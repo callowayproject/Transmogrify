@@ -1,0 +1,123 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Getting Started &mdash; Transmogrify v0.1beta1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1beta1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Transmogrify v0.1beta1 documentation" href="index.html" />
+    <link rel="next" title="Installation" href="installation.html" />
+    <link rel="prev" title="Transmogrify 0.1 documentation" href="index.html" /> 
+  </head>
+  <body>
+<div id="docstitle">
+	<p>Transmogrify v0.1beta1 documentation</p>
+</div>
+<div id="header">
+	<div id="title"><h1>Getting Started</h1></div>
+	<ul id="headerButtons">
+		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
+		<li id="page_buttons">
+			<div class="headerButton"><a href="genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="installation.html" title="Installation" accesskey="N">next</a></div>
+			<div class="headerButton"><a href="index.html" title="Transmogrify 0.1 documentation" accesskey="P">previous</a></div>
+		</li>
+	</ul>
+</div>
+
+<div id="sphinxsidebar">
+  <div class="sphinxsidebarwrapper">
+	<ul><li class="toctree-l1"><a href="index.html">Main Page</a></li></ul>
+	<ul class="current">
+<li class="toctree-l1 current"><a class="current reference external" href="">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference external" href="#the-url-generator">The URL Generator</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference external" href="templatetag.html">Django Template Tag</a></li>
+<li class="toctree-l1"><a class="reference external" href="webserver_integration/index.html">Web Server Integration</a></li>
+<li class="toctree-l1"><a class="reference external" href="reference/index.html">Reference</a></li>
+</ul>
+
+    <div id="searchbox" style="display: none">
+      
+        <form class="search" action="search.html" method="get">
+			<div class="search-wrapper">
+			<span class="search-left"></span>
+			<input class="prettysearch" type="text" name="q" size="18" />
+			<span class="search-right">&nbsp;</span>
+			</div>
+          <input type="submit" value="Search" class="searchbutton" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        <p class="searchtip" style="font-size: 90%">
+        Enter search terms or a module, class or function name.
+        </p>
+    </div>
+    <script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</div>
+
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="getting-started">
+<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
+<p>Transmogrify is a library to dynamically alter images. Its biggest impact is probably how it frees up the designer from resizing images for different designs.</p>
+<p>There are several parts to transmogrify. At the core is the image processor. It takes an image file and a set of one or more actions and outputs a new file, predictably renamed, with the actions performed.</p>
+<img alt="_images/transmogrify_parts.png" src="_images/transmogrify_parts.png" />
+<p>The URL router works with the web server when the processed file doesn&#8217;t exist. It tells the image processor to create the correct version, allowing the web server to serve the file.</p>
+<p>Lastly, the URL generator is a piece of code that generates the URL for the image based on what the designer wants to do with the image.</p>
+<p>Currently there is a URL generator for Django (as a template tag), and URL routers for lighttpd (as a 404 handler) and Django (for local serving). Help for other frameworks and servers is greatly appreciated. The image processor is pure python.</p>
+<div class="section" id="the-url-generator">
+<h2>The URL Generator<a class="headerlink" href="#the-url-generator" title="Permalink to this headline">¶</a></h2>
+<p>A transmogrify URL consists of action codes and parameters and a SHA1 hash that can prevent others from reusing the images. For example:</p>
+<div class="highlight-python"><pre>/images/funny/clown_rx300_b1-000.jpg?47da31880d05b12f85aedf8b9afc913a6c4e6c12</pre>
+</div>
+<p>This URL says take the file at URL <tt class="docutils literal"><span class="pre">/images/funny/clown.jpg</span></tt> and resize it to 300 pixels high, scaling the width proportionally, then apply a 1 pixel black border. You can verify that it is me (and not some miscreant) with this security hash.</p>
+<p>The security hash is a SHA1 hex digest of the actions (<tt class="docutils literal"><span class="pre">_rx300_b1-000</span></tt>) and a <tt class="docutils literal"><span class="pre">SECRET_KEY</span></tt>. The <tt class="docutils literal"><span class="pre">SECRET_KEY</span></tt> is set in the <tt class="docutils literal"><span class="pre">settings.py</span></tt> file.</p>
+<div class="section" id="django-template-tag">
+<h3>Django Template Tag<a class="headerlink" href="#django-template-tag" title="Permalink to this headline">¶</a></h3>
+<p>For Django, there is a template tag to generate the correct URL.</p>
+</div>
+</div>
+</div>
+
+
+          </div> 
+        </div>
+      </div>
+    <div class="footer">
+    <p>
+      &copy; Copyright 2010, The Washington Times.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+	</p>
+    </div>
+      <div class="clearer"></div>
+    </div>
+	<div id="breadcrumbs">
+		Getting Started
+		</ul>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="_static/toc.js"></script>
+  </body>
+</html>

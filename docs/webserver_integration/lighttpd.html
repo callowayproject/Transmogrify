@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Lighttpd Integration &mdash; Transmogrify v0.1beta1 documentation</title>
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1beta1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Transmogrify v0.1beta1 documentation" href="../index.html" />
+    <link rel="up" title="Web Server Integration" href="index.html" />
+    <link rel="next" title="Reference" href="../reference/index.html" />
+    <link rel="prev" title="Web Server Integration" href="index.html" /> 
+  </head>
+  <body>
+<div id="docstitle">
+	<p>Transmogrify v0.1beta1 documentation</p>
+</div>
+<div id="header">
+	<div id="title"><h1>Lighttpd Integration</h1></div>
+	<ul id="headerButtons">
+		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
+		<li id="page_buttons">
+			<div class="headerButton"><a href="../genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="../reference/index.html" title="Reference" accesskey="N">next</a></div>
+			<div class="headerButton"><a href="index.html" title="Web Server Integration" accesskey="P">previous</a></div>
+		</li>
+	</ul>
+</div>
+
+<div id="sphinxsidebar">
+  <div class="sphinxsidebarwrapper">
+	<ul><li class="toctree-l1"><a href="../index.html">Main Page</a></li></ul>
+	<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference external" href="../getting_started.html#the-url-generator">The URL Generator</a></li>
+<li class="toctree-l1"><a class="reference external" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference external" href="../templatetag.html">Django Template Tag</a></li>
+<li class="toctree-l1 current"><a class="reference external" href="index.html">Web Server Integration</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference external" href="">Lighttpd Integration</a><ul>
+<li class="toctree-l3"><a class="reference external" href="#lighttpd-conf"><tt class="docutils literal"><span class="pre">lighttpd.conf</span></tt></a></li>
+<li class="toctree-l3"><a class="reference external" href="#the-404-handler-script">The 404 handler script</a></li>
+<li class="toctree-l3"><a class="reference external" href="#debugging-the-404-handler">Debugging the 404 Handler</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="../reference/index.html">Reference</a></li>
+</ul>
+
+    <div id="searchbox" style="display: none">
+      
+        <form class="search" action="../search.html" method="get">
+			<div class="search-wrapper">
+			<span class="search-left"></span>
+			<input class="prettysearch" type="text" name="q" size="18" />
+			<span class="search-right">&nbsp;</span>
+			</div>
+          <input type="submit" value="Search" class="searchbutton" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        <p class="searchtip" style="font-size: 90%">
+        Enter search terms or a module, class or function name.
+        </p>
+    </div>
+    <script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</div>
+
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="lighttpd-integration">
+<h1>Lighttpd Integration<a class="headerlink" href="#lighttpd-integration" title="Permalink to this headline">¶</a></h1>
+<p>The easiest method to integrate Transmogrify into a Lighttpd server is as a <tt class="docutils literal"><span class="pre">server.error-handler-404</span></tt>. This allows Lighttpd to handle normal file serving, unless lighttpd can&#8217;t find the requested file. At that point, Lighttpd will pass off control to the script, which will either create the file and let Lighttpd serve it or return a 404 error. From that point on Lighttpd will be able to serve the file normally.</p>
+<div class="section" id="lighttpd-conf">
+<h2><tt class="docutils literal"><span class="pre">lighttpd.conf</span></tt><a class="headerlink" href="#lighttpd-conf" title="Permalink to this headline">¶</a></h2>
+<p>In your lighttpd.conf, you&#8217;ll need <tt class="docutils literal"><span class="pre">mod_cgi</span></tt> and <tt class="docutils literal"><span class="pre">mod_setenv</span></tt> in your <tt class="docutils literal"><span class="pre">server.modules</span></tt>:</p>
+<div class="highlight-python"><pre>server.modules = (
+    ...
+    "mod_cgi",
+    "mod_setenv",
+)</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">.py</span></tt> extension must be assigned as cgi script:</p>
+<div class="highlight-python"><pre>cgi.assign = (".py" =&gt; "/usr/bin/python")</pre>
+</div>
+<p>Then the error handler is set. The value set is a URL, not a path. Unless you are going to put the python file in the <tt class="docutils literal"><span class="pre">server.document-root</span></tt>, you will have to do some configuring.</p>
+<p>First decide where you are going to install the handler. For this example, the entire module is installed in python&#8217;s site-packages, and the actual error handling script (<tt class="docutils literal"><span class="pre">404_handler.py</span></tt>) is in <tt class="docutils literal"><span class="pre">/var/www/scripts/</span></tt>. So we&#8217;ll add an alias for this:</p>
+<div class="highlight-python"><pre>alias.url = (
+    ...
+    "/error/" =&gt; "/var/www/scripts/",
+)</pre>
+</div>
+<p>Now we can set the actual error handler:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">server</span><span class="o">.</span><span class="n">error</span><span class="o">-</span><span class="n">handler</span><span class="o">-</span><span class="mi">404</span> <span class="o">=</span> <span class="s">&quot;/error/404_handler.py&quot;</span>
+</pre></div>
+</div>
+<p>Lastly, we must configure a few parameters. These settings allow easy customization without having to customize the scripts. See <a class="reference external" href="../reference/settings.html#settings"><em>Settings</em></a> for details on each setting. There are a few more settings than shown in this example, but this is typical.</p>
+<div class="highlight-python"><pre>setenv.add-environment = (
+    "TRANSMOGRIFY_KEY"  =&gt; "Anything you want, but keep it secret",
+    "TRANSMOGRIFY_DEBUG" =&gt; "0",
+    "TRANSMOGRIFY_ROOT" =&gt; "/web-media/export/assets/",
+    "TRANSMOGRIFY_VHOSTS" =&gt; "0",
+)</pre>
+</div>
+</div>
+<div class="section" id="the-404-handler-script">
+<h2>The 404 handler script<a class="headerlink" href="#the-404-handler-script" title="Permalink to this headline">¶</a></h2>
+<p>The 404 handling script is pretty basic. It should look like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">transmogrify</span> <span class="kn">import</span> <span class="n">lighttpd_404_handler</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">lighttpd_404_handler</span><span class="o">.</span><span class="n">handle_request</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Save that file as <tt class="docutils literal"><span class="pre">/var/www/scripts/404_handler.py</span></tt> and make sure the lighttpd process can read it.</p>
+</div>
+<div class="section" id="debugging-the-404-handler">
+<h2>Debugging the 404 Handler<a class="headerlink" href="#debugging-the-404-handler" title="Permalink to this headline">¶</a></h2>
+<p>Figuring out what is going on with the 404 handler can be infuriating. Here are a few tips.</p>
+<ul class="simple">
+<li><strong>Make sure the TRANSMOGRIFY_DEBUG setting is 1.</strong> The error messages will be more detailed and a stacktrace will be returned if there was an internal error.</li>
+<li><strong>Call the script from the shell.</strong> Some errors, such as ImportErrors simply fail without notice. Simply typing <tt class="docutils literal"><span class="pre">python</span> <span class="pre">/var/www/scripts/404_handler.py</span></tt> can show those errors.</li>
+<li><strong>Check permissions.</strong> Make sure the web process can make new files where it is trying to make new files.</li>
+</ul>
+</div>
+</div>
+
+
+          </div> 
+        </div>
+      </div>
+    <div class="footer">
+    <p>
+      &copy; Copyright 2010, The Washington Times.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+	</p>
+    </div>
+      <div class="clearer"></div>
+    </div>
+	<div id="breadcrumbs">
+		<a href="index.html" accesskey="U">Web Server Integration</a><img src="../_static/triangle_closed.png" height="9" width="9" alt="&gt;">
+		Lighttpd Integration
+		</ul>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="../_static/toc.js"></script>
+  </body>
+</html>

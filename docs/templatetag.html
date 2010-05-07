@@ -1,0 +1,398 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Django Template Tag &mdash; Transmogrify v0.1beta1 documentation</title>
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1beta1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Transmogrify v0.1beta1 documentation" href="index.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+<div id="docstitle">
+	<p>Transmogrify v0.1beta1 documentation</p>
+</div>
+<div id="header">
+	<div id="title"><h1>Django Template Tag</h1></div>
+	<ul id="headerButtons">
+		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
+		<li id="page_buttons">
+			<div class="headerButton"><a href="genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="installation.html" title="Installation" accesskey="P">previous</a></div>
+		</li>
+	</ul>
+</div>
+
+<div id="sphinxsidebar">
+  <div class="sphinxsidebarwrapper">
+	<ul><li class="toctree-l1"><a href="index.html">Main Page</a></li></ul>
+	<ul class="current">
+<li class="toctree-l1"><a class="reference external" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference external" href="getting_started.html#the-url-generator">The URL Generator</a></li>
+<li class="toctree-l1"><a class="reference external" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference external" href="">Django Template Tag</a><ul>
+<li class="toctree-l2"><a class="reference external" href="#transmogrify">transmogrify</a></li>
+<li class="toctree-l2"><a class="reference external" href="#thumbnail">thumbnail</a></li>
+<li class="toctree-l2"><a class="reference external" href="#resize">resize</a></li>
+<li class="toctree-l2"><a class="reference external" href="#letterbox">letterbox</a></li>
+<li class="toctree-l2"><a class="reference external" href="#forcefit">forcefit</a></li>
+<li class="toctree-l2"><a class="reference external" href="#crop">crop</a></li>
+<li class="toctree-l2"><a class="reference external" href="#filter">filter</a></li>
+<li class="toctree-l2"><a class="reference external" href="#border">border</a></li>
+</ul>
+</li>
+</ul>
+
+    <div id="searchbox" style="display: none">
+      
+        <form class="search" action="search.html" method="get">
+			<div class="search-wrapper">
+			<span class="search-left"></span>
+			<input class="prettysearch" type="text" name="q" size="18" />
+			<span class="search-right">&nbsp;</span>
+			</div>
+          <input type="submit" value="Search" class="searchbutton" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        <p class="searchtip" style="font-size: 90%">
+        Enter search terms or a module, class or function name.
+        </p>
+    </div>
+    <script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</div>
+
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="django-template-tag">
+<h1>Django Template Tag<a class="headerlink" href="#django-template-tag" title="Permalink to this headline">¶</a></h1>
+<p>In the template, first:</p>
+<div class="highlight-python"><pre>{% load transmogrifiers %}</pre>
+</div>
+<p>You will have access to the following tags:</p>
+<ul class="simple">
+<li><a class="reference internal" href="#transmogrify-tag"><em>transmogrify</em></a></li>
+<li><a class="reference internal" href="#thumbnail-tag"><em>thumbnail</em></a></li>
+<li><a class="reference internal" href="#resize-tag"><em>resize</em></a></li>
+<li><a class="reference internal" href="#letterbox-tag"><em>letterbox</em></a></li>
+<li><a class="reference internal" href="#forcefit-tag"><em>forcefit</em></a></li>
+<li><a class="reference internal" href="#crop-tag"><em>crop</em></a></li>
+<li><a class="reference internal" href="#filter-tag"><em>filter</em></a></li>
+<li><a class="reference internal" href="#border-tag"><em>border</em></a></li>
+</ul>
+<div class="section" id="transmogrify">
+<span id="transmogrify-tag"></span><h2>transmogrify<a class="headerlink" href="#transmogrify" title="Permalink to this headline">¶</a></h2>
+<p>Alter an image URL so that the media server will transform the image on the
+fly. This tag allows for multiple actions on an image. There are shortcuts for doing just one action.</p>
+<div class="section" id="usage">
+<h3>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% transmogrify url [action [param]] [action2 [param2] ...] %}</pre>
+</div>
+</div>
+<div class="section" id="available-actions">
+<h3>Available actions:<a class="headerlink" href="#available-actions" title="Permalink to this headline">¶</a></h3>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">thumbnail</span> <span class="pre">&lt;width&gt;</span></tt></dt>
+<dd>Thumbnail to a given width. Height is set to maintain aspect ratio.</dd>
+<dt><tt class="docutils literal"><span class="pre">thumbnail</span> <span class="pre">x&lt;height&gt;</span></tt></dt>
+<dd>Thumbnail to a given height. Width is set to maintain aspect ratio.</dd>
+<dt><tt class="docutils literal"><span class="pre">thumbnail</span> <span class="pre">&lt;width&gt;x&lt;height&gt;</span></tt></dt>
+<dd>Thumbnail to fit a given size. The image is reduced to fit
+proportionally within the specified size.</dd>
+<dt><tt class="docutils literal"><span class="pre">crop</span> <span class="pre">&lt;width&gt;x&lt;height&gt;</span></tt></dt>
+<dd>Crop to a given size. Crops are centered within the image.</dd>
+<dt><tt class="docutils literal"><span class="pre">resize</span> <span class="pre">&lt;width&gt;x&lt;height&gt;</span></tt></dt>
+<dd>Resize the image proportionally to fit within the specified size.</dd>
+<dt><tt class="docutils literal"><span class="pre">forcefit</span> <span class="pre">&lt;width&gt;x&lt;height&gt;</span></tt></dt>
+<dd>Force the image to fit within the specified box; could result in a
+distorted image.</dd>
+<dt><tt class="docutils literal"><span class="pre">letterbox</span> <span class="pre">&lt;width&gt;x&lt;height&gt;</span> <span class="pre">&lt;color&gt;</span></tt></dt>
+<dd>Resize the image proportionally to fit within the specified size,
+and fill the remaining space with the specified color. Color should
+be in <tt class="docutils literal"><span class="pre">#RRGGBB</span></tt> or <tt class="docutils literal"><span class="pre">#RGB</span></tt> format.</dd>
+<dt><tt class="docutils literal"><span class="pre">filter</span> <span class="pre">&lt;filter&gt;</span></tt></dt>
+<dd><p class="first">Run an image filter; filter can be:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">blur</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">contour</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">detail</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">edge_enhance</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">edge_enhance_more</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">emboss</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">find_edges</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">smooth</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">smooth_more</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">sharpen</span></tt></li>
+</ul>
+<p class="last">These don&#8217;t look all that good, but whatever.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">border</span> <span class="pre">&lt;width&gt;</span> <span class="pre">&lt;color&gt;</span></tt></dt>
+<dd>Add a &lt;width&gt; pixel border around the image. &lt;color&gt; should be in
+HTML (#RRGGBB or #RGB) format.</dd>
+</dl>
+</div>
+<div class="section" id="examples">
+<h3>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
+<p>Thumbnail 200px wide:</p>
+<div class="highlight-python"><pre>{% transmogrify img thumbnail "200" %}</pre>
+</div>
+<p>Thumbnail 200px high:</p>
+<div class="highlight-python"><pre>{% transmogrify img thumbnail "x200" %}</pre>
+</div>
+<p>Thumbnail to fit within 200x200:</p>
+<div class="highlight-python"><pre>{% transmogrify img thumbnail "200x200" %}</pre>
+</div>
+<p>Resize to fit within a 400x400px box:</p>
+<div class="highlight-python"><pre>{% transmogrify img resize "400x400" %}</pre>
+</div>
+<p>Resize to be 400px wide:</p>
+<div class="highlight-python"><pre>{% transmogrify img resize "400" %}</pre>
+</div>
+<p>Resize to be 400px high:</p>
+<div class="highlight-python"><pre>{% transmogrify img resize "x400" %}</pre>
+</div>
+<p>Force the image to fit 75x75, distorting the image if the aspect isn&#8217;t right:</p>
+<div class="highlight-python"><pre>{% transmogrify img forcefit "75x75" %}</pre>
+</div>
+<p>Resize the image to fit 100x100 and sharpen:</p>
+<div class="highlight-python"><pre>{% transmogrify img resize "100x100" filter "sharpen" %}</pre>
+</div>
+<p>Resize the image to fit 100x100, smooth, and add a 1px black border:</p>
+<div class="highlight-python"><pre>{% transmogrify img resize "100x100" filter "smooth" border "1" "#000" %}</pre>
+</div>
+<p>Crop a 100x100 section out of the middle of image:</p>
+<div class="highlight-python"><pre>{% transmogrify img crop "100x100" %}</pre>
+</div>
+</div>
+</div>
+<div class="section" id="thumbnail">
+<span id="thumbnail-tag"></span><h2>thumbnail<a class="headerlink" href="#thumbnail" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to the <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">thumbnail</span></tt> action. It creates a thumbnail.</p>
+<div class="section" id="id1">
+<h3>Usage:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% thumbnail &lt;image_url&gt; &lt;width&gt; %}
+{% thumbnail &lt;image_url&gt; x&lt;height&gt; %}
+{% thumbnail &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="id2">
+<h3>Examples:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><strong>Thumbnail 200px wide</strong></p>
+<div class="highlight-python"><pre>{% thumbnail img 200 %}</pre>
+</div>
+<img alt="_images/horiz_img_t200.jpg" src="_images/horiz_img_t200.jpg" />
+<img alt="_images/square_img_t200.jpg" src="_images/square_img_t200.jpg" />
+<img alt="_images/vert_img_t200.jpg" src="_images/vert_img_t200.jpg" />
+<hr class="docutils" />
+<p><strong>Thumbnail 200px high</strong></p>
+<div class="highlight-python"><pre>{% thumbnail img x200 %}</pre>
+</div>
+<img alt="_images/horiz_img_tx200.jpg" src="_images/horiz_img_tx200.jpg" />
+<img alt="_images/square_img_tx200.jpg" src="_images/square_img_tx200.jpg" />
+<img alt="_images/vert_img_tx200.jpg" src="_images/vert_img_tx200.jpg" />
+<hr class="docutils" />
+<p><strong>Thumbnail to fit within 200x200</strong></p>
+<div class="highlight-python"><pre>{% thumbnail img 200x200 %}</pre>
+</div>
+<img alt="_images/horiz_img_t200x200.jpg" src="_images/horiz_img_t200x200.jpg" />
+<img alt="_images/square_img_t200x200.jpg" src="_images/square_img_t200x200.jpg" />
+<img alt="_images/vert_img_t200x200.jpg" src="_images/vert_img_t200x200.jpg" />
+</div>
+</div>
+<div class="section" id="resize">
+<span id="resize-tag"></span><h2>resize<a class="headerlink" href="#resize" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to the <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">resize</span></tt> action. It resizes the image to fit the dimensions and maintains the aspect ratio.</p>
+<div class="section" id="id3">
+<h3>Usage:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% resize &lt;image_url&gt; &lt;width&gt; %}
+{% resize &lt;image_url&gt; x&lt;height&gt; %}
+{% resize &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="id4">
+<h3>Examples:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p><strong>Resize image to 500px wide</strong></p>
+<div class="highlight-python"><pre>{% resize img 500 %}</pre>
+</div>
+<img alt="_images/horiz_img_r500.jpg" src="_images/horiz_img_r500.jpg" />
+<img alt="_images/square_img_r500.jpg" src="_images/square_img_r500.jpg" />
+<img alt="_images/vert_img_r500.jpg" src="_images/vert_img_r500.jpg" />
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The vertical image is <em>not</em> 500 pixels wide because the original is only 358 pixels wide. The Python Imaging Library will not upscale an image. Instead the original image is returned.</p>
+</div>
+<hr class="docutils" />
+<p><strong>Resize image to 500px high</strong></p>
+<div class="highlight-python"><pre>{% resize img x500 %}</pre>
+</div>
+<img alt="_images/horiz_img_rx500.jpg" src="_images/horiz_img_rx500.jpg" />
+<img alt="_images/square_img_rx500.jpg" src="_images/square_img_rx500.jpg" />
+<img alt="_images/vert_img_rx500.jpg" src="_images/vert_img_rx500.jpg" />
+<hr class="docutils" />
+<p><strong>Resize image to fit within 500x500 pixel box</strong></p>
+<div class="highlight-python"><pre>{% resize img 500x500 %}</pre>
+</div>
+<img alt="_images/horiz_img_r500x500.jpg" src="_images/horiz_img_r500x500.jpg" />
+<img alt="_images/square_img_r500x500.jpg" src="_images/square_img_r500x500.jpg" />
+<img alt="_images/vert_img_r500x500.jpg" src="_images/vert_img_r500x500.jpg" />
+</div>
+</div>
+<div class="section" id="letterbox">
+<span id="letterbox-tag"></span><h2>letterbox<a class="headerlink" href="#letterbox" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to the <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">letterbox</span></tt> action. It resizes the image to fit the dimensions and maintains the aspect ratio. The remaining space is filled with the color specified.</p>
+<div class="section" id="id5">
+<h3>Usage:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% letterbox &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; &lt;color&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="example">
+<h3>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
+<p><strong>Resize image to fit within 500x500 pixel box, and fill the rest with red</strong></p>
+<div class="highlight-python"><pre>{% letterbox img 500x500 #f00 %}</pre>
+</div>
+<img alt="_images/horiz_img_l500x500-f00.jpg" src="_images/horiz_img_l500x500-f00.jpg" />
+<img alt="_images/square_img_l500x500-f00.jpg" src="_images/square_img_l500x500-f00.jpg" />
+<img alt="_images/vert_img_l500x500-f00.jpg" src="_images/vert_img_l500x500-f00.jpg" />
+<hr class="docutils" />
+<p><strong>Resize image to fit within 400x500 pixel box, and fill the rest with a light yellow</strong></p>
+<div class="highlight-python"><pre>{% letterbox img 500x500 #fffee1 %}</pre>
+</div>
+<img alt="_images/horiz_img_l500x500-fffee1.jpg" src="_images/horiz_img_l500x500-fffee1.jpg" />
+<img alt="_images/square_img_l500x500-fffee1.jpg" src="_images/square_img_l500x500-fffee1.jpg" />
+<img alt="_images/vert_img_l500x500-fffee1.jpg" src="_images/vert_img_l500x500-fffee1.jpg" />
+</div>
+</div>
+<div class="section" id="forcefit">
+<span id="forcefit-tag"></span><h2>forcefit<a class="headerlink" href="#forcefit" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">forcefit</span></tt> action. It resizes the image to fit the dimensions, possibly distorting the image in the process.</p>
+<div class="section" id="id6">
+<h3>Usage:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% forcefit &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="id7">
+<h3>Example:<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p><strong>Resize image to fit within 300x300 pixel box</strong></p>
+<div class="highlight-python"><pre>{% forcefit img 300x300 %}</pre>
+</div>
+<img alt="_images/horiz_img_s300x300.jpg" src="_images/horiz_img_s300x300.jpg" />
+<img alt="_images/square_img_s300x300.jpg" src="_images/square_img_s300x300.jpg" />
+<img alt="_images/vert_img_s300x300.jpg" src="_images/vert_img_s300x300.jpg" />
+</div>
+</div>
+<div class="section" id="crop">
+<span id="crop-tag"></span><h2>crop<a class="headerlink" href="#crop" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to the <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">crop</span></tt> action. It crops out a section of the center of an image.</p>
+<div class="section" id="id8">
+<h3>Usage:<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% crop &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="id9">
+<h3>Example:<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p><strong>Crop a 100x100 section out of the middle of image</strong></p>
+<div class="highlight-python"><pre>{% crop img 100x100 %}</pre>
+</div>
+<img alt="_images/horiz_img_c100x100.jpg" src="_images/horiz_img_c100x100.jpg" />
+<img alt="_images/square_img_c100x100.jpg" src="_images/square_img_c100x100.jpg" />
+<img alt="_images/vert_img_c100x100.jpg" src="_images/vert_img_c100x100.jpg" />
+</div>
+</div>
+<div class="section" id="filter">
+<span id="filter-tag"></span><h2>filter<a class="headerlink" href="#filter" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to the <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">filter</span></tt> action. It applies the specified filter (one of <tt class="docutils literal"><span class="pre">blur</span></tt>, <tt class="docutils literal"><span class="pre">contour</span></tt>, <tt class="docutils literal"><span class="pre">detail</span></tt>, <tt class="docutils literal"><span class="pre">edge_enhance</span></tt>, <tt class="docutils literal"><span class="pre">edge_enhance_more</span></tt>, <tt class="docutils literal"><span class="pre">emboss</span></tt>, <tt class="docutils literal"><span class="pre">find_edges</span></tt>, <tt class="docutils literal"><span class="pre">smooth</span></tt>, <tt class="docutils literal"><span class="pre">smooth_more</span></tt>, <tt class="docutils literal"><span class="pre">sharpen</span></tt>) to the image. Only one filter can be specified.</p>
+<div class="section" id="id10">
+<h3>Usage:<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% filter &lt;image_url&gt; &lt;filtername&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="id11">
+<h3>Examples:<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p><strong>Blur</strong></p>
+<img alt="_images/square_img_r300x300_fblur.jpg" src="_images/square_img_r300x300_fblur.jpg" />
+<hr class="docutils" />
+<p><strong>Contour</strong></p>
+<img alt="_images/square_img_r300x300_fcontour.jpg" src="_images/square_img_r300x300_fcontour.jpg" />
+<hr class="docutils" />
+<p><strong>Detail</strong></p>
+<img alt="_images/square_img_r300x300_fdetail.jpg" src="_images/square_img_r300x300_fdetail.jpg" />
+<hr class="docutils" />
+<p><strong>Edge Enhance</strong></p>
+<img alt="_images/square_img_r300x300_fedge_enhance.jpg" src="_images/square_img_r300x300_fedge_enhance.jpg" />
+<hr class="docutils" />
+<p><strong>Edge Enhance More</strong></p>
+<img alt="_images/square_img_r300x300_fedge_enhance_more.jpg" src="_images/square_img_r300x300_fedge_enhance_more.jpg" />
+<hr class="docutils" />
+<p><strong>Emboss</strong></p>
+<img alt="_images/square_img_r300x300_femboss.jpg" src="_images/square_img_r300x300_femboss.jpg" />
+<hr class="docutils" />
+<p><strong>Find Edges</strong></p>
+<img alt="_images/square_img_r300x300_ffind_edges.jpg" src="_images/square_img_r300x300_ffind_edges.jpg" />
+<hr class="docutils" />
+<p><strong>Sharpen</strong></p>
+<img alt="_images/square_img_r300x300_fsharpen.jpg" src="_images/square_img_r300x300_fsharpen.jpg" />
+<hr class="docutils" />
+<p><strong>Smooth</strong></p>
+<img alt="_images/square_img_r300x300_fsmooth.jpg" src="_images/square_img_r300x300_fsmooth.jpg" />
+<hr class="docutils" />
+<p><strong>Smooth More</strong></p>
+<img alt="_images/square_img_r300x300_fsmooth_more.jpg" src="_images/square_img_r300x300_fsmooth_more.jpg" />
+</div>
+</div>
+<div class="section" id="border">
+<span id="border-tag"></span><h2>border<a class="headerlink" href="#border" title="Permalink to this headline">¶</a></h2>
+<p>A shortcut to the <tt class="docutils literal"><span class="pre">transmogrify</span></tt> tag&#8217;s <tt class="docutils literal"><span class="pre">border</span></tt> action. It applies a border of the specified width and color to the image.</p>
+<div class="section" id="id12">
+<h3>Usage:<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><pre>{% border &lt;image_url&gt; &lt;border_width&gt; &lt;color&gt; %}</pre>
+</div>
+</div>
+<div class="section" id="id13">
+<h3>Example:<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p><strong>Add a 3 pixel light-yellow border around the image</strong></p>
+<div class="highlight-python"><pre>{% border img 3 #fffee1 %}</pre>
+</div>
+<img alt="_images/square_img_r300x300_b3-fffee1.jpg" src="_images/square_img_r300x300_b3-fffee1.jpg" />
+</div>
+</div>
+</div>
+
+
+          </div> 
+        </div>
+      </div>
+    <div class="footer">
+    <p>
+      &copy; Copyright 2010, The Washington Times.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+	</p>
+    </div>
+      <div class="clearer"></div>
+    </div>
+	<div id="breadcrumbs">
+		Django Template Tag
+		</ul>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="_static/toc.js"></script>
+  </body>
+</html>
