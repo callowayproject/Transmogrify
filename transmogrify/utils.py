@@ -19,7 +19,8 @@
 5. Return
 """
 import os, re, urllib
-from settings import BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS, SECRET_KEY
+from settings import BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS, \
+                    SECRET_KEY, PATH_ALIASES
 from hashcompat import sha_constructor
 
 class Http404(Exception):
@@ -41,6 +42,17 @@ def create_securityhash(action_tuples):
 
 def is_valid_security(action_tuples, security_hash):
     return create_securityhash(action_tuples) == security_hash
+
+def resolve_request_path(requested_uri):
+    """
+    Check for any aliases and alter the path accordingly.
+    
+    Returns resolved_uri
+    """
+    for key, val in PATH_ALIASES.items():
+        if re.match(key, requested_uri):
+            return re.sub(key, val, requested_uri)
+    return requested_uri
 
 def process_url(url, server_name="", document_root=None):
     """
@@ -64,16 +76,17 @@ def process_url(url, server_name="", document_root=None):
         request_uri, security_hash = url.split("?", 1)
     except ValueError:
         request_uri, security_hash = url, ""
-    request_uri = request_uri.lstrip("/")
+    resolved_uri = resolve_request_path(request_uri)
+    resolved_uri = resolved_uri.lstrip("/")
     
     base_path = document_root or BASE_PATH
     
     if USE_VHOSTS:
         if not os.path.exists(os.path.join(BASE_PATH, server)):
             raise Http404("Bad server: %s" % server)
-        requested_path = os.path.join(base_path, server, VHOST_DOC_BASE, urllib.unquote(request_uri))
+        requested_path = os.path.join(base_path, server, VHOST_DOC_BASE, urllib.unquote(resolved_uri))
     else:
-        requested_path = os.path.abspath(os.path.join(base_path, urllib.unquote(request_uri)))
+        requested_path = os.path.abspath(os.path.join(base_path, urllib.unquote(resolved_uri)))
     if not requested_path.startswith(base_path):
         # Apparently, there was an attempt to put some directory traversal
         # hacks into the path. (../../../vulnerable_file.exe)
@@ -95,10 +108,10 @@ def process_url(url, server_name="", document_root=None):
         else:
             bits.append(action)
             break
-    
     base_file_name = "".join(bits)
     original_file = os.path.join(parent_dir, base_file_name + ext)
     if not os.path.exists(original_file):
+        print "looking for:", original_file
         raise Http404("Original file does not exist.")
     if not is_valid_security(action_tuples, security_hash):
         raise Http404("Invalid security token.")

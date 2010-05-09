@@ -27,6 +27,15 @@ if HAS_DJANGO:
     VHOST_DOC_BASE = getattr(settings, "TRANSMOGRIFY_VHOST_DOC_BASE", "")
 
     NO_IMAGE_URL = getattr(settings, "TRANSMOGRIFY_NO_IMG_URL", "")
+    
+    # A dictionary of URL paths to real paths
+    # e.g. {'/media/': '/assets/'} would change a request like
+    # /media/images/spanish_inquisition.png
+    # to
+    # /assets/images/spanish_inquisition.png
+    # The changed request path is then added to BASE_PATH for original file
+    # location
+    PATH_ALIASES = getattr(settings, "TRANSMOGRIFY_PATH_ALIASES", {})
 else:
     # Shared secret
     SECRET_KEY = os.environ.get("TRANSMOGRIFY_SECRET", "")

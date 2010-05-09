@@ -97,6 +97,23 @@ class TestTransmogrify(unittest.TestCase):
         transmog = Transmogrify(self.horiz_img, [('b', '3-f00'),])
         transmog.save()
 
+class UrlProcessingTest(TestCase):
+    """
+    Test aspects of URL processing.
+    """
+    def doShaHash(self, value):
+        import hashlib
+        return hashlib.sha1(value).hexdigest()
+    
+    def testAliases(self):
+        import utils
+        utils.PATH_ALIASES = {'/media/':'/testdata/'}
+        utils.BASE_PATH = os.path.abspath(os.path.dirname(__file__))
+        url = "/media/horiz_img_r200.jpg"
+        url += "?%s" % self.doShaHash('_r200')
+        result = utils.process_url(url)
+        self.assertEquals(result['original_file'], os.path.join(utils.BASE_PATH, 'testdata', 'horiz_img.jpg'))
+
 if HAS_DJANGO:
     # Note: By default the secret key is empty, so we can test just a straight
     # SHA1 hash of the action
