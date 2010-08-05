@@ -7,8 +7,18 @@ import sys
 from settings import DEBUG
 from utils import process_url, Http404
 from transmogrify import Transmogrify
+from hashcompat import sha_constructor
+
 
 def handle_request():
+    # Acquire lockfile
+    lock = '/tmp/%s' % sha_constructor(os.environ["REQUEST_URI"]).hexdigest()
+    if os.path.isfile(lock):
+        print "Location: %s" % os.environ["REQUEST_URI"]
+        print
+        return
+    open(lock, 'w')
+    
     if DEBUG:
         import cgitb
         cgitb.enable()
@@ -24,7 +34,9 @@ def handle_request():
     
     print "Location: /%s" % os.environ['REQUEST_URI']
     print
-
+    
+    # Remove lockfile
+    os.remove(lock)
 
 def do404(why, debug):
     if debug:
