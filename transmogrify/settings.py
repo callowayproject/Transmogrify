@@ -55,6 +55,8 @@ else:
 
     NO_IMAGE_URL = os.environ.get("TRANSMOGRIFY_NO_IMG_URL", "")
 
+    PATH_ALIASES = {}
+
 PROCESSORS = {}
 for attr in processors.__all__:
     item = getattr(processors, attr)
