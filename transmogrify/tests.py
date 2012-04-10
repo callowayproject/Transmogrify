@@ -1,14 +1,18 @@
 import unittest
 import os
-from django.template import Template
+from django.template import Template, Context
+from StringIO import StringIO
 
 from transmogrify import Transmogrify
+import utils
+import settings
 from PIL import Image
 try:
     from django.test import TestCase
     HAS_DJANGO = True
 except ImportError:
     HAS_DJANGO = False
+
 
 class TestTransmogrify(unittest.TestCase):
     """Testing the features of Transmogrify"""
@@ -103,7 +107,7 @@ class UrlProcessingTest(TestCase):
     """
     def doShaHash(self, value):
         import hashlib
-        return hashlib.sha1(value).hexdigest()
+        return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
     
     def testAliases(self):
         import utils
@@ -151,6 +155,7 @@ if HAS_DJANGO:
                 'SERVER_NAME': 'testserver',
                 'SERVER_PORT': 80,
                 'SERVER_PROTOCOL': 'HTTP/1.1',
+                'wsgi.input': StringIO(),
             }
             environ.update(self.defaults)
             environ.update(request)
@@ -159,40 +164,40 @@ if HAS_DJANGO:
     class TemplateTagTest(TestCase):
         def doShaHash(self, value):
             import hashlib
-            return hashlib.sha1(value).hexdigest()
+            return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
         
         def testResize(self):
             t = Template("{% load transmogrifiers %}{% resize /test/picture.jpg 300 %}")
-            self.assertEqual(t.render({}), '/test/picture_r300.jpg?%s' % self.doShaHash("_r300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_r300.jpg?%s' % self.doShaHash("_r300"))
             t = Template("{% load transmogrifiers %}{% resize /test/picture.jpg x300 %}")
-            self.assertEqual(t.render({}), '/test/picture_rx300.jpg?%s' % self.doShaHash("_rx300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_rx300.jpg?%s' % self.doShaHash("_rx300"))
             t = Template("{% load transmogrifiers %}{% resize /test/picture.jpg 300x300 %}")
-            self.assertEqual(t.render({}), '/test/picture_r300x300.jpg?%s' % self.doShaHash("_r300x300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_r300x300.jpg?%s' % self.doShaHash("_r300x300"))
         
         def testForceFit(self):
             t = Template("{% load transmogrifiers %}{% forcefit /test/picture.jpg 300 %}")
-            self.assertEqual(t.render({}), '/test/picture_s300.jpg?%s' % self.doShaHash("_s300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_s300.jpg?%s' % self.doShaHash("_s300"))
             t = Template("{% load transmogrifiers %}{% forcefit /test/picture.jpg x300 %}")
-            self.assertEqual(t.render({}), '/test/picture_sx300.jpg?%s' % self.doShaHash("_sx300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_sx300.jpg?%s' % self.doShaHash("_sx300"))
             t = Template("{% load transmogrifiers %}{% forcefit /test/picture.jpg 300x300 %}")
-            self.assertEqual(t.render({}), '/test/picture_s300x300.jpg?%s' % self.doShaHash("_s300x300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_s300x300.jpg?%s' % self.doShaHash("_s300x300"))
         
         def testCrop(self):
             t = Template("{% load transmogrifiers %}{% crop /test/picture.jpg 300x300 %}")
-            self.assertEqual(t.render({}), '/test/picture_c300x300.jpg?%s' % self.doShaHash("_c300x300"))
+            self.assertEqual(t.render(Context({})), '/test/picture_c300x300.jpg?%s' % self.doShaHash("_c300x300"))
         
         def testLetterbox(self):
             t = Template("{% load transmogrifiers %}{% letterbox /test/picture.jpg 300x300 #f8129b  %}")
-            self.assertEqual(t.render({}), '/test/picture_l300x300-f8129b.jpg?%s' % self.doShaHash("_l300x300-f8129b"))
+            self.assertEqual(t.render(Context({})), '/test/picture_l300x300-f8129b.jpg?%s' % self.doShaHash("_l300x300-f8129b"))
         
         def testBorder(self):
             t = Template("{% load transmogrifiers %}{% border /test/picture.jpg 1 #f8129b %}")
-            self.assertEqual(t.render({}), '/test/picture_b1-f8129b.jpg?%s' % self.doShaHash("_b1-f8129b"))
+            self.assertEqual(t.render(Context({})), '/test/picture_b1-f8129b.jpg?%s' % self.doShaHash("_b1-f8129b"))
     
     class ViewTest(TestCase):
         def doShaHash(self, value):
             import hashlib
-            return hashlib.sha1(value).hexdigest()
+            return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
         
         def testView(self):
             rf = RequestFactory()
@@ -203,6 +208,15 @@ if HAS_DJANGO:
             response = views.transmogrify_serve(request, path, document_root)
             self.assertEqual(response.status_code, 200)
 
+    class TestUtil(unittest.TestCase):
+        def testGenerateUrl(self):
+            expected = ("http://example.com/media/foo_r200.jpg"
+                        "?d7a3f8c02c4ecb0c13aa024e1d80d1053ad1deec")
 
+            result = utils.generate_url("http://example.com/media/foo.jpg",
+                                        "_r200")
+            self.assertEqual(expected, result)
+
+            
 if __name__ == "__main__":
     unittest.main()
