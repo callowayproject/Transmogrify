@@ -40,6 +40,12 @@ def create_securityhash(action_tuples):
     security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
     return security_hash
 
+def generate_url(url, action_string):
+    security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
+    base_url, ext = os.path.splitext(url)
+    
+    return "%s%s%s?%s" % (base_url, action_string, ext, security_hash)
+
 def is_valid_security(action_tuples, security_hash):
     return create_securityhash(action_tuples) == security_hash
 
@@ -124,4 +130,3 @@ def process_url(url, server_name="", document_root=None):
         'requested_file': requested_path,
         'original_file': original_file
     }
-    
