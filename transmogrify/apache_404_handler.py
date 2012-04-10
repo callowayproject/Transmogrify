@@ -53,8 +53,8 @@ def handle_request():
 
 
 def doRedirect(path):
-    time.sleep(0.002)
-    print "Status: 301 Moved Permanently"
+    time.sleep(0.005)
+    print "Status: 302 Found"
     print "Location: %s" % path
     print
 
