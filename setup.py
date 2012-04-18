@@ -8,9 +8,9 @@ def read_file(the_file):
     return open(os.path.join(current_dir, the_file)).read()
 
 setup(name = 'transmogrify',
-    version = transmogrify.get_version(),
+    version = transmogrify.get_version() + "-gannett",
     description = 'Allows for the dynamic alteration of images using the URL.',
-    long_description = read_file('PKG-INFO'),
+    long_description = read_file('README.md'),
     author = 'Corey Oordt',
     author_email = 'coordt@washingtontimes.com',
     url = 'http://opensource.washingtontimes.com/projects/transmogrify/',
