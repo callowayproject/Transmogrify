@@ -10,7 +10,7 @@ def read_file(the_file):
 setup(name = 'transmogrify',
     version = transmogrify.get_version() + "-gannett",
     description = 'Allows for the dynamic alteration of images using the URL.',
-    long_description = read_file('README.md'),
+    long_description = "",
     author = 'Corey Oordt',
     author_email = 'coordt@washingtontimes.com',
     url = 'http://opensource.washingtontimes.com/projects/transmogrify/',
