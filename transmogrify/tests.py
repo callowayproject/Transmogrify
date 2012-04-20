@@ -87,17 +87,17 @@ class TestTransmogrify(unittest.TestCase):
 
     def testCropBBOX(self):
         expected_square = (300,300)
-        transmog = Transmogrify(self.square_img, [('c', '100_100_400_400'),])
+        transmog = Transmogrify(self.square_img, [('c', '100-100-400-400'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
 
-        transmog = Transmogrify(self.vert_img, [('c', '0_100_300_400'),])
+        transmog = Transmogrify(self.vert_img, [('c', '0-100-300-400'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
 
-        transmog = Transmogrify(self.horiz_img, [('c', '0_410_300_710'),])
+        transmog = Transmogrify(self.horiz_img, [('c', '0-410-300-710'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
@@ -105,7 +105,7 @@ class TestTransmogrify(unittest.TestCase):
         # 810 is larger than the image, PIL adds black to the extra space.
         # who knows if this is desirable but at least it doesn't raise
         # an exception.
-        transmog = Transmogrify(self.horiz_img, [('c', '0_510_300_810'),])
+        transmog = Transmogrify(self.horiz_img, [('c', '0-510-300-810'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)

@@ -91,11 +91,11 @@ class Crop(Processor):
     @staticmethod
     def param_pattern():
         return re.compile((r"^((\d+)|(x\d+)|(\d+x\d+))"
-                           r"|((\d+)_(\d+)_(\d+)_(\d+))$"))
+                           r"|((\d+)-(\d+)-(\d+)-(\d+))$"))
     
     @staticmethod
     def process(image, size_or_bbox, *args, **kwargs):
-        if "_" in size_or_bbox:
+        if "-" in size_or_bbox:
             return Crop.crop_bbox(image, size_or_bbox, *args, **kwargs)
         else:
             return Crop.crop_center(image, size_or_bbox, *args, **kwargs)
@@ -112,7 +112,7 @@ class Crop(Processor):
 
     @staticmethod
     def crop_bbox(image, bbox, *args, **kwargs):
-        bbox = map(int, bbox.split("_"))
+        bbox = map(int, bbox.split("-"))
         return image.crop(bbox)
 
 class ForceFit(Processor):
