@@ -210,6 +210,10 @@ if HAS_DJANGO:
         def testCrop(self):
             t = Template("{% load transmogrifiers %}{% crop /test/picture.jpg 300x300 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_c300x300.jpg?%s' % self.doShaHash("_c300x300"))
+
+        def testCropBBox(self):
+            t = Template("{% load transmogrifiers %}{% crop /test/picture.jpg 0-0-100-100 %}")
+            self.assertEqual(t.render(Context({})), '/test/picture_c0-0-100-100.jpg?%s' % self.doShaHash("_c0-0-100-100"))
         
         def testLetterbox(self):
             t = Template("{% load transmogrifiers %}{% letterbox /test/picture.jpg 300x300 #f8129b  %}")
