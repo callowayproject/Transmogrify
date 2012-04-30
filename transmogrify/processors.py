@@ -5,7 +5,7 @@ import re
 
 SIZE_RE = re.compile(r"^((\d+)|(x\d+)|(\d+x\d+))$")
 
-__all__ = ["Thumbnail", "Crop", "ForceFit", "Resize", "LetterboxResize", "Border", "Filter"]
+__all__ = ["Thumbnail", "Crop", "ForceFit", "Resize", "LetterboxResize", "Border", "Filter", "Mask"]
 
 class Processor(object):
     """
@@ -257,3 +257,21 @@ class Filter(Processor):
         else:
             return image
 
+class Mask(Processor):
+    """
+    Create a black mask of the non-transparent parts of the image
+    """
+    @staticmethod
+    def code():
+        return "m"
+
+    @staticmethod
+    def process(image, *args, **kwargs):
+        r,g,b,a = image.split()
+        data=[0]*(image.size[0]*image.size[1])
+        r.putdata(data)
+        g.putdata(data)
+        b.putdata(data)
+
+        im2=Image.merge("RGBA", [r,g,b,a])
+        return im2

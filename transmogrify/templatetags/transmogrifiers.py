@@ -13,6 +13,7 @@ ACTIONS = {
     'letterbox': 'l', 
     'filter': 'f', 
     'border': 'b',
+    'mask': 'm',
 }
 FILTERS = ["blur", "contour", "edge_enhance", "edge_enhance_more", "emboss",
            "find_edges", "smooth", "smooth_more", "sharpen"]
@@ -181,5 +182,4 @@ register.tag('resize', one_param_shortcut)
 register.tag('filter', one_param_shortcut)
 register.tag('border', two_param_shortcut)
 register.tag('letterbox', two_param_shortcut)
-
-
+register.tag('mask', one_param_shortcut)
