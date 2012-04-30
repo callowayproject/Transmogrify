@@ -116,13 +116,16 @@ class MogrifyNode(template.Node):
         if not action_list:
             return imageurl
         
-        # Construct the action into a string, and calculate the security hash
+        # Create the new URL
         action_string = "".join(action_list)
-        security_hash = sha_constructor(action_string + settings.SECRET_KEY).hexdigest()
-        
-        # Apply the converted actions to the image url
         prefix, ext = os.path.splitext(imageurl)
-        return "%s%s%s?%s" % (prefix, action_string, ext, security_hash)
+        imageurl = "%s%s%s" % (prefix, action_string, ext)
+
+        # Create a security hash from the new URL
+        base_file_name, action_tuples = utils.parse_action_tuples(imageurl)
+        security_hash = utils.create_securityhash(action_tuples)
+
+        return "%s?%s" % (imageurl, security_hash)
 
 
 def mogrify_filter(action):
