@@ -277,6 +277,12 @@ if HAS_DJANGO:
             t = Template('{% load transmogrifiers %}{{ img_url|crop:"0-0-300-300"|resize:"x100" }}')
             self.assertEqual(t.render(context), '/test/picture_c0-0-300-300_rx100.jpg?%s' % self.doShaHash("_c0-0-300-300_rx100"))
             
+        def testExistingActionString(self):
+            context = Context({"img_url": "/test/picture_c0-0-300-300.jpg"})
+            t = Template('{% load transmogrifiers %}{{ img_url|resize:"x100" }}')
+            self.assertEqual(t.render(context), '/test/picture_c0-0-300-300_rx100.jpg?%s' % self.doShaHash("_c0-0-300-300_rx100"))
+
+
 
     class ViewTest(TestCase):
         def doShaHash(self, value):
