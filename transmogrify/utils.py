@@ -60,6 +60,27 @@ def resolve_request_path(requested_uri):
             return re.sub(key, val, requested_uri)
     return requested_uri
 
+def parse_action_tuples(filename):
+    base_filename, ext = os.path.splitext(filename)
+
+    action_tuples = []
+    # split on underscore but keep 'em around in case there are duplicates.
+    bits = re.split("(_)", base_filename)
+    while bits:
+        action = bits.pop()
+        if len(action) < 1:
+            continue
+        if is_valid_actionstring(action):
+            action_tuples.insert(0, (action[0], action[1:]))
+            bits.pop() # pop the remaining underscore off the stack
+        else:
+            bits.append(action)
+            break
+
+    base_file_name = "".join(bits)
+
+    return base_file_name, action_tuples
+
 def process_url(url, server_name="", document_root=None):
     """
     Goes through the url and returns a dictionary of fields.
@@ -101,20 +122,8 @@ def process_url(url, server_name="", document_root=None):
     parent_dir, requested_file = os.path.split(requested_path)
     base_filename, ext = os.path.splitext(requested_file)
     
-    action_tuples = []
-    # split on underscore but keep 'em around in case there are duplicates.
-    bits = re.split("(_)", base_filename)
-    while bits:
-        action = bits.pop()
-        if len(action) < 1:
-            continue
-        if is_valid_actionstring(action):
-            action_tuples.insert(0, (action[0], action[1:]))
-            bits.pop() # pop the remaining underscore off the stack
-        else:
-            bits.append(action)
-            break
-    base_file_name = "".join(bits)
+    base_file_name, action_tuples = parse_action_tuples(requested_file)
+
     original_file = os.path.join(parent_dir, base_file_name + ext)
     if not os.path.exists(original_file):
         print "looking for:", original_file
