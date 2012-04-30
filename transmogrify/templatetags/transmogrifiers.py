@@ -183,4 +183,3 @@ register.tag('filter', one_param_shortcut)
 register.tag('border', two_param_shortcut)
 register.tag('letterbox', two_param_shortcut)
 register.tag('mask', one_param_shortcut)
-
