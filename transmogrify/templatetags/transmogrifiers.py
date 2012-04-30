@@ -58,6 +58,20 @@ def transmogrify(parser, token):
     return MogrifyNode(imageurl, actions)
 
 
+def no_param_shortcut(parser, token):
+    """
+    Shortcut to transmogrify thumbnail
+    """
+    bits = smart_split(token.contents)
+    tagname = bits.next()
+    try:
+        imageurl = bits.next()
+    except StopIteration:
+        raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
+    
+    return MogrifyNode(imageurl, [(tagname, ),])
+
+
 def one_param_shortcut(parser, token):
     """
     Shortcut to transmogrify thumbnail
@@ -130,7 +144,7 @@ class MogrifyNode(template.Node):
 
 
 def mogrify_filter(action):
-    def inner(imageurl, arg_string):
+    def inner(imageurl, arg_string=""):
         action_list = []
 
         bits = arg_string.split()
@@ -182,4 +196,4 @@ register.tag('resize', one_param_shortcut)
 register.tag('filter', one_param_shortcut)
 register.tag('border', two_param_shortcut)
 register.tag('letterbox', two_param_shortcut)
-register.tag('mask', one_param_shortcut)
+register.tag('mask', no_param_shortcut)
