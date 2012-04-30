@@ -275,3 +275,4 @@ class Mask(Processor):
 
         im2=Image.merge("RGBA", [r,g,b,a])
         return im2
+
