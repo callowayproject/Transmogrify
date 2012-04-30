@@ -1,6 +1,7 @@
 import os
 from transmogrify.hashcompat import sha_constructor
 from transmogrify import settings
+from transmogrify import utils
 from django import template
 from django.utils.text import smart_split
 
@@ -123,7 +124,52 @@ class MogrifyNode(template.Node):
         prefix, ext = os.path.splitext(imageurl)
         return "%s%s%s?%s" % (prefix, action_string, ext, security_hash)
 
+
+def mogrify_filter(action):
+    def inner(imageurl, arg_string):
+        action_list = []
+        
+        bits = arg_string.split()
+
+        # parse one arg vs two args
+        if len(bits) == 2:
+            arg_list = [bits[0], bits[1].lstrip("#")]
+        else:
+            arg_list = bits
+
+        # dispose of an existing security hash if it exists
+        if "?" in imageurl:
+            imageurl, _ = imageurl.split("?", 1) 
+
+        # build the action list
+        action_code = ACTIONS[action]
+        args = "-".join(arg_list)
+        if settings.PROCESSORS[action_code].param_pattern().match(args):
+            action_list.append("_%s%s" % (action_code, args))
+        else:
+            raise template.TemplateSyntaxError("The action '%s' doesn't accept the arguments: %s" % (action[0], ",".join(action[1:])))
+
+        if not action_list: 
+            return imageurl
+
+        # Create the new URL
+        action_string = "".join(action_list)
+        prefix, ext = os.path.splitext(imageurl)
+        imageurl = "%s%s%s" % (prefix, action_string, ext)
+
+        # Create a security hash from the new URL
+        base_file_name, action_tuples = utils.parse_action_tuples(imageurl)
+        security_hash = utils.create_securityhash(action_tuples)
+
+        return "%s?%s" % (imageurl, security_hash)
+
+    return inner
+
 register = template.Library()
+for action in ACTIONS:
+    register.filter(action, mogrify_filter(action))
+
+
 register.tag(transmogrify)
 register.tag('thumbnail', one_param_shortcut)
 register.tag('crop', one_param_shortcut)
@@ -132,3 +178,5 @@ register.tag('resize', one_param_shortcut)
 register.tag('filter', one_param_shortcut)
 register.tag('border', two_param_shortcut)
 register.tag('letterbox', two_param_shortcut)
+
+

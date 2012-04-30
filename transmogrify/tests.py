@@ -198,7 +198,7 @@ if HAS_DJANGO:
             self.assertEqual(t.render(Context({})), '/test/picture_rx300.jpg?%s' % self.doShaHash("_rx300"))
             t = Template("{% load transmogrifiers %}{% resize /test/picture.jpg 300x300 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_r300x300.jpg?%s' % self.doShaHash("_r300x300"))
-        
+
         def testForceFit(self):
             t = Template("{% load transmogrifiers %}{% forcefit /test/picture.jpg 300 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_s300.jpg?%s' % self.doShaHash("_s300"))
@@ -222,7 +222,62 @@ if HAS_DJANGO:
         def testBorder(self):
             t = Template("{% load transmogrifiers %}{% border /test/picture.jpg 1 #f8129b %}")
             self.assertEqual(t.render(Context({})), '/test/picture_b1-f8129b.jpg?%s' % self.doShaHash("_b1-f8129b"))
+
+    class TemplateFilterTest(TestCase):
+        def doShaHash(self, value):
+            import hashlib
+            return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
+        
+        def testResize(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+
+            t = Template('{% load transmogrifiers %}{{ img_url|resize:"300" }}')
+            self.assertEqual(t.render(context), '/test/picture_r300.jpg?%s' % self.doShaHash("_r300"))
+            t = Template('{% load transmogrifiers %}{{ img_url|resize:"x300" }}')
+            self.assertEqual(t.render(context), '/test/picture_rx300.jpg?%s' % self.doShaHash("_rx300"))
+            t = Template('{% load transmogrifiers %}{{ img_url|resize:"300x300" }}')
+            self.assertEqual(t.render(context), '/test/picture_r300x300.jpg?%s' % self.doShaHash("_r300x300"))
+
+        def testForceFit(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+
+            t = Template('{% load transmogrifiers %}{{ img_url|forcefit:"300" }}')
+            self.assertEqual(t.render(context), '/test/picture_s300.jpg?%s' % self.doShaHash("_s300"))
+            t = Template('{% load transmogrifiers %}{{ img_url|forcefit:"x300" }}')
+            self.assertEqual(t.render(context), '/test/picture_sx300.jpg?%s' % self.doShaHash("_sx300"))
+            t = Template('{% load transmogrifiers %}{{ img_url|forcefit:"300x300" }}')
+            self.assertEqual(t.render(context), '/test/picture_s300x300.jpg?%s' % self.doShaHash("_s300x300"))
+        
+        def testCrop(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+
+            t = Template('{% load transmogrifiers %}{{ img_url|crop:"300x300" }}')
+            self.assertEqual(t.render(context), '/test/picture_c300x300.jpg?%s' % self.doShaHash("_c300x300"))
+
+        def testCropBBox(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+
+            t = Template('{% load transmogrifiers %}{{ img_url|crop:"0-0-100-100" }}')
+            self.assertEqual(t.render(context), '/test/picture_c0-0-100-100.jpg?%s' % self.doShaHash("_c0-0-100-100"))
+        
+        def testLetterbox(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+
+            t = Template('{% load transmogrifiers %}{{ img_url|letterbox:"300x300 #f8129b" }}')
+            self.assertEqual(t.render(context), '/test/picture_l300x300-f8129b.jpg?%s' % self.doShaHash("_l300x300-f8129b"))
+        
+        def testBorder(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+
+            t = Template('{% load transmogrifiers %}{{ img_url|border:"1 #f8129b" }}')
+            self.assertEqual(t.render(context), '/test/picture_b1-f8129b.jpg?%s' % self.doShaHash("_b1-f8129b"))
     
+        def testChaining(self):
+            context = Context({"img_url": "/test/picture.jpg"})
+            t = Template('{% load transmogrifiers %}{{ img_url|crop:"0-0-300-300"|resize:"x100" }}')
+            self.assertEqual(t.render(context), '/test/picture_c0-0-300-300_rx100.jpg?%s' % self.doShaHash("_c0-0-300-300_rx100"))
+            
+
     class ViewTest(TestCase):
         def doShaHash(self, value):
             import hashlib
