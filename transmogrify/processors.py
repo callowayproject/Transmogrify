@@ -275,3 +275,7 @@ class Mask(Processor):
 
         im2=Image.merge("RGBA", [r,g,b,a])
         return im2
+
+    @staticmethod
+    def param_pattern():
+        return re.compile(r'^$')
