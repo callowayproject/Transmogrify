@@ -20,18 +20,25 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 ### Available actions:
 <b>thumbnail &lt;width&gt;</b>
 > Thumbnail to a given width. Height is set to maintain aspect ratio.
+
 <b>thumbnail x&lt;height&gt;</b>
 > Thumbnail to a given height. Width is set to maintain aspect ratio.
+
 <b>thumbnail &lt;width&gt;x&lt;height&gt;</b>
 > Thumbnail to fit a given size. The image is reduced to fit proportionally within the specified size.
+
 <b>crop &lt;width&gt;x&lt;height&gt;</b>
 > Crop to a given size. Crops are centered within the image.
+
 <b>resize &lt;width&gt;x&lt;height&gt;</b>
 > Resize the image proportionally to fit within the specified size.
+
 <b>forcefit &lt;width&gt;x&lt;height&gt;</b>
 > Force the image to fit within the specified box; could result in a distorted image.
+
 <b>letterbox &lt;width&gt;x&lt;height&gt; &lt;color&gt;</b>
 > Resize the image proportionally to fit within the specified size, and fill the remaining space with the specified color. Color should be in #RRGGBB or #RGB format.
+
 <b>filter &lt;filter&gt;</b>
 > Run an image filter; filter can be:
 * blur
@@ -45,6 +52,7 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 * smooth_more
 * sharpen
 > These don&#8217;t look all that good, but whatever.
+
 <b>border &lt;width&gt; &lt;color&gt;</b>
 > Add a &lt;width&gt; pixel border around the image. &lt;color&gt; should be in HTML (#RRGGBB or #RGB) format.
 
