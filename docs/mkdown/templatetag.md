@@ -51,7 +51,7 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 * smooth
 * smooth_more
 * sharpen
-> These don&#8217;t look all that good, but whatever.
+These don&#8217;t look all that good, but whatever.
 
 <b>border &lt;width&gt; &lt;color&gt;</b>
 > Add a &lt;width&gt; pixel border around the image. &lt;color&gt; should be in HTML (#RRGGBB or #RGB) format.
@@ -92,13 +92,11 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 <img src="_images/horiz_img_t200.jpg" />
 <img src="_images/square_img_t200.jpg" />
 <img src="_images/vert_img_t200.jpg" />
-<hr class="docutils" />
 <p>Thumbnail 200px high</p>
 	{% thumbnail img x200 %}
 <img src="_images/horiz_img_tx200.jpg" />
 <img src="_images/square_img_tx200.jpg" />
 <img src="_images/vert_img_tx200.jpg" />
-<hr class="docutils" />
 <p>Thumbnail to fit within 200x200</p>
 	{% thumbnail img 200x200 %}
 <img src="_images/horiz_img_t200x200.jpg" />
@@ -122,13 +120,13 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 <img src="_images/vert_img_r500.jpg" />
 <p class="first admonition-title">Note</p>
 <p class="last">The vertical image is not 500 pixels wide because the original is only 358 pixels wide. The Python Imaging Library will not upscale an image. Instead the original image is returned.</p>
-<hr class="docutils" />
+
 <p>Resize image to 500px high</p>
 	{% resize img x500 %}
 <img src="_images/horiz_img_rx500.jpg" />
 <img src="_images/square_img_rx500.jpg" />
 <img src="_images/vert_img_rx500.jpg" />
-<hr class="docutils" />
+
 <p>Resize image to fit within 500x500 pixel box</p>
 	{% resize img 500x500 %}
 <img src="_images/horiz_img_r500x500.jpg" />
@@ -148,7 +146,7 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 <img src="_images/horiz_img_l500x500-f00.jpg" />
 <img src="_images/square_img_l500x500-f00.jpg" />
 <img src="_images/vert_img_l500x500-f00.jpg" />
-<hr class="docutils" />
+
 <p>Resize image to fit within 400x500 pixel box, and fill the rest with a light yellow</p>
 	{% letterbox img 500x500 #fffee1 %}
 <img src="_images/horiz_img_l500x500-fffee1.jpg" />
@@ -193,31 +191,31 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 ### Examples:
 <p>Blur</p>
 <img src="_images/square_img_r300x300_fblur.jpg" />
-<hr class="docutils" />
+
 <p>Contour</p>
 <img src="_images/square_img_r300x300_fcontour.jpg" />
-<hr class="docutils" />
+
 <p>Detail</p>
 <img src="_images/square_img_r300x300_fdetail.jpg" />
-<hr class="docutils" />
+
 <p>Edge Enhance</p>
 <img src="_images/square_img_r300x300_fedge_enhance.jpg" />
-<hr class="docutils" />
+
 <p>Edge Enhance More</p>
 <img src="_images/square_img_r300x300_fedge_enhance_more.jpg" />
-<hr class="docutils" />
+
 <p>Emboss</p>
 <img src="_images/square_img_r300x300_femboss.jpg" />
-<hr class="docutils" />
+
 <p>Find Edges</p>
 <img src="_images/square_img_r300x300_ffind_edges.jpg" />
-<hr class="docutils" />
+
 <p>Sharpen</p>
 <img src="_images/square_img_r300x300_fsharpen.jpg" />
-<hr class="docutils" />
+
 <p>Smooth</p>
 <img src="_images/square_img_r300x300_fsmooth.jpg" />
-<hr class="docutils" />
+
 <p>Smooth More</p>
 <img src="_images/square_img_r300x300_fsmooth_more.jpg" />
 
@@ -230,5 +228,5 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 
 ### Example:
 <p>Add a 3 pixel light-yellow border around the image</p>
->{% border img 3 #fffee1 %}
+	{% border img 3 #fffee1 %}
 <img src="_images/square_img_r300x300_b3-fffee1.jpg" />

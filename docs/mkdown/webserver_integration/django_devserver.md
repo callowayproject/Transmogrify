@@ -6,7 +6,7 @@ transmogrify.views.transmogrify_serve
 	from django.conf import settings
 
 	if settings.DEBUG:
-	    urlpatterns += patterns (&#39;&#39;,
-	        (r&#39;^static/(?P&lt;path&gt;.*)$&#39;, &#39;transmogrify.views.transmogrify_serve&#39;,
-	             {&#39;document_root&#39;: settings.MEDIA_ROOT}),
+	    urlpatterns += patterns ('',
+	        (r'^static/(?P&lt;path&gt;.*)$', 'transmogrify.views.transmogrify_serve',
+	             {'document_root': settings.MEDIA_ROOT}),
 	    )
