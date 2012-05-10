@@ -18,12 +18,12 @@ TRANSMOGRIFY_BASE_PATH + requested_url
 <p>Sometimes this isn&#8217;t very useful, as the actual paths of the files don&#8217;t make for good URLs. TRANSMOGRIFY_PATH_ALIASES allows you to set regular expressions to alter incoming URLs.</p>
 <p>TRANSMOGRIFY_PATH_ALIASES is a dictionary of </p>
 
-	{'&lt;url_regex&gt;':</span> <span class="pre">'&lt;sub_regex&gt;'}
+	{'<url_regex>':'<sub_regex>'}
 
 <p>Each request is matched against the keys. The first match is substituted using that key&#8217;s value. For example if your images were stored in /home/www/assets/images/, but the URL was /media/images/, you would set:</p>
 
 	TRANSMOGRIFY_BASE_PATH = &quot;/home/www&quot;
-	TRANSMOGRIFY_PATH_ALIASES = {&#39;/media/&#39;:&#39;/assets/&#39;}
+	TRANSMOGRIFY_PATH_ALIASES = {'/media/':'/assets/'}
 
 <p>so requests for /media/images/sample.jpg converts into /assets/images/sample.jpg and when added to /home/www you get the file.</p>
 > Default: {}

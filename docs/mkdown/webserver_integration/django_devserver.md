@@ -7,6 +7,6 @@ transmogrify.views.transmogrify_serve
 
 	if settings.DEBUG:
 	    urlpatterns += patterns ('',
-	        (r'^static/(?P&lt;path&gt;.*)$', 'transmogrify.views.transmogrify_serve',
+	        (r'^static/(?P<path>.*)$', 'transmogrify.views.transmogrify_serve',
 	             {'document_root': settings.MEDIA_ROOT}),
 	    )

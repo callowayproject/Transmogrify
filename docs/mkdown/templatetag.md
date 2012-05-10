@@ -18,28 +18,28 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 ### Usage:
 	{% transmogrify url [action [param]] [action2 [param2] ...] %}
 ### Available actions:
-<b>thumbnail &lt;width&gt;</b>
+<b>thumbnail <width></b>
 > Thumbnail to a given width. Height is set to maintain aspect ratio.
 
-<b>thumbnail x&lt;height&gt;</b>
+<b>thumbnail x<height></b>
 > Thumbnail to a given height. Width is set to maintain aspect ratio.
 
-<b>thumbnail &lt;width&gt;x&lt;height&gt;</b>
+<b>thumbnail <width>x<height></b>
 > Thumbnail to fit a given size. The image is reduced to fit proportionally within the specified size.
 
-<b>crop &lt;width&gt;x&lt;height&gt;</b>
+<b>crop <width>x<height></b>
 > Crop to a given size. Crops are centered within the image.
 
-<b>resize &lt;width&gt;x&lt;height&gt;</b>
+<b>resize <width>x<height></b>
 > Resize the image proportionally to fit within the specified size.
 
-<b>forcefit &lt;width&gt;x&lt;height&gt;</b>
+<b>forcefit <width>x<height></b>
 > Force the image to fit within the specified box; could result in a distorted image.
 
-<b>letterbox &lt;width&gt;x&lt;height&gt; &lt;color&gt;</b>
+<b>letterbox <width>x<height> <color></b>
 > Resize the image proportionally to fit within the specified size, and fill the remaining space with the specified color. Color should be in #RRGGBB or #RGB format.
 
-<b>filter &lt;filter&gt;</b>
+<b>filter <filter></b>
 > Run an image filter; filter can be:
 * blur
 * contour
@@ -53,8 +53,8 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 * sharpen
 These don&#8217;t look all that good, but whatever.
 
-<b>border &lt;width&gt; &lt;color&gt;</b>
-> Add a &lt;width&gt; pixel border around the image. &lt;color&gt; should be in HTML (#RRGGBB or #RGB) format.
+<b>border <width> <color></b>
+> Add a <width> pixel border around the image. <color> should be in HTML (#RRGGBB or #RGB) format.
 
 ### Examples:
 <p>Thumbnail 200px wide:</p>
@@ -82,9 +82,9 @@ These don&#8217;t look all that good, but whatever.
 ## thumbnail ##
 <p>A shortcut to the transmogrify tag&#8217;s thumbnail action. It creates a thumbnail.</p>
 ### Usage:
-	{% thumbnail &lt;image_url&gt; &lt;width&gt; %}
-	{% thumbnail &lt;image_url&gt; x&lt;height&gt; %}
-	{% thumbnail &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+	{% thumbnail <image_url> <width> %}
+	{% thumbnail <image_url> x<height> %}
+	{% thumbnail <image_url> <width>x<height> %}
 
 ### Examples:
 <p>Thumbnail 200px wide</p>
@@ -108,9 +108,9 @@ These don&#8217;t look all that good, but whatever.
 <p>A shortcut to the transmogrify tag&#8217;s resize action. It resizes the image to fit the dimensions and maintains the aspect ratio.</p>
 
 ### Usage:
-	{% resize &lt;image_url&gt; &lt;width&gt; %}
-	{% resize &lt;image_url&gt; x&lt;height&gt; %}
-	{% resize &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+	{% resize <image_url> <width> %}
+	{% resize <image_url> x<height> %}
+	{% resize <image_url> <width>x&<height> %}
 
 ### Examples:
 <p>Resize image to 500px wide</p>
@@ -138,7 +138,7 @@ These don&#8217;t look all that good, but whatever.
 <p>A shortcut to the transmogrify tag&#8217;s letterbox action. It resizes the image to fit the dimensions and maintains the aspect ratio. The remaining space is filled with the color specified.</p>
 
 ### Usage:
-	{% letterbox &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; &lt;color&gt; %}
+	{% letterbox <image_url> <width>x<height> <color> %}
 
 ### Example:
 <p>Resize image to fit within 500x500 pixel box, and fill the rest with red</p>
@@ -158,7 +158,7 @@ These don&#8217;t look all that good, but whatever.
 <p>A shortcut to transmogrify tag&#8217;s forcefit action. It resizes the image to fit the dimensions, possibly distorting the image in the process.</p>
 
 ### Usage:
-	{% forcefit &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+	{% forcefit <image_url> <width>x<height> %}
 
 ### Example:
 <p>Resize image to fit within 300x300 pixel box</p>
@@ -172,7 +172,7 @@ These don&#8217;t look all that good, but whatever.
 <p>A shortcut to the transmogrify tag&#8217;s crop action. It crops out a section of the center of an image.</p>
 
 ### Usage:
-	{% crop &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+	{% crop <image_url> <width>x<height> %}
 
 ### Example:
 <p>Crop a 100x100 section out of the middle of image</p>
@@ -186,7 +186,7 @@ These don&#8217;t look all that good, but whatever.
 <p>A shortcut to the transmogrify tag&#8217;s filter action. It applies the specified filter (one of blur, contour, detail, edge_enhance, edge_enhance_more, emboss, find_edges, smooth, smooth_more, sharpen) to the image. Only one filter can be specified.</p>
 
 ### Usage:
-	{% filter &lt;image_url&gt; &lt;filtername&gt; %}
+	{% filter <image_url> <filtername> %}
 
 ### Examples:
 <p>Blur</p>
@@ -224,7 +224,7 @@ These don&#8217;t look all that good, but whatever.
 <p>A shortcut to the transmogrify tag&#8217;s border action. It applies a border of the specified width and color to the image.</p>
 
 ### Usage:
-	{% border &lt;image_url&gt; &lt;border_width&gt; &lt;color&gt; %}
+	{% border <image_url> <border_width> <color> %}
 
 ### Example:
 <p>Add a 3 pixel light-yellow border around the image</p>
