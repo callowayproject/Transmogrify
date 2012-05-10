@@ -110,7 +110,7 @@ These don&#8217;t look all that good, but whatever.
 ### Usage:
 	{% resize <image_url> <width> %}
 	{% resize <image_url> x<height> %}
-	{% resize <image_url> <width>x&<height> %}
+	{% resize <image_url> <width>x<height> %}
 
 ### Examples:
 <p>Resize image to 500px wide</p>

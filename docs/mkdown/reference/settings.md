@@ -22,7 +22,7 @@ TRANSMOGRIFY_BASE_PATH + requested_url
 
 <p>Each request is matched against the keys. The first match is substituted using that key&#8217;s value. For example if your images were stored in /home/www/assets/images/, but the URL was /media/images/, you would set:</p>
 
-	TRANSMOGRIFY_BASE_PATH = &quot;/home/www&quot;
+	TRANSMOGRIFY_BASE_PATH = "/home/www"
 	TRANSMOGRIFY_PATH_ALIASES = {'/media/':'/assets/'}
 
 <p>so requests for /media/images/sample.jpg converts into /assets/images/sample.jpg and when added to /home/www you get the file.</p>
