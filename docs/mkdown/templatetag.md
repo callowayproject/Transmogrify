@@ -3,14 +3,14 @@ Django Template Tag &mdash; Transmogrify v0.1beta2 documentation
 <p>In the template, first:</p>
 	{% load transmogrifiers %}
 <p>You will have access to the following tags:</p>
-*transmogrify
-*thumbnail
-*resize
-*letterbox
-*forcefit
-*crop
-*filter
-*border
+* transmogrify
+* thumbnail
+* resize
+* letterbox
+* forcefit
+* crop
+* filter
+* border
 
 ## transmogrify ##
 <p>Alter an image URL so that the media server will transform the image on the
@@ -18,35 +18,35 @@ fly. This tag allows for multiple actions on an image. There are shortcuts for d
 ### Usage:
 	{% transmogrify url [action [param]] [action2 [param2] ...] %}
 ### Available actions:
-thumbnail &lt;width&gt;
-Thumbnail to a given width. Height is set to maintain aspect ratio.
-thumbnail x&lt;height&gt;
-Thumbnail to a given height. Width is set to maintain aspect ratio.
-thumbnail &lt;width&gt;x&lt;height&gt;
-Thumbnail to fit a given size. The image is reduced to fit proportionally within the specified size.
-crop &lt;width&gt;x&lt;height&gt;
-Crop to a given size. Crops are centered within the image.
-resize &lt;width&gt;x&lt;height&gt;
-Resize the image proportionally to fit within the specified size.
-forcefit &lt;width&gt;x&lt;height&gt;
-Force the image to fit within the specified box; could result in a distorted image.
-letterbox &lt;width&gt;x&lt;height&gt; &lt;color&gt;
-Resize the image proportionally to fit within the specified size, and fill the remaining space with the specified color. Color should be in #RRGGBB or #RGB format.
-filter &lt;filter&gt;
-Run an image filter; filter can be:
-*blur
-*contour
-*detail
-*edge_enhance
-*edge_enhance_more
-*emboss
-*find_edges
-*smooth
-*smooth_more
-*sharpen
-These don&#8217;t look all that good, but whatever.
-border &lt;width&gt; &lt;color&gt;
-Add a &lt;width&gt; pixel border around the image. &lt;color&gt; should be in HTML (#RRGGBB or #RGB) format.
+<b>thumbnail &lt;width&gt;</b>
+> Thumbnail to a given width. Height is set to maintain aspect ratio.
+<b>thumbnail x&lt;height&gt;</b>
+> Thumbnail to a given height. Width is set to maintain aspect ratio.
+<b>thumbnail &lt;width&gt;x&lt;height&gt;</b>
+> Thumbnail to fit a given size. The image is reduced to fit proportionally within the specified size.
+<b>crop &lt;width&gt;x&lt;height&gt;</b>
+> Crop to a given size. Crops are centered within the image.
+<b>resize &lt;width&gt;x&lt;height&gt;</b>
+> Resize the image proportionally to fit within the specified size.
+<b>forcefit &lt;width&gt;x&lt;height&gt;</b>
+> Force the image to fit within the specified box; could result in a distorted image.
+<b>letterbox &lt;width&gt;x&lt;height&gt; &lt;color&gt;</b>
+> Resize the image proportionally to fit within the specified size, and fill the remaining space with the specified color. Color should be in #RRGGBB or #RGB format.
+<b>filter &lt;filter&gt;</b>
+> Run an image filter; filter can be:
+* blur
+* contour
+* detail
+* edge_enhance
+* edge_enhance_more
+* emboss
+* find_edges
+* smooth
+* smooth_more
+* sharpen
+> These don&#8217;t look all that good, but whatever.
+<b>border &lt;width&gt; &lt;color&gt;</b>
+> Add a &lt;width&gt; pixel border around the image. &lt;color&gt; should be in HTML (#RRGGBB or #RGB) format.
 
 ### Examples:
 <p>Thumbnail 200px wide:</p>
