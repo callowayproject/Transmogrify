@@ -20,7 +20,7 @@
 """
 import os, re, urllib, urlparse
 from settings import BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS, \
-                    SECRET_KEY, PATH_ALIASES
+                    SECRET_KEY, PATH_ALIASES, DEBUG
 from hashcompat import sha_constructor
 
 class Http404(Exception):
@@ -132,9 +132,12 @@ def process_url(url, server_name="", document_root=None):
 
     if not os.path.exists(original_file):
         print "looking for:", original_file
-        raise Http404("Original file does not exist.")
-    if not is_valid_security(action_tuples, security_hash):
-        raise Http404("Invalid security token.")
+        raise Http404("Original file does not exist. %r %r" % (url, original_file, ))
+    if action_tuples and not is_valid_security(action_tuples, security_hash):
+        if DEBUG:
+            raise Http404("Invalid security token. %r %r %r" % (request_uri, action_tuples, SECRET_KEY, ))
+        else:
+            raise Http404("Invalid security token.")
     return {
         'actions': action_tuples,
         'parent_dir': parent_dir,

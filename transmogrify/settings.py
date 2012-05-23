@@ -37,7 +37,7 @@ if HAS_DJANGO:
     # location
     PATH_ALIASES = getattr(settings, "TRANSMOGRIFY_PATH_ALIASES", {})
 
-    FALLBACK_SERVER = getattr(settings, "TRANSMOGRIFY_FALLBACK_SERVER", "")
+    FALLBACK_SERVERS = getattr(settings, "TRANSMOGRIFY_FALLBACK_SERVERS", "")
 else:
     # Shared secret
     SECRET_KEY = os.environ.get("TRANSMOGRIFY_SECRET", "")
@@ -56,9 +56,15 @@ else:
     VHOST_DOC_BASE = os.environ.get("TRANSMOGRIFY_VHOST_DOC_BASE", "")
 
     NO_IMAGE_URL = os.environ.get("TRANSMOGRIFY_NO_IMG_URL", "")
-    FALLBACK_SERVER = os.environ.get("TRANSMOGRIFY_FALLBACK_SERVER", "")
 
     PATH_ALIASES = {}
+
+    # Fallback Servers 
+    FALLBACK_SERVERS = (
+        # Format is 
+        # (regex, repl, host), 
+        # (r"^/media/(.*), "\1", "http://www.example.com/"),
+        )
 
 PROCESSORS = {}
 for attr in processors.__all__:
