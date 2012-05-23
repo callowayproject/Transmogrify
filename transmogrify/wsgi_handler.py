@@ -6,17 +6,16 @@ WSGI handler for mogrifying images.
 
 import os
 import sys
-from settings import DEBUG, FALLBACK_SERVER, BASE_PATH
+import re
+from settings import DEBUG, FALLBACK_SERVERS, BASE_PATH
 from utils import process_url, Http404, parse_action_tuples
 from transmogrify import Transmogrify
 from hashcompat import sha_constructor
 from contextlib import contextmanager
 import time
-from pprint import pformat
+from pprint import pformat, pprint
 import urllib, urlparse, shutil
 import wsgiref.util
-
-print "fallback server ", FALLBACK_SERVER
 
 @contextmanager
 def lock_file(lock):
@@ -47,7 +46,17 @@ def makedirs(dirname):
             pass
         
 
-def do_fallback(fallback_server, base_path, path_info):
+def match_fallback(fallback_servers, path_info):
+    print "Matching..."
+    for pattern, replace, server in fallback_servers:
+        if re.match(pattern, path_info):
+
+            new_path = re.sub(pattern, replace, path_info)
+            print "Matched %r %r %r %r" % (pattern, replace, path_info, (new_path, server))
+            return (new_path, server)
+
+
+def do_fallback(fallback_servers, base_path, path_info):
     _, ext = os.path.splitext(path_info)
     path_info = path_info.lstrip("/")
     path_info, action_tuples = parse_action_tuples(path_info)
@@ -55,36 +64,37 @@ def do_fallback(fallback_server, base_path, path_info):
 
     if ".." in path_info:
         return (False, "bad path")
+
+    match = match_fallback(fallback_servers, path_info)
+
+    if not match:
+        return (False, "no matching fallback")
+
+    remote_path, fallback_server = match
+    fallback_url = urlparse.urljoin(fallback_server, remote_path)
+    output_file = os.path.join(base_path, path_info)
+
+    if not os.path.lexists(output_file):
+        o = urllib.URLopener()
+        try:
+            (tmpfn, httpmsg) = o.retrieve(fallback_url)
+
+            makedirs(os.path.dirname(output_file))
+            shutil.move(tmpfn, output_file)
+            print "downloaded %s to %s" % (fallback_url, output_file)
+            return (True, tmpfn)
+        except IOError, e:
+            return (False, (e, (fallback_url, output_file)))
     else:
-        output_file = os.path.join(base_path, path_info)
-
-        fallback_url = urlparse.urljoin(fallback_server, path_info)
-
-        if not os.path.lexists(output_file):
-            o = urllib.URLopener()
-            try:
-                (tmpfn, httpmsg) = o.retrieve(fallback_url)
-
-                makedirs(os.path.dirname(output_file))
-                shutil.move(tmpfn, output_file)
-                print "downloaded %s to %s" % (fallback_url, output_file)
-                return (True, tmpfn)
-            except IOError, e:
-                return (False, e)
-        
+        return (False, ("file exists", output_file))
 
 
 def app(environ, start_response):
     server = environ['SERVER_NAME']
-    path_info   = environ['PATH_INFO']
-    query  = environ.get("QUERY_STRING", "")
-    if query:
-        path_and_query = path_info + "?" + query
-    else:
-        path_and_query = path_info
-
-    request_uri = path_and_query
-
+    request_uri = environ['REQUEST_URI']
+    path_and_query = request_uri.lstrip("/")
+    requested_path = urlparse.urlparse(path_and_query).path
+    
     # Acquire lockfile
     lock = '/tmp/%s' % sha_constructor(path_and_query).hexdigest()
 
@@ -93,8 +103,9 @@ def app(environ, start_response):
 
     with lock_file(lock):
 
-        if FALLBACK_SERVER and path_info:
-            result = do_fallback(FALLBACK_SERVER, BASE_PATH, path_info)
+        if FALLBACK_SERVERS:
+            result = do_fallback(FALLBACK_SERVERS, BASE_PATH, requested_path)
+            print "fallback: %r" % (result, )
             if result == (False, "bad path"):
                 start_response("403 Forbidden", [])
                 return []
@@ -111,6 +122,7 @@ def app(environ, start_response):
 
 
 def doRedirect(environ, start_response, path):
+    print "Redirecting to %r" % (path, )
     start_response("302 Found", [("Location", path)])
     return []
 
@@ -140,8 +152,37 @@ ERROR_404 = """
 </html>
 """
 
+class DemoApp(object):
+    def __init__(self):
+        from static import Cling
+        self.app = Cling(BASE_PATH)
+        self.fallback = app
+
+    def __call__(self, environ, start_response):
+        response = {}
+        def sr(status, headers):
+            response['status'] = status
+            response['headers'] = headers
+        
+        result = self.app(environ, sr)
+        
+        if response['status'] == '404 Not Found':
+            request_uri = wsgiref.util.request_uri(environ)
+            p = urlparse.urlparse(request_uri)
+            if p.query:
+                request_uri = p.path + "?" + p.query
+            else:
+                request_uri = p.path
+
+            environ['REQUEST_URI'] = request_uri
+            return self.fallback(environ, start_response)
+        else:
+            start_response(response['status'], response['headers'])
+            return result
+
+
 if __name__ == '__main__':
     from wsgiref.simple_server import make_server
-    s = make_server("", 8000, app)
+    s = make_server("", 8000, DemoApp())
     print "Serving on port 8000"
     s.serve_forever()

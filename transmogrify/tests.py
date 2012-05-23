@@ -185,10 +185,31 @@ class TestMakeDirs(TestCase):
         self.assertRaises(OSError, wsgi_handler.makedirs, path)
 
 
+class TestMatchFallback(TestCase):
+    def test_match_fallback(self):
+        fallback_servers = (
+            (r"^media/(.+)", r"\1", "http://example.com/"),
+            (r"^static/(.+)", r"static-files/\1", "http://static.example.com/"),
+            )
+
+        self.assertEqual(("foo/bar/baz.jpg", "http://example.com/"),
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "media/foo/bar/baz.jpg"))
+
+        self.assertEqual(("static-files/foo/bar/baz.jpg", "http://static.example.com/"),
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "static/foo/bar/baz.jpg"))
+
+        self.assertEqual(None,
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "foo/bar/baz.jpg"))
+
 class TestDoFallback(TestCase):
     def setUp(self):
         self.testdata_root = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata'))
-        self.fallback_server = "http://i.usatoday.com/"
+        self.fallback_servers = (
+            (r"media/(.+)", r"\1", "http://i.usatoday.com/"),
+            )
 
         self.base_path = self.testdata_root
 
@@ -196,16 +217,16 @@ class TestDoFallback(TestCase):
             "http://i.usatoday.com/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg"
 
         self.path_info =\
-            "life/gallery/2012/l120523_untamed/02untamed-pg-horizontal_r115.jpg"
+            "media/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal_r115.jpg"
 
         self.output_file = os.path.join(self.base_path,
-            "life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg")
+            "media/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg")
 
         # clean the slate
         self.tearDown()
         
     def tearDown(self):
-        test_root = os.path.join(self.testdata_root, "life")
+        test_root = os.path.join(self.testdata_root, "media/life")
         if os.path.exists(test_root):
             shutil.rmtree(test_root)
 
@@ -225,7 +246,7 @@ class TestDoFallback(TestCase):
         ##
         # Execute
         ##
-        success = wsgi_handler.do_fallback(self.fallback_server,
+        success = wsgi_handler.do_fallback(self.fallback_servers,
                                            self.base_path,
                                            self.path_info)
 
@@ -261,14 +282,15 @@ class TestDoFallback(TestCase):
         ##
         # Execute
         ##
-        result = wsgi_handler.do_fallback(self.fallback_server,
+        result = wsgi_handler.do_fallback(self.fallback_servers,
                                           self.base_path,
                                           self.path_info)
 
 
         # assert that do_fallback did not create the
         # object and the reason was because of the http_error
-        self.assertEqual((False, http_error), result)
+        self.assertEqual((False, (http_error, (self.expected_url, self.output_file))),
+                          result)
         
         # Ensure the directory tree was not created.
         self.assertTrue(
