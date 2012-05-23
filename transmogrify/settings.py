@@ -36,6 +36,8 @@ if HAS_DJANGO:
     # The changed request path is then added to BASE_PATH for original file
     # location
     PATH_ALIASES = getattr(settings, "TRANSMOGRIFY_PATH_ALIASES", {})
+
+    FALLBACK_SERVER = getattr(settings, "TRANSMOGRIFY_FALLBACK_SERVER", "")
 else:
     # Shared secret
     SECRET_KEY = os.environ.get("TRANSMOGRIFY_SECRET", "")
@@ -54,6 +56,7 @@ else:
     VHOST_DOC_BASE = os.environ.get("TRANSMOGRIFY_VHOST_DOC_BASE", "")
 
     NO_IMAGE_URL = os.environ.get("TRANSMOGRIFY_NO_IMG_URL", "")
+    FALLBACK_SERVER = os.environ.get("TRANSMOGRIFY_FALLBACK_SERVER", "")
 
     PATH_ALIASES = {}
 

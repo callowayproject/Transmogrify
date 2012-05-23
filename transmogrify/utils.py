@@ -18,7 +18,7 @@
 
 5. Return
 """
-import os, re, urllib
+import os, re, urllib, urlparse
 from settings import BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS, \
                     SECRET_KEY, PATH_ALIASES
 from hashcompat import sha_constructor
@@ -125,6 +125,11 @@ def process_url(url, server_name="", document_root=None):
     base_file_name, action_tuples = parse_action_tuples(requested_file)
 
     original_file = os.path.join(parent_dir, base_file_name + ext)
+
+    base_uri = os.path.dirname(resolved_uri)
+    original_uri = urlparse.urljoin(base_uri, base_filename + ext)
+
+
     if not os.path.exists(original_file):
         print "looking for:", original_file
         raise Http404("Original file does not exist.")
@@ -137,5 +142,6 @@ def process_url(url, server_name="", document_root=None):
         'base_filename': base_filename,
         'security_hash': security_hash,
         'requested_file': requested_path,
-        'original_file': original_file
+        'original_file': original_file,
+        'orignial_uri': original_uri,
     }
