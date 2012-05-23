@@ -2,10 +2,12 @@ import unittest
 import os
 from django.template import Template, Context
 from StringIO import StringIO
-
+import wsgi_handler
 from transmogrify import Transmogrify
 import utils
 import settings
+import shutil
+import mock
 from PIL import Image
 try:
     from django.test import TestCase
@@ -142,6 +144,143 @@ class UrlProcessingTest(TestCase):
         url += "?%s" % self.doShaHash('_r200')
         result = utils.process_url(url)
         self.assertEquals(result['original_file'], os.path.join(utils.BASE_PATH, 'testdata', 'horiz_img.jpg'))
+
+class TestMakeDirs(TestCase):
+    def setUp(self):
+        self.test_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), 'testdata', "makedirs"))
+
+    def tearDown(self):
+        dirs = [
+            os.path.join(self.test_root, "didnotexist"),
+            os.path.join(self.test_root, "partiallyexists", "foo", "bar"),
+            ]
+
+        for item in dirs:
+            if os.path.exists(item):
+                shutil.rmtree(item)
+                         
+    def test_didnotexist(self):
+        path = os.path.join(self.test_root,
+                            "didnotexist", "foo", "bar", "baz")
+        wsgi_handler.makedirs(path)
+        self.assertTrue(os.path.isdir(path))
+
+    def test_exists(self):
+        path = os.path.join(self.test_root,
+                            "exists", "foo", "bar", "baz")
+        wsgi_handler.makedirs(path)
+        self.assertTrue(os.path.isdir(path))
+
+    def test_partiallyexists(self):
+        path = os.path.join(self.test_root,
+                            "partiallyexists", "foo", "bar", "baz")
+        wsgi_handler.makedirs(path)
+        self.assertTrue(os.path.isdir(path))
+
+    def test_nondirbit(self):
+        path = os.path.join(self.test_root,
+                            "nondirbit", "foo", "bar", "baz")
+
+        self.assertRaises(OSError, wsgi_handler.makedirs, path)
+
+
+class TestDoFallback(TestCase):
+    def setUp(self):
+        self.testdata_root = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata'))
+        self.fallback_server = "http://i.usatoday.com/"
+
+        self.base_path = self.testdata_root
+
+        self.expected_url = \
+            "http://i.usatoday.com/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg"
+
+        self.path_info =\
+            "life/gallery/2012/l120523_untamed/02untamed-pg-horizontal_r115.jpg"
+
+        self.output_file = os.path.join(self.base_path,
+            "life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg")
+
+        # clean the slate
+        self.tearDown()
+        
+    def tearDown(self):
+        test_root = os.path.join(self.testdata_root, "life")
+        if os.path.exists(test_root):
+            shutil.rmtree(test_root)
+
+
+    @mock.patch("shutil.move")
+    @mock.patch("os.path.exists")
+    @mock.patch("urllib.URLopener")
+    def test_200(self, mock_opener, mock_exists, mock_move):
+        ##
+        # Setup mocks
+        ##
+        instance = mock_opener.return_value
+        instance.retrieve.return_value = ("/tmp/sometmpfilename", mock.Mock())
+
+        mock_exists.return_value = False
+
+        ##
+        # Execute
+        ##
+        success = wsgi_handler.do_fallback(self.fallback_server,
+                                           self.base_path,
+                                           self.path_info)
+
+        ##
+        # Test
+        ##
+        
+        self.assertTrue(success)
+
+        # Ensure that the URLopener instance was called with the
+        # correct parameters
+        instance.retrieve.assert_called_with(self.expected_url)
+
+        # Ensure the directory tree was created.
+        self.assertTrue(os.path.isdir(os.path.dirname(self.output_file)))
+        
+        # Ensure that shutil.move was called correctly
+        mock_move.assert_called_with("/tmp/sometmpfilename", 
+                                     self.output_file)
+
+    @mock.patch("shutil.move")
+    @mock.patch("os.path.exists")
+    @mock.patch("urllib.URLopener")
+    def test_non200(self, mock_opener, mock_exists, mock_move):
+        ##
+        # Setup mocks
+        ##
+        instance = mock_opener.return_value
+        http_error = IOError('http error', 404, 'NOT FOUND', mock.Mock())
+        instance.retrieve.side_effect = http_error
+        mock_exists.return_value = False
+
+        ##
+        # Execute
+        ##
+        result = wsgi_handler.do_fallback(self.fallback_server,
+                                          self.base_path,
+                                          self.path_info)
+
+
+        # assert that do_fallback did not create the
+        # object and the reason was because of the http_error
+        self.assertEqual((False, http_error), result)
+        
+        # Ensure the directory tree was not created.
+        self.assertTrue(
+            not os.path.isdir(os.path.dirname(self.output_file)),
+            os.path.dirname(self.output_file))
+        
+        # Ensure that the URLopener instance was called with the
+        # correct parameters
+        instance.retrieve.assert_called_with(self.expected_url)
+
+        # Ensure that the move never happend
+        self.assertFalse(mock_move.called)
 
 if HAS_DJANGO:
     # Note: By default the secret key is empty, so we can test just a straight

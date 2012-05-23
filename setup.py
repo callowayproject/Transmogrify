@@ -24,4 +24,6 @@ setup(
     install_requires=read_file('requirements.txt'),
     include_package_data = True,
     packages = find_packages(),
+    zip_safe=False,
+    install_requires=['PIL', 'wsgiref'],
 )
