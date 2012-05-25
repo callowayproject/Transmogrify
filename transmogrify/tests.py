@@ -22,6 +22,7 @@ class TestTransmogrify(unittest.TestCase):
         self.square_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'square_img.jpg'))
         self.vert_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'vert_img.jpg'))
         self.horiz_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img.jpg'))
+        self.cropname_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img-cropped.jpg'))
     
     def testThumbnail(self):
         expected_square = (300,300)
@@ -111,6 +112,14 @@ class TestTransmogrify(unittest.TestCase):
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
+
+    def testCrapname(self):
+        transmog = Transmogrify(self.horiz_img, [('c', '0-510-300-810'),])
+        transmog.cropname = "cropped"
+
+        self.assertEqual(transmog.get_processed_filename(),
+                         self.cropname_img)
+        
 
     def testLetterbox(self):
         transmog = Transmogrify(self.square_img, [('l', '300x300-888'),])
