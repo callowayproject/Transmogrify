@@ -5,8 +5,10 @@ from StringIO import StringIO
 import wsgi_handler
 from transmogrify import Transmogrify
 import utils
+import urllib
 import settings
 import shutil
+from webob import Request
 import mock
 from PIL import Image
 try:
@@ -15,6 +17,7 @@ try:
 except ImportError:
     HAS_DJANGO = False
 
+HERE = os.path.abspath(os.path.dirname(__file__))
 
 class TestTransmogrify(unittest.TestCase):
     """Testing the features of Transmogrify"""
@@ -312,6 +315,78 @@ class TestDoFallback(TestCase):
 
         # Ensure that the move never happend
         self.assertFalse(mock_move.called)
+
+class TestWSGIHandler(unittest.TestCase):
+
+    def setUp(self):
+        self.tearDown()
+
+        settings.BASE_PATH = os.path.join(HERE, "testdata")
+        settings.FALLBACK_SERVERS = ((r"dummy", r"", "notused"))
+        reload(utils)
+
+    def tearDown(self):
+        for filename in ["vert_img_r222.jpg", "vert_img-testcrop.jpg"]:
+            absfn = os.path.join(HERE, "testdata", filename)
+
+        if os.path.exists(absfn):
+            os.remove(absfn)
+
+        reload(settings)
+
+    def doShaHash(self, value):
+        import hashlib
+        return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
+
+    def test_local(self):
+        security_hash = self.doShaHash("_r222")
+        req = Request.blank("/")
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['REQUEST_URI'] = "/vert_img_r222.jpg?" + security_hash
+
+        resp = req.get_response(wsgi_handler.app)
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img_r222.jpg?" + security_hash,
+                         resp.location)
+        self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
+                                                    "vert_img_r222.jpg")))
+
+    def test_direct_mode(self):
+        security_hash = self.doShaHash("_r222")
+        qs = urllib.urlencode({"key": security_hash,
+                               "path": "/vert_img_r222.jpg"})
+
+        req = Request.blank("/")
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['QUERY_STRING'] = qs
+
+        resp = req.get_response(wsgi_handler.app)
+
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img_r222.jpg?" + security_hash , resp.location)
+        self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
+                                                    "vert_img_r222.jpg")))
+        
+    def test_cropname(self):
+        security_hash = self.doShaHash("_r222")
+        qs = urllib.urlencode({"key": security_hash,
+                               "path": "/vert_img_r222.jpg",
+                               "cropname": "testcrop"})
+
+        req = Request.blank("/")
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['QUERY_STRING'] = qs
+
+        resp = req.get_response(wsgi_handler.app)
+
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img-testcrop.jpg?" + security_hash , resp.location)
+        self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
+                                                    "vert_img-testcrop.jpg")))
+        
 
 if HAS_DJANGO:
     # Note: By default the secret key is empty, so we can test just a straight
