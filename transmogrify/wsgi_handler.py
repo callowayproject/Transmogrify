@@ -47,12 +47,10 @@ def makedirs(dirname):
         
 
 def match_fallback(fallback_servers, path_info):
-    print "Matching..."
     for pattern, replace, server in fallback_servers:
         if re.match(pattern, path_info):
 
             new_path = re.sub(pattern, replace, path_info)
-            print "Matched %r %r %r %r" % (pattern, replace, path_info, (new_path, server))
             return (new_path, server)
 
 
@@ -81,7 +79,6 @@ def do_fallback(fallback_servers, base_path, path_info):
 
             makedirs(os.path.dirname(output_file))
             shutil.move(tmpfn, output_file)
-            print "downloaded %s to %s" % (fallback_url, output_file)
             return (True, tmpfn)
         except IOError, e:
             return (False, (e, (fallback_url, output_file)))
@@ -90,11 +87,39 @@ def do_fallback(fallback_servers, base_path, path_info):
 
 
 def app(environ, start_response):
+    cropname = None
     server = environ['SERVER_NAME']
+
+    if "path=" in environ.get("QUERY_STRING", ""):
+        # I should probably require a POST for this, but meh, let's not
+        # rock the boat.
+
+        # transmogrify is being used directly and not as a 404 handler
+        query_dict = urlparse.parse_qs(environ['QUERY_STRING'])
+
+        path = query_dict.get("path", [""])[0]
+        key = query_dict.get("key", [""])[0]
+
+        # validate the query params
+        if not (path and key):
+            # The required parameters were not given
+            start_response("400 Bad Response",
+                           [("Content-Type", "text/plain")])
+            return ["path and key are required query parameters"]
+
+        cropname = query_dict.get("cropname", [None])[0]
+
+        # rewrite the environ to look like a 404 handler 
+        environ['REQUEST_URI'] = path + "?" + key
+
+
     request_uri = environ['REQUEST_URI']
     path_and_query = request_uri.lstrip("/")
     requested_path = urlparse.urlparse(path_and_query).path
-    
+        
+    if path_and_query is "":
+        return do404(environ, start_response, "Not Found", DEBUG)
+
     # Acquire lockfile
     lock = '/tmp/%s' % sha_constructor(path_and_query).hexdigest()
 
@@ -105,7 +130,6 @@ def app(environ, start_response):
 
         if FALLBACK_SERVERS:
             result = do_fallback(FALLBACK_SERVERS, BASE_PATH, requested_path)
-            print "fallback: %r" % (result, )
             if result == (False, "bad path"):
                 start_response("403 Forbidden", [])
                 return []
@@ -116,13 +140,23 @@ def app(environ, start_response):
             return do404(environ, start_response, e.message, DEBUG)
 
         new_file = Transmogrify(url_parts['original_file'], url_parts['actions'])
+        new_file.cropname = cropname
         new_file.save()
+
+        if cropname:
+            # Rewrite the request_uri to use the new file with the
+            # cropname
+            urlbits = list(urlparse.urlsplit(request_uri))
+            output_filename = new_file.get_processed_filename()
+            filename = os.path.basename(output_filename)
+            requested_dir = os.path.dirname(urlbits[2])
+            urlbits[2] = os.path.join(requested_dir, filename)
+            request_uri = urlparse.urlunsplit(urlbits)
 
         return doRedirect(environ, start_response, request_uri)
 
 
 def doRedirect(environ, start_response, path):
-    print "Redirecting to %r" % (path, )
     start_response("302 Found", [("Location", path)])
     return []
 
