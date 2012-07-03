@@ -2,6 +2,8 @@
 Lighttpd Integration
 ====================
 
+First install and configure Lighttpd.
+
 The easiest method to integrate Transmogrify into a Lighttpd server is as a ``server.error-handler-404``\ . This allows Lighttpd to handle normal file serving, unless lighttpd can't find the requested file. At that point, Lighttpd will pass off control to the script, which will either create the file and let Lighttpd serve it or return a 404 error. From that point on Lighttpd will be able to serve the file normally.
 
 ``lighttpd.conf``
@@ -39,7 +41,7 @@ Lastly, we must configure a few parameters. These settings allow easy customizat
 	setenv.add-environment = (
 	    "TRANSMOGRIFY_KEY"  => "Anything you want, but keep it secret",
 	    "TRANSMOGRIFY_DEBUG" => "0",
-	    "TRANSMOGRIFY_ROOT" => "/web-media/export/assets/",
+	    "TRANSMOGRIFY_BASE_PATH" => "/web-media/export/assets/",
 	    "TRANSMOGRIFY_VHOSTS" => "0",
 	)
 
