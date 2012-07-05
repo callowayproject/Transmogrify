@@ -1,0 +1,9 @@
+recursive-include doc_src *
+recursive-include docs *
+recursive-include transmogrify/templatetags *
+
+include LICENSE
+include README.rst
+include CREDITS
+
+prune example
