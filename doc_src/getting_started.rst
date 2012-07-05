@@ -1,9 +1,37 @@
-
 ===============
 Getting Started
 ===============
 
-Transmogrify is a library to dynamically alter images. Its biggest impact is probably how it frees up the designer from resizing images for different designs.
+* Show basic setup of a server
+
+    * Single Site
+
+    * Originals separated from thumbnails
+
+    * Multiple Sites
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Transmogrify is a library to dynamically alter images and create thumbnails. It allows for:
+
+* Moving the burden of thumbnail making to a separate source. You can scale the media servers separately from the web servers.
+
+* Giving flexibility to designers for image placement and sizing. You don't have to worry that you only have thumbnails 200px wide and your new design has a 250px hole.
+
+* Your original images are never available. You are only delivering thumbnails. Your originals are never available.
 
 There are several parts to transmogrify. At the core is the image processor. It takes an image file and a set of one or more actions and outputs a new file, predictably renamed, with the actions performed.
 
@@ -13,7 +41,7 @@ The URL router works with the web server when the processed file doesn't exist. 
 
 Lastly, the URL generator is a piece of code that generates the URL for the image based on what the designer wants to do with the image.
 
-Currently there is a URL generator for Django (as a template tag), and URL routers for lighttpd (as a 404 handler) and Django (for local serving). Help for other frameworks and servers is greatly appreciated. The image processor is pure python.
+Currently there is a URL generator for Django (as a template tag), and URL routers for lighttpd (as a 404 handler), Apache (as a 404 handler) and Django (for local serving). Help for other frameworks and servers is greatly appreciated. The image processor is pure python.
 
 
 The URL Generator
