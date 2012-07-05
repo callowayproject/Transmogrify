@@ -1,5 +1,5 @@
 import os
-from hashcompat import sha_constructor
+from hashlib import sha1
 from PIL import Image
 from settings import PROCESSORS, SECRET_KEY
 

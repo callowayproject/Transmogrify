@@ -10,7 +10,7 @@ import re
 from settings import DEBUG, FALLBACK_SERVERS, BASE_PATH
 from utils import process_url, Http404, parse_action_tuples
 from transmogrify import Transmogrify
-from hashcompat import sha_constructor
+from hashlib import sha1
 from contextlib import contextmanager
 import time
 from pprint import pformat, pprint

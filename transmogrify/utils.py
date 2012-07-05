@@ -18,10 +18,14 @@
 
 5. Return
 """
-import os, re, urllib, urlparse
-from settings import BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS, \
-                    SECRET_KEY, PATH_ALIASES, DEBUG
-from hashcompat import sha_constructor
+import os
+import re
+import urllib
+import urlparse
+from hashlib import sha1
+from settings import (BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS,
+                      SECRET_KEY, PATH_ALIASES, DEBUG)
+
 
 class Http404(Exception):
     pass

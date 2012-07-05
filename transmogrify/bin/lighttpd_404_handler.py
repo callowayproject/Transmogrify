@@ -7,34 +7,34 @@ import sys
 from settings import DEBUG
 from utils import process_url, Http404
 from transmogrify import Transmogrify
-from hashcompat import sha_constructor
+from hashlib import sha1
 
 
 def handle_request():
     # Acquire lockfile
-    lock = '/tmp/%s' % sha_constructor(os.environ["REQUEST_URI"]).hexdigest()
+    lock = '/tmp/%s' % sha1(os.environ["REQUEST_URI"]).hexdigest()
     if os.path.isfile(lock):
         print "Location: %s" % os.environ["REQUEST_URI"]
         print
         return
     open(lock, 'w')
-    
+
     if DEBUG:
         import cgitb
         cgitb.enable()
-    
+
     try:
         server = os.environ["SERVER_NAME"].split(":")[0]
         url_parts = process_url(os.environ['REQUEST_URI'], server)
     except Http404, e:
         do404(e.message, DEBUG)
-    
+
     new_file = Transmogrify(url_parts['original_file'], url_parts['actions'])
     new_file.save()
-    
+
     print "Location: /%s" % os.environ['REQUEST_URI']
     print
-    
+
     # Remove lockfile
     os.remove(lock)
 
@@ -45,7 +45,7 @@ def do404(why, debug):
         message = "File not found"
     print "Status: 404"
     print "Content-type: text/html"
-    print 
+    print
     print ERROR_404 % message
     sys.exit(0)
 

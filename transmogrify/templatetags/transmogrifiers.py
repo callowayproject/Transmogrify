@@ -1,5 +1,5 @@
 import os
-from transmogrify.hashcompat import sha_constructor
+from hashlib import sha1
 from transmogrify import settings
 from transmogrify import utils
 from django import template
