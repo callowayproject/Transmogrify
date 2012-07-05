@@ -44,7 +44,7 @@ def makedirs(dirname):
             raise OSError("%s is exists, but is not a directory." % (root, ))
         else: # exists and is a dir
             pass
-        
+
 
 def match_fallback(fallback_servers, path_info):
     for pattern, replace, server in fallback_servers:
@@ -109,19 +109,19 @@ def app(environ, start_response):
 
         cropname = query_dict.get("cropname", [None])[0]
 
-        # rewrite the environ to look like a 404 handler 
+        # rewrite the environ to look like a 404 handler
         environ['REQUEST_URI'] = path + "?" + key
 
 
     request_uri = environ['REQUEST_URI']
     path_and_query = request_uri.lstrip("/")
     requested_path = urlparse.urlparse(path_and_query).path
-        
+
     if path_and_query is "":
         return do404(environ, start_response, "Not Found", DEBUG)
 
     # Acquire lockfile
-    lock = '/tmp/%s' % sha_constructor(path_and_query).hexdigest()
+    lock = '/tmp/%s' % sha1(path_and_query).hexdigest()
 
     if os.path.isfile(lock):
         return doRedirect(environ, start_response, request_uri)
@@ -167,7 +167,7 @@ def do404(environ, start_response, why, debug):
         message = "<h2>%s</h2>" % why
     else:
         message = "File not found"
-    
+
     start_response("404 Not Found", [("Content-Type", "text/html")])
     return [ERROR_404 % message]
 
@@ -197,9 +197,9 @@ class DemoApp(object):
         def sr(status, headers):
             response['status'] = status
             response['headers'] = headers
-        
+
         result = self.app(environ, sr)
-        
+
         if response['status'] == '404 Not Found':
             request_uri = wsgiref.util.request_uri(environ)
             p = urlparse.urlparse(request_uri)

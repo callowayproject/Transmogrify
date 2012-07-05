@@ -68,7 +68,7 @@ def no_param_shortcut(parser, token):
         imageurl = bits.next()
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
-    
+
     return MogrifyNode(imageurl, [(tagname, ),])
 
 
