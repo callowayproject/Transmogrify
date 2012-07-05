@@ -41,11 +41,11 @@ def create_securityhash(action_tuples):
     Create a SHA1 hash based on the KEY and action string
     """
     action_string = "".join(["_%s%s" % a for a in action_tuples])
-    security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
+    security_hash = sha1(action_string + SECRET_KEY).hexdigest()
     return security_hash
 
 def generate_url(url, action_string):
-    security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
+    security_hash = sha1(action_string + SECRET_KEY).hexdigest()
     base_url, ext = os.path.splitext(url)
     
     return "%s%s%s?%s" % (base_url, action_string, ext, security_hash)

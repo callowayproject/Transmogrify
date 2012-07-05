@@ -48,4 +48,4 @@ class Transmogrify(object):
     
     def get_security_hash(self):
         action_string = self.get_action_string()
-        return sha_constructor(action_string + SECRET_KEY).hexdigest()
+        return sha1(action_string + SECRET_KEY).hexdigest()
