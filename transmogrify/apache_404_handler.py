@@ -5,13 +5,13 @@ Apache 404 handler for mogrifying images.
 """
 
 import os
-import sys
 from settings import DEBUG
 from utils import process_url, Http404
 from transmogrify import Transmogrify
 from hashcompat import sha_constructor
 from contextlib import contextmanager
 import time
+
 
 @contextmanager
 def lock_file(lock):
@@ -22,7 +22,7 @@ def lock_file(lock):
     finally:
         # Remove lockfile
         os.remove(lock)
-    
+
 
 def handle_request():
     server = os.environ["SERVER_NAME"].split(":")[0]
@@ -32,8 +32,8 @@ def handle_request():
     lock = '/tmp/%s' % sha_constructor(path).hexdigest()
     if os.path.isfile(lock):
         doRedirect(path)
-        return 
-    
+        return
+
     with lock_file(lock):
         if DEBUG:
             import cgitb
@@ -51,7 +51,6 @@ def handle_request():
         doRedirect(path)
 
 
-
 def doRedirect(path):
     time.sleep(0.005)
     print "Status: 302 Found"
@@ -66,7 +65,7 @@ def do404(why, debug):
         message = "File not found"
     print "Status: 404"
     print "Content-type: text/html"
-    print 
+    print
     print ERROR_404 % message
 
 ERROR_404 = """
