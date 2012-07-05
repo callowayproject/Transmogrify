@@ -8,6 +8,7 @@ class Transmogrify(object):
         self.im = Image.open(original_file)
         self.actions = action_tuples
         self.original_file = original_file
+        self.cropname = None
     
     def save(self):
         """
@@ -34,8 +35,12 @@ class Transmogrify(object):
         parent_dir, filename = os.path.split(self.original_file)
         base_filename, ext = os.path.splitext(filename)
         action_string = self.get_action_string()
-        
-        return os.path.join(parent_dir, "%s%s%s" % (base_filename, action_string, ext))
+        cropname = self.cropname
+
+        if cropname:
+            return os.path.join(parent_dir, "%s-%s%s" % (base_filename, cropname, ext))            
+        else:
+            return os.path.join(parent_dir, "%s%s%s" % (base_filename, action_string, ext))
     
     def get_action_string(self):
         code = ["_%s%s" % (action, param) for action, param in self.actions]

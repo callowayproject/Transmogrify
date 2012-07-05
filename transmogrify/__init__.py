@@ -1,10 +1,11 @@
 __version_info__ = {
     'major': 0,
-    'minor': 1,
+    'minor': 2,
     'micro': 0,
     'releaselevel': 'beta',
-    'serial': 2
+    'serial': 0
 }
+
 
 def get_version():
     vers = ["%(major)i.%(minor)i" % __version_info__, ]

@@ -1,5 +1,6 @@
-Transmogrify 0.1 documentation
-==============================
+====================================
+Transmogrify |version| documentation
+====================================
 
 Contents:
 

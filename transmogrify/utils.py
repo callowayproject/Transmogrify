@@ -18,9 +18,9 @@
 
 5. Return
 """
-import os, re, urllib
+import os, re, urllib, urlparse
 from settings import BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS, \
-                    SECRET_KEY, PATH_ALIASES
+                    SECRET_KEY, PATH_ALIASES, DEBUG
 from hashcompat import sha_constructor
 
 class Http404(Exception):
@@ -40,6 +40,12 @@ def create_securityhash(action_tuples):
     security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
     return security_hash
 
+def generate_url(url, action_string):
+    security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
+    base_url, ext = os.path.splitext(url)
+    
+    return "%s%s%s?%s" % (base_url, action_string, ext, security_hash)
+
 def is_valid_security(action_tuples, security_hash):
     return create_securityhash(action_tuples) == security_hash
 
@@ -53,6 +59,27 @@ def resolve_request_path(requested_uri):
         if re.match(key, requested_uri):
             return re.sub(key, val, requested_uri)
     return requested_uri
+
+def parse_action_tuples(filename):
+    base_filename, ext = os.path.splitext(filename)
+
+    action_tuples = []
+    # split on underscore but keep 'em around in case there are duplicates.
+    bits = re.split("(_)", base_filename)
+    while bits:
+        action = bits.pop()
+        if len(action) < 1:
+            continue
+        if is_valid_actionstring(action):
+            action_tuples.insert(0, (action[0], action[1:]))
+            bits.pop() # pop the remaining underscore off the stack
+        else:
+            bits.append(action)
+            break
+
+    base_file_name = "".join(bits)
+
+    return base_file_name, action_tuples
 
 def process_url(url, server_name="", document_root=None):
     """
@@ -95,26 +122,22 @@ def process_url(url, server_name="", document_root=None):
     parent_dir, requested_file = os.path.split(requested_path)
     base_filename, ext = os.path.splitext(requested_file)
     
-    action_tuples = []
-    # split on underscore but keep 'em around in case there are duplicates.
-    bits = re.split("(_)", base_filename)
-    while bits:
-        action = bits.pop()
-        if len(action) < 1:
-            continue
-        if is_valid_actionstring(action):
-            action_tuples.insert(0, (action[0], action[1:]))
-            bits.pop() # pop the remaining underscore off the stack
-        else:
-            bits.append(action)
-            break
-    base_file_name = "".join(bits)
+    base_file_name, action_tuples = parse_action_tuples(requested_file)
+
     original_file = os.path.join(parent_dir, base_file_name + ext)
+
+    base_uri = os.path.dirname(resolved_uri)
+    original_uri = urlparse.urljoin(base_uri, base_filename + ext)
+
+
     if not os.path.exists(original_file):
         print "looking for:", original_file
-        raise Http404("Original file does not exist.")
-    if not is_valid_security(action_tuples, security_hash):
-        raise Http404("Invalid security token.")
+        raise Http404("Original file does not exist. %r %r" % (url, original_file, ))
+    if action_tuples and not is_valid_security(action_tuples, security_hash):
+        if DEBUG:
+            raise Http404("Invalid security token. %r %r %r" % (request_uri, action_tuples, SECRET_KEY, ))
+        else:
+            raise Http404("Invalid security token.")
     return {
         'actions': action_tuples,
         'parent_dir': parent_dir,
@@ -122,6 +145,6 @@ def process_url(url, server_name="", document_root=None):
         'base_filename': base_filename,
         'security_hash': security_hash,
         'requested_file': requested_path,
-        'original_file': original_file
+        'original_file': original_file,
+        'orignial_uri': original_uri,
     }
-    

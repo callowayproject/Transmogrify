@@ -1,3 +1,4 @@
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
@@ -5,28 +6,29 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Lighttpd Integration &mdash; Transmogrify v0.1beta2 documentation</title>
+    <title>Lighttpd Integration &mdash; Transmogrify v0.2beta0 documentation</title>
     <link rel="stylesheet" href="../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '0.1beta2',
-        COLLAPSE_MODINDEX: false,
+        VERSION:     '0.2beta0',
+        COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
       };
     </script>
     <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Transmogrify v0.1beta2 documentation" href="../index.html" />
+    <link rel="top" title="Transmogrify v0.2beta0 documentation" href="../index.html" />
     <link rel="up" title="Web Server Integration" href="index.html" />
     <link rel="next" title="Django Development Server Integration" href="django_devserver.html" />
     <link rel="prev" title="Web Server Integration" href="index.html" /> 
   </head>
   <body>
 <div id="docstitle">
-	<p>Transmogrify v0.1beta2 documentation</p>
+	<p>Transmogrify v0.2beta0 documentation</p>
 </div>
 <div id="header">
 	<div id="title"><h1>Lighttpd Integration</h1></div>
@@ -44,15 +46,15 @@
   <div class="sphinxsidebarwrapper">
 	<ul><li class="toctree-l1"><a href="../index.html">Main Page</a></li></ul>
 	<ul class="current">
-<li class="toctree-l1"><a class="reference external" href="../getting_started.html">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference external" href="../installation.html">Installation</a></li>
-<li class="toctree-l1"><a class="reference external" href="../templatetag.html">Django Template Tag</a></li>
-<li class="toctree-l1 current"><a class="reference external" href="index.html">Web Server Integration</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference external" href="">Lighttpd Integration</a></li>
-<li class="toctree-l2"><a class="reference external" href="django_devserver.html">Django Development Server Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../templatetag.html">Django Template Tag</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Web Server Integration</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="">Lighttpd Integration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="django_devserver.html">Django Development Server Integration</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference external" href="../reference/index.html">Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../reference/index.html">Reference</a></li>
 </ul>
 
     <div id="searchbox" style="display: none">
@@ -84,6 +86,7 @@
             
   <div class="section" id="lighttpd-integration">
 <h1>Lighttpd Integration<a class="headerlink" href="#lighttpd-integration" title="Permalink to this headline">¶</a></h1>
+<p>First install and configure Lighttpd.</p>
 <p>The easiest method to integrate Transmogrify into a Lighttpd server is as a <tt class="docutils literal"><span class="pre">server.error-handler-404</span></tt>. This allows Lighttpd to handle normal file serving, unless lighttpd can&#8217;t find the requested file. At that point, Lighttpd will pass off control to the script, which will either create the file and let Lighttpd serve it or return a 404 error. From that point on Lighttpd will be able to serve the file normally.</p>
 <div class="section" id="lighttpd-conf">
 <h2><tt class="docutils literal"><span class="pre">lighttpd.conf</span></tt><a class="headerlink" href="#lighttpd-conf" title="Permalink to this headline">¶</a></h2>
@@ -108,11 +111,11 @@
 <div class="highlight-python"><div class="highlight"><pre><span class="n">server</span><span class="o">.</span><span class="n">error</span><span class="o">-</span><span class="n">handler</span><span class="o">-</span><span class="mi">404</span> <span class="o">=</span> <span class="s">&quot;/error/404_handler.py&quot;</span>
 </pre></div>
 </div>
-<p>Lastly, we must configure a few parameters. These settings allow easy customization without having to customize the scripts. See <a class="reference external" href="../reference/settings.html#settings"><em>Settings</em></a> for details on each setting. There are a few more settings than shown in this example, but this is typical.</p>
+<p>Lastly, we must configure a few parameters. These settings allow easy customization without having to customize the scripts. See <a class="reference internal" href="../reference/settings.html#settings"><em>Settings</em></a> for details on each setting. There are a few more settings than shown in this example, but this is typical.</p>
 <div class="highlight-python"><pre>setenv.add-environment = (
     "TRANSMOGRIFY_KEY"  =&gt; "Anything you want, but keep it secret",
     "TRANSMOGRIFY_DEBUG" =&gt; "0",
-    "TRANSMOGRIFY_ROOT" =&gt; "/web-media/export/assets/",
+    "TRANSMOGRIFY_BASE_PATH" =&gt; "/web-media/export/assets/",
     "TRANSMOGRIFY_VHOSTS" =&gt; "0",
 )</pre>
 </div>
@@ -146,7 +149,7 @@
     <div class="footer">
     <p>
       &copy; Copyright 2010, The Washington Times.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.7.
 	</p>
     </div>
       <div class="clearer"></div>

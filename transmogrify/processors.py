@@ -5,7 +5,7 @@ import re
 
 SIZE_RE = re.compile(r"^((\d+)|(x\d+)|(\d+x\d+))$")
 
-__all__ = ["Thumbnail", "Crop", "ForceFit", "Resize", "LetterboxResize", "Border", "Filter"]
+__all__ = ["Thumbnail", "Crop", "ForceFit", "Resize", "LetterboxResize", "Border", "Filter", "Mask"]
 
 class Processor(object):
     """
@@ -90,16 +90,30 @@ class Crop(Processor):
     
     @staticmethod
     def param_pattern():
-        return SIZE_RE
+        return re.compile((r"^((\d+)|(x\d+)|(\d+x\d+))"
+                           r"|((\d+)-(\d+)-(\d+)-(\d+))$"))
     
     @staticmethod
-    def process(image, size, *args, **kwargs):
+    def process(image, size_or_bbox, *args, **kwargs):
+        if "-" in size_or_bbox:
+            return Crop.crop_bbox(image, size_or_bbox, *args, **kwargs)
+        else:
+            return Crop.crop_center(image, size_or_bbox, *args, **kwargs)
+
+
+    @staticmethod
+    def crop_center(image, size, *args, **kwargs):
         w, h = Crop.parse_size(image, size)
         left = (image.size[0] - w) / 2
         top  = (image.size[1] - h) / 2
         right = left + w
         bottom = top + h
         return image.crop((left, top, right, bottom))
+
+    @staticmethod
+    def crop_bbox(image, bbox, *args, **kwargs):
+        bbox = map(int, bbox.split("-"))
+        return image.crop(bbox)
 
 class ForceFit(Processor):
     """
@@ -243,3 +257,25 @@ class Filter(Processor):
         else:
             return image
 
+class Mask(Processor):
+    """
+    Create a thumbnail at the specified size
+    """
+    @staticmethod
+    def code():
+        return "m"
+
+    @staticmethod
+    def process(image, *args, **kwargs):
+        r,g,b,a = image.split()
+        data=[0]*(image.size[0]*image.size[1])
+        r.putdata(data)
+        g.putdata(data)
+        b.putdata(data)
+
+        im2=Image.merge("RGBA", [r,g,b,a])
+        return im2
+
+    @staticmethod
+    def param_pattern():
+        return re.compile(r'^$')

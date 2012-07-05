@@ -1,0 +1,4 @@
+* refactor settings to dict.
+* Enable a path to store thumbnails
+    * alias TRANSMOGRIFY_BASE_PATH to TRANSMOGRIFY_ORIGINAL_ROOT
+    * Have OUTPUT_ROOT for the output. Default is output_root == original_root
