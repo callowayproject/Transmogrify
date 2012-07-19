@@ -200,17 +200,23 @@ class TestMakeDirs(TestCase):
 class TestMatchFallback(TestCase):
     def test_match_fallback(self):
         fallback_servers = (
+            (r"^domain/(example.com/.+)", r"", r"http://\1"),
             (r"^media/(.+)", r"\1", "http://example.com/"),
             (r"^static/(.+)", r"static-files/\1", "http://static.example.com/"),
             )
 
-        self.assertEqual(("foo/bar/baz.jpg", "http://example.com/"),
+        self.assertEqual("http://example.com/foo/bar/baz.jpg",
                          wsgi_handler.match_fallback(fallback_servers,
                                                      "media/foo/bar/baz.jpg"))
 
-        self.assertEqual(("static-files/foo/bar/baz.jpg", "http://static.example.com/"),
+        self.assertEqual("http://static.example.com/static-files/foo/bar/baz.jpg",
                          wsgi_handler.match_fallback(fallback_servers,
                                                      "static/foo/bar/baz.jpg"))
+
+
+        self.assertEqual("http://example.com/bar/baz.jpg",
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "domain/example.com/bar/baz.jpg"))
 
         self.assertEqual(None,
                          wsgi_handler.match_fallback(fallback_servers,

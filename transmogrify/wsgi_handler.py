@@ -51,7 +51,8 @@ def match_fallback(fallback_servers, path_info):
         if re.match(pattern, path_info):
 
             new_path = re.sub(pattern, replace, path_info)
-            return (new_path, server)
+            new_server = re.sub(pattern, server, path_info)
+            return urlparse.urljoin(new_server, new_path)
 
 
 def do_fallback(fallback_servers, base_path, path_info):
@@ -63,13 +64,11 @@ def do_fallback(fallback_servers, base_path, path_info):
     if ".." in path_info:
         return (False, "bad path")
 
-    match = match_fallback(fallback_servers, path_info)
+    fallback_url = match_fallback(fallback_servers, path_info)
 
-    if not match:
+    if not fallback_url:
         return (False, "no matching fallback")
 
-    remote_path, fallback_server = match
-    fallback_url = urlparse.urljoin(fallback_server, remote_path)
     output_file = os.path.join(base_path, path_info)
 
     if not os.path.lexists(output_file):
