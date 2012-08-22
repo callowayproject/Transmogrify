@@ -22,7 +22,7 @@ class Transmogrify(object):
             self.im = action.process(self.im, arg)
         
         filename = self.get_processed_filename()
-        self.im.save(filename, quality=85)
+        self.im.save(filename, quality=70)
     
     def apply_action_tuples(self, actions):
         """
