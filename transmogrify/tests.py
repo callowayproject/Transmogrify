@@ -4,6 +4,7 @@ from django.template import Template, Context
 from StringIO import StringIO
 import wsgi_handler
 from transmogrify import Transmogrify
+import processors
 import utils
 import urllib
 import settings
@@ -18,6 +19,24 @@ except ImportError:
     HAS_DJANGO = False
 
 HERE = os.path.abspath(os.path.dirname(__file__))
+
+class TestParseSize(unittest.TestCase):
+    def test(self):
+        image = mock.Mock()
+        image.size = [100, 200]
+
+        self.assertEqual((200, 400),
+                         processors.Processor.parse_size(image,
+                                                         "200"))
+
+        self.assertEqual((200, 400),
+                         processors.Processor.parse_size(image,
+                                                         "x400"))
+        
+        self.assertEqual((300, 400),
+                         processors.Processor.parse_size(image,
+                                                         "300x400"))
+
 
 class TestTransmogrify(unittest.TestCase):
     """Testing the features of Transmogrify"""

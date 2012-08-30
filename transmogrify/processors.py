@@ -30,12 +30,14 @@ class Processor(object):
         height) tuple. 
         """
         bits = size.split("x")
+        ratio = float(image.size[0]) / float(image.size[1])
+
         if len(bits) == 1 or not bits[1]:
             width = int(bits[0])
-            height = image.size[1]
+            height = int(1 / ratio * width)
         elif not bits[0]:
             height = int(bits[1])
-            width = image.size[0]
+            width = int(height * ratio)
         else:
             width, height = map(int, bits)
         return width, height
