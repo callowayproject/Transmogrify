@@ -6,12 +6,12 @@ from django import template
 from django.utils.text import smart_split
 
 ACTIONS = {
-    'thumbnail':'t', 
-    'crop':'c', 
-    'forcefit': 's', 
-    'resize': 'r', 
-    'letterbox': 'l', 
-    'filter': 'f', 
+    'thumbnail':'t',
+    'crop':'c',
+    'forcefit': 's',
+    'resize': 'r',
+    'letterbox': 'l',
+    'filter': 'f',
     'border': 'b',
     'mask': 'm',
 }
@@ -29,14 +29,14 @@ def resolve(var, context):
 
 def transmogrify(parser, token):
     """
-    """    
+    """
     bits = smart_split(token.contents)
     tagname = bits.next()
     try:
         imageurl = bits.next()
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
-    
+
     # Parse the actions into a list of (action, arg) tuples.
     # The "border" and "letterbox" actions are a special case: they take two arguments.
     actions = []
@@ -50,11 +50,11 @@ def transmogrify(parser, token):
             actions.append((action, param1, color))
         else:
             actions.append((action, bits.next()))
-    
+
     # No actions is an error
     if not actions:
         raise template.TemplateSyntaxError("%r tag requires at least one action" % (tagname))
-    
+
     return MogrifyNode(imageurl, actions)
 
 
@@ -68,7 +68,7 @@ def no_param_shortcut(parser, token):
         imageurl = bits.next()
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
-    
+
     return MogrifyNode(imageurl, [(tagname, ),])
 
 
@@ -83,7 +83,7 @@ def one_param_shortcut(parser, token):
         param1 = bits.next()
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
-    
+
     return MogrifyNode(imageurl, [(tagname, param1),])
 
 
@@ -100,24 +100,26 @@ def two_param_shortcut(parser, token):
         param2 = param2.lstrip("#")
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
-    
+
     return MogrifyNode(imageurl, [(tagname, param1, param2),])
 
 
 
 class MogrifyNode(template.Node):
-        
+
     def __init__(self, imageurl, actions):
         self.imageurl, self.actions = template.Variable(imageurl), actions
-        
+
     def render(self, context):
+        action_list = []
         imageurl = resolve(self.imageurl, context)
-        
+
         if not imageurl:
             imageurl = settings.NO_IMAGE_URL
-            
-        action_list = []
-        
+
+        if not imageurl:
+            raise TemplateSyntaxError("imageurl blank and settings.TRANSMOGRIFY_NO_IMG_URL is blank")
+
         for action in self.actions:
             action_code = ACTIONS[action[0]]
             arg_list = [str(resolve(template.Variable(arg), context)) for arg in action[1:]]
@@ -126,11 +128,11 @@ class MogrifyNode(template.Node):
                 action_list.append("_%s%s" % (action_code, args))
             else:
                 raise template.TemplateSyntaxError("The action '%s' doesn't accept the arguments: %s" % (action[0], ",".join(action[1:])))
-        
+
         # Make sure we've actually got some actions.
         if not action_list:
             return imageurl
-        
+
         # Create the new URL
         action_string = "".join(action_list)
         prefix, ext = os.path.splitext(imageurl)
@@ -146,7 +148,7 @@ class MogrifyNode(template.Node):
 def mogrify_filter(action):
     def inner(imageurl, arg_string=""):
         action_list = []
-        
+
         bits = arg_string.split()
 
         # parse one arg vs two args
@@ -157,7 +159,13 @@ def mogrify_filter(action):
 
         # dispose of an existing security hash if it exists
         if "?" in imageurl:
-            imageurl, _ = imageurl.split("?", 1) 
+            imageurl, _ = imageurl.split("?", 1)
+
+        if not imageurl:
+            imageurl = settings.NO_IMAGE_URL
+
+        if not imageurl:
+            raise TemplateSyntaxError("imageurl blank and settings.TRANSMOGRIFY_NO_IMG_URL is blank")
 
         # build the action list
         action_code = ACTIONS[action]
@@ -167,7 +175,7 @@ def mogrify_filter(action):
         else:
             raise template.TemplateSyntaxError("The action '%s' doesn't accept the arguments: %s" % (action[0], ",".join(action[1:])))
 
-        if not action_list: 
+        if not action_list:
             return imageurl
 
         # Create the new URL
