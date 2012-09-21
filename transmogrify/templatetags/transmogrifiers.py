@@ -117,6 +117,9 @@ class MogrifyNode(template.Node):
         if not imageurl:
             imageurl = settings.NO_IMAGE_URL
 
+        if not imageurl:
+            return ""
+
         for action in self.actions:
             action_code = ACTIONS[action[0]]
             arg_list = [str(resolve(template.Variable(arg), context)) for arg in action[1:]]
@@ -161,6 +164,8 @@ def mogrify_filter(action):
         if not imageurl:
             imageurl = settings.NO_IMAGE_URL
 
+        if not imageurl:
+            return ""
 
         # build the action list
         action_code = ACTIONS[action]
