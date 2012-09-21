@@ -117,9 +117,6 @@ class MogrifyNode(template.Node):
         if not imageurl:
             imageurl = settings.NO_IMAGE_URL
 
-        if not imageurl:
-            raise TemplateSyntaxError("imageurl blank and settings.TRANSMOGRIFY_NO_IMG_URL is blank")
-
         for action in self.actions:
             action_code = ACTIONS[action[0]]
             arg_list = [str(resolve(template.Variable(arg), context)) for arg in action[1:]]
@@ -164,8 +161,6 @@ def mogrify_filter(action):
         if not imageurl:
             imageurl = settings.NO_IMAGE_URL
 
-        if not imageurl:
-            raise TemplateSyntaxError("imageurl blank and settings.TRANSMOGRIFY_NO_IMG_URL is blank")
 
         # build the action list
         action_code = ACTIONS[action]
