@@ -20,6 +20,15 @@ except ImportError:
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
+class TestParseActionTuples(unittest.TestCase):
+    def test_startswith_c(self):
+        self.assertEqual(
+            ("c05-v2-final-orioles-12-x-large", []),
+            utils.parse_action_tuples("c05-v2-final-orioles-12-x-large")
+        )
+
+
+
 class TestParseSize(unittest.TestCase):
     def test(self):
         image = mock.Mock()
@@ -32,7 +41,7 @@ class TestParseSize(unittest.TestCase):
         self.assertEqual((200, 400),
                          processors.Processor.parse_size(image,
                                                          "x400"))
-        
+
         self.assertEqual((300, 400),
                          processors.Processor.parse_size(image,
                                                          "300x400"))
@@ -45,7 +54,7 @@ class TestTransmogrify(unittest.TestCase):
         self.vert_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'vert_img.jpg'))
         self.horiz_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img.jpg'))
         self.cropname_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img-cropped.jpg'))
-    
+
     def testThumbnail(self):
         expected_square = (300,300)
         expected_vert = (168,300)
@@ -62,7 +71,7 @@ class TestTransmogrify(unittest.TestCase):
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_horiz, img.size)
-    
+
     def testResize(self):
         expected_square = (300,300)
         expected_vert = (168,300)
@@ -79,7 +88,7 @@ class TestTransmogrify(unittest.TestCase):
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_horiz, img.size)
-    
+
     def testForceFit(self):
         expected_square = (300,300)
         transmog = Transmogrify(self.square_img, [('s', '300x300'),])
@@ -94,7 +103,7 @@ class TestTransmogrify(unittest.TestCase):
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
-    
+
     def testCrop(self):
         expected_square = (300,300)
         transmog = Transmogrify(self.square_img, [('c', '300x300'),])
@@ -141,7 +150,7 @@ class TestTransmogrify(unittest.TestCase):
 
         self.assertEqual(transmog.get_processed_filename(),
                          self.cropname_img)
-        
+
 
     def testLetterbox(self):
         transmog = Transmogrify(self.square_img, [('l', '300x300-888'),])
@@ -150,7 +159,7 @@ class TestTransmogrify(unittest.TestCase):
         transmog.save()
         transmog = Transmogrify(self.horiz_img, [('l', '300x300-888'),])
         transmog.save()
-    
+
     def testBorder(self):
         transmog = Transmogrify(self.square_img, [('b', '3-f00'),])
         transmog.save()
@@ -166,7 +175,7 @@ class UrlProcessingTest(TestCase):
     def doShaHash(self, value):
         import hashlib
         return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
-    
+
     def testAliases(self):
         import utils
         utils.PATH_ALIASES = {'/media/':'/testdata/'}
@@ -190,7 +199,7 @@ class TestMakeDirs(TestCase):
         for item in dirs:
             if os.path.exists(item):
                 shutil.rmtree(item)
-                         
+
     def test_didnotexist(self):
         path = os.path.join(self.test_root,
                             "didnotexist", "foo", "bar", "baz")
@@ -261,7 +270,7 @@ class TestDoFallback(TestCase):
 
         # clean the slate
         self.tearDown()
-        
+
     def tearDown(self):
         test_root = os.path.join(self.testdata_root, "media/life")
         if os.path.exists(test_root):
@@ -290,7 +299,7 @@ class TestDoFallback(TestCase):
         ##
         # Test
         ##
-        
+
         self.assertTrue(success)
 
         # Ensure that the URLopener instance was called with the
@@ -299,9 +308,9 @@ class TestDoFallback(TestCase):
 
         # Ensure the directory tree was created.
         self.assertTrue(os.path.isdir(os.path.dirname(self.output_file)))
-        
+
         # Ensure that shutil.move was called correctly
-        mock_move.assert_called_with("/tmp/sometmpfilename", 
+        mock_move.assert_called_with("/tmp/sometmpfilename",
                                      self.output_file)
 
     @mock.patch("shutil.move")
@@ -328,12 +337,12 @@ class TestDoFallback(TestCase):
         # object and the reason was because of the http_error
         self.assertEqual((False, (http_error, (self.expected_url, self.output_file))),
                           result)
-        
+
         # Ensure the directory tree was not created.
         self.assertTrue(
             not os.path.isdir(os.path.dirname(self.output_file)),
             os.path.dirname(self.output_file))
-        
+
         # Ensure that the URLopener instance was called with the
         # correct parameters
         instance.retrieve.assert_called_with(self.expected_url)
@@ -393,7 +402,7 @@ class TestWSGIHandler(unittest.TestCase):
         self.assertEqual("/vert_img_r222.jpg?" + security_hash , resp.location)
         self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
                                                     "vert_img_r222.jpg")))
-        
+
     def test_cropname(self):
         security_hash = self.doShaHash("_r222")
         qs = urllib.urlencode({"key": security_hash,
@@ -411,7 +420,7 @@ class TestWSGIHandler(unittest.TestCase):
         self.assertEqual("/vert_img-testcrop.jpg?" + security_hash , resp.location)
         self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
                                                     "vert_img-testcrop.jpg")))
-        
+
 
 if HAS_DJANGO:
     # Note: By default the secret key is empty, so we can test just a straight
@@ -432,7 +441,7 @@ if HAS_DJANGO:
         This class re-uses the django.test.client.Client interface, docs here:
         http://www.djangoproject.com/documentation/testing/#the-test-client
 
-        Once you have a request object you can pass it to any view function, 
+        Once you have a request object you can pass it to any view function,
         just as if that view had been hooked up using a URLconf.
 
         """
@@ -455,12 +464,12 @@ if HAS_DJANGO:
             environ.update(self.defaults)
             environ.update(request)
             return WSGIRequest(environ)
-    
+
     class TemplateTagTest(TestCase):
         def doShaHash(self, value):
             import hashlib
             return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
-        
+
         def testResize(self):
             t = Template("{% load transmogrifiers %}{% resize /test/picture.jpg 300 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_r300.jpg?%s' % self.doShaHash("_r300"))
@@ -476,7 +485,7 @@ if HAS_DJANGO:
             self.assertEqual(t.render(Context({})), '/test/picture_sx300.jpg?%s' % self.doShaHash("_sx300"))
             t = Template("{% load transmogrifiers %}{% forcefit /test/picture.jpg 300x300 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_s300x300.jpg?%s' % self.doShaHash("_s300x300"))
-        
+
         def testCrop(self):
             t = Template("{% load transmogrifiers %}{% crop /test/picture.jpg 300x300 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_c300x300.jpg?%s' % self.doShaHash("_c300x300"))
@@ -484,11 +493,11 @@ if HAS_DJANGO:
         def testCropBBox(self):
             t = Template("{% load transmogrifiers %}{% crop /test/picture.jpg 0-0-100-100 %}")
             self.assertEqual(t.render(Context({})), '/test/picture_c0-0-100-100.jpg?%s' % self.doShaHash("_c0-0-100-100"))
-        
+
         def testLetterbox(self):
             t = Template("{% load transmogrifiers %}{% letterbox /test/picture.jpg 300x300 #f8129b  %}")
             self.assertEqual(t.render(Context({})), '/test/picture_l300x300-f8129b.jpg?%s' % self.doShaHash("_l300x300-f8129b"))
-        
+
         def testBorder(self):
             t = Template("{% load transmogrifiers %}{% border /test/picture.jpg 1 #f8129b %}")
             self.assertEqual(t.render(Context({})), '/test/picture_b1-f8129b.jpg?%s' % self.doShaHash("_b1-f8129b"))
@@ -500,13 +509,13 @@ if HAS_DJANGO:
         def testMask(self):
             t = Template("{% load transmogrifiers %}{% mask /test/picture.jpg %}")
             self.assertEqual(t.render(Context({})), u'/test/picture_m.jpg?%s' % self.doShaHash("_m"))
-            
+
 
     class TemplateFilterTest(TestCase):
         def doShaHash(self, value):
             import hashlib
             return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
-        
+
         def testResize(self):
             context = Context({"img_url": "/test/picture.jpg"})
 
@@ -526,7 +535,7 @@ if HAS_DJANGO:
             self.assertEqual(t.render(context), '/test/picture_sx300.jpg?%s' % self.doShaHash("_sx300"))
             t = Template('{% load transmogrifiers %}{{ img_url|forcefit:"300x300" }}')
             self.assertEqual(t.render(context), '/test/picture_s300x300.jpg?%s' % self.doShaHash("_s300x300"))
-        
+
         def testCrop(self):
             context = Context({"img_url": "/test/picture.jpg"})
 
@@ -538,13 +547,13 @@ if HAS_DJANGO:
 
             t = Template('{% load transmogrifiers %}{{ img_url|crop:"0-0-100-100" }}')
             self.assertEqual(t.render(context), '/test/picture_c0-0-100-100.jpg?%s' % self.doShaHash("_c0-0-100-100"))
-        
+
         def testLetterbox(self):
             context = Context({"img_url": "/test/picture.jpg"})
 
             t = Template('{% load transmogrifiers %}{{ img_url|letterbox:"300x300 #f8129b" }}')
             self.assertEqual(t.render(context), '/test/picture_l300x300-f8129b.jpg?%s' % self.doShaHash("_l300x300-f8129b"))
-        
+
         def testBorder(self):
             context = Context({"img_url": "/test/picture.jpg"})
 
@@ -556,12 +565,12 @@ if HAS_DJANGO:
 
             t = Template('{% load transmogrifiers %}{{ img_url|mask }}')
             self.assertEqual(t.render(context), '/test/picture_m.jpg?%s' % self.doShaHash("_m"))
-    
+
         def testChaining(self):
             context = Context({"img_url": "/test/picture.jpg"})
             t = Template('{% load transmogrifiers %}{{ img_url|crop:"0-0-300-300"|resize:"x100" }}')
             self.assertEqual(t.render(context), '/test/picture_c0-0-300-300_rx100.jpg?%s' % self.doShaHash("_c0-0-300-300_rx100"))
-            
+
         def testExistingActionString(self):
             context = Context({"img_url": "/test/picture_c0-0-300-300.jpg"})
             t = Template('{% load transmogrifiers %}{{ img_url|resize:"x100" }}')
@@ -572,7 +581,7 @@ if HAS_DJANGO:
         def doShaHash(self, value):
             import hashlib
             return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
-        
+
         def testView(self):
             rf = RequestFactory()
             path = '/horiz_img_r300x400.jpg'
@@ -591,6 +600,6 @@ if HAS_DJANGO:
                                         "_r200")
             self.assertEqual(expected, result)
 
-            
+
 if __name__ == "__main__":
     unittest.main()

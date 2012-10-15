@@ -1,6 +1,6 @@
 """
 1. Get url like:
-   
+
    img/photos/2008/05/12/WIZARDS_0034_05022035_r329x151.jpg?e315d4515574cec417b1845392ba687dd98c17ce
 
 2. Parse url into:
@@ -29,7 +29,7 @@ class Http404(Exception):
 
 def is_valid_actionstring(action_string):
     code, arg = action_string[0], action_string[1:]
-    
+
     return code in PROCESSORS and PROCESSORS[code].param_pattern().match(arg)
 
 def create_securityhash(action_tuples):
@@ -43,7 +43,7 @@ def create_securityhash(action_tuples):
 def generate_url(url, action_string):
     security_hash = sha_constructor(action_string + SECRET_KEY).hexdigest()
     base_url, ext = os.path.splitext(url)
-    
+
     return "%s%s%s?%s" % (base_url, action_string, ext, security_hash)
 
 def is_valid_security(action_tuples, security_hash):
@@ -52,7 +52,7 @@ def is_valid_security(action_tuples, security_hash):
 def resolve_request_path(requested_uri):
     """
     Check for any aliases and alter the path accordingly.
-    
+
     Returns resolved_uri
     """
     for key, val in PATH_ALIASES.items():
@@ -63,9 +63,13 @@ def resolve_request_path(requested_uri):
 def parse_action_tuples(filename):
     base_filename, ext = os.path.splitext(filename)
 
+    if "_" not in base_filename:
+        return (base_filename, [])
+
     action_tuples = []
     # split on underscore but keep 'em around in case there are duplicates.
     bits = re.split("(_)", base_filename)
+
     while bits:
         action = bits.pop()
         if len(action) < 1:
@@ -84,11 +88,11 @@ def parse_action_tuples(filename):
 def process_url(url, server_name="", document_root=None):
     """
     Goes through the url and returns a dictionary of fields.
-    
+
     For example:
-    
+
     img/photos/2008/05/12/WIZARDS_0034_05022035_r329x151.jpg?e315d4515574cec417b1845392ba687dd98c17ce
-    
+
     actions:       [('r', '329x151')]
     parent_dir:    img/photos/2008/05/12/
     ext:           jpg
@@ -96,7 +100,7 @@ def process_url(url, server_name="", document_root=None):
     security_hash: e315d4515574cec417b1845392ba687dd98c17ce
     requested_path /path/to/media_root/img/photos/2008/05/12/WIZARDS_0034_05022035_r329x151.jpg
     original_file: /path/to/media_root/img/photos/2008/05/12/WIZARDS_0034_05022035.jpg
-    
+
     The ``document_root`` parameter overrides the ``BASE_PATH`` setting.
     """
     try:
@@ -105,9 +109,9 @@ def process_url(url, server_name="", document_root=None):
         request_uri, security_hash = url, ""
     resolved_uri = resolve_request_path(request_uri)
     resolved_uri = resolved_uri.lstrip("/")
-    
+
     base_path = document_root or BASE_PATH
-    
+
     if USE_VHOSTS:
         if not os.path.exists(os.path.join(BASE_PATH, server)):
             raise Http404("Bad server: %s" % server)
@@ -118,10 +122,10 @@ def process_url(url, server_name="", document_root=None):
         # Apparently, there was an attempt to put some directory traversal
         # hacks into the path. (../../../vulnerable_file.exe)
         raise Http404("Unknown file path.")
-    
+
     parent_dir, requested_file = os.path.split(requested_path)
     base_filename, ext = os.path.splitext(requested_file)
-    
+
     base_file_name, action_tuples = parse_action_tuples(requested_file)
 
     original_file = os.path.join(parent_dir, base_file_name + ext)
