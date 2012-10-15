@@ -21,12 +21,33 @@ except ImportError:
 HERE = os.path.abspath(os.path.dirname(__file__))
 
 class TestParseActionTuples(unittest.TestCase):
-    def test_startswith_c(self):
+    def test(self):
         self.assertEqual(
             ("c05-v2-final-orioles-12-x-large", []),
             utils.parse_action_tuples("c05-v2-final-orioles-12-x-large")
         )
 
+        self.assertEqual(
+            ("c05-v2-final-orioles-12-x-large", [("r", "100x100")]),
+            utils.parse_action_tuples(
+                "c05-v2-final-orioles-12-x-large_r100x100"
+            )
+        )
+
+        self.assertEqual(
+            ("final-orioles-12-x-large", [("r", "100x100")]),
+            utils.parse_action_tuples("final-orioles-12-x-large_r100x100")
+        )
+
+        self.assertEqual(
+            ("foo_bar", []),
+            utils.parse_action_tuples("foo_bar")
+        )
+
+        self.assertEqual(
+            ("foo_bar", [("r", "100")]),
+            utils.parse_action_tuples("foo_bar_r100")
+        )
 
 
 class TestParseSize(unittest.TestCase):
