@@ -49,6 +49,22 @@ class TestParseActionTuples(unittest.TestCase):
             utils.parse_action_tuples("foo_bar_r100")
         )
 
+        self.assertEqual(
+            ("c1088", []),
+            utils.parse_action_tuples("c1088")
+        )
+
+        self.assertEqual(
+            ("c1088-1_1", []),
+            utils.parse_action_tuples("c1088-1_1")
+        )
+
+
+        self.assertEqual(
+            ("c1088", [("c", "0-0-100-100")]),
+            utils.parse_action_tuples("c1088_c0-0-100-100")
+        )
+
 
 class TestParseSize(unittest.TestCase):
     def test(self):

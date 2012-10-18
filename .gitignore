@@ -15,3 +15,4 @@ transmogrify/testdata/square_img_*.jpg
 transmogrify/testdata/horiz_img-cropped.jpg
 dist/
 build/
+testenv/

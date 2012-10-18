@@ -63,27 +63,24 @@ def resolve_request_path(requested_uri):
 def parse_action_tuples(filename):
     base_filename, ext = os.path.splitext(filename)
 
-    if "_" not in base_filename:
-        return (base_filename, [])
-
     action_tuples = []
+    filename_bits = []
+
     # split on underscore but keep 'em around in case there are duplicates.
-    bits = re.split("(_)", base_filename)
+    bits = base_filename.split("_")
 
-    while bits:
-        action = bits.pop()
-        if len(action) < 1:
-            continue
-        if is_valid_actionstring(action):
-            action_tuples.insert(0, (action[0], action[1:]))
-            bits.pop() # pop the remaining underscore off the stack
+    # The first bit is never an action string
+    filename_bits.append(bits.pop(0))
+    for bit in bits:
+        if is_valid_actionstring(bit):
+            action_tuples.append((bit[0], bit[1:]))
         else:
-            bits.append(action)
-            break
+            filename_bits.append(bit)
 
-    base_file_name = "".join(bits)
+    base_file_name = "_".join(filename_bits)
 
     return base_file_name, action_tuples
+
 
 def process_url(url, server_name="", document_root=None):
     """
