@@ -88,7 +88,7 @@ def do_fallback(fallback_servers, base_path, path_info):
 def app(environ, start_response):
     cropname = None
     server = environ['SERVER_NAME']
-    quality = 70
+    quality = 80
 
     if "path=" in environ.get("QUERY_STRING", ""):
         # I should probably require a POST for this, but meh, let's not

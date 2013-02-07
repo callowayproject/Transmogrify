@@ -4,7 +4,7 @@ from PIL import Image
 from settings import PROCESSORS, SECRET_KEY
 
 class Transmogrify(object):
-    def __init__(self, original_file, action_tuples = [], quality=70, **kwargs):
+    def __init__(self, original_file, action_tuples = [], quality=80, **kwargs):
         self.im = Image.open(original_file)
         self.actions = action_tuples
         self.original_file = original_file
