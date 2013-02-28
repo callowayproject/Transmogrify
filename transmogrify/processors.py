@@ -5,7 +5,7 @@ import re
 
 SIZE_RE = re.compile(r"^((\d+)|(x\d+)|(\d+x\d+))$")
 
-__all__ = ["Thumbnail", "Crop", "ForceFit", "Resize", "LetterboxResize", "Border", "Filter", "Mask"]
+__all__ = ["Crop", "ForceFit", "Resize", "LetterboxResize", "Border", "Filter", "Mask"]
 
 class Processor(object):
     """
