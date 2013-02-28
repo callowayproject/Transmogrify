@@ -62,24 +62,6 @@ class Processor(object):
         return out_width, out_height
 
 
-class Thumbnail(Processor):
-    """
-    Create a thumbnail at the specified size
-    """
-    @staticmethod
-    def code():
-        return "t"
-
-    @staticmethod
-    def param_pattern():
-        return SIZE_RE
-
-    @staticmethod
-    def process(image, size, *args, **kwargs):
-        width, height = Thumbnail.parse_size(image, size)
-        image.thumbnail((width, height), Image.ANTIALIAS)
-        return image
-
 class Crop(Processor):
     """
     Crop out a centered box in the existing image.
