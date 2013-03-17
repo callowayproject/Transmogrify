@@ -51,7 +51,8 @@ def match_fallback(fallback_servers, path_info):
         if re.match(pattern, path_info):
 
             new_path = re.sub(pattern, replace, path_info)
-            return (new_path, server)
+            new_server = re.sub(pattern, server, path_info)
+            return urlparse.urljoin(new_server, new_path)
 
 
 def do_fallback(fallback_servers, base_path, path_info):
@@ -89,6 +90,7 @@ def do_fallback(fallback_servers, base_path, path_info):
 def app(environ, start_response):
     cropname = None
     server = environ['SERVER_NAME']
+    quality = 80
 
     if "path=" in environ.get("QUERY_STRING", ""):
         # I should probably require a POST for this, but meh, let's not
@@ -108,6 +110,7 @@ def app(environ, start_response):
             return ["path and key are required query parameters"]
 
         cropname = query_dict.get("cropname", [None])[0]
+        quality = 100
 
         # rewrite the environ to look like a 404 handler
         environ['REQUEST_URI'] = path + "?" + key
@@ -139,7 +142,11 @@ def app(environ, start_response):
         except Http404, e:
             return do404(environ, start_response, e.message, DEBUG)
 
-        new_file = Transmogrify(url_parts['original_file'], url_parts['actions'])
+        new_file = Transmogrify(
+            url_parts['original_file'],
+            url_parts['actions'],
+            quality=quality
+        )
         new_file.cropname = cropname
         new_file.save()
 

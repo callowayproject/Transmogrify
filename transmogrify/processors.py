@@ -32,12 +32,14 @@ class Processor(object):
         (width, height) tuple.
         """
         bits = size.split("x")
+        ratio = float(image.size[0]) / float(image.size[1])
+
         if len(bits) == 1 or not bits[1]:
             width = int(bits[0])
-            height = image.size[1]
+            height = int(1 / ratio * width)
         elif not bits[0]:
             height = int(bits[1])
-            width = image.size[0]
+            width = int(height * ratio)
         else:
             width, height = map(int, bits)
         return width, height
@@ -93,8 +95,8 @@ class Crop(Processor):
 
     @staticmethod
     def param_pattern():
-        return re.compile((r"^((\d+)|(x\d+)|(\d+x\d+))"
-                           r"|((\d+)-(\d+)-(\d+)-(\d+))$"))
+        return re.compile((r"^((\d+)|(x\d+)|(\d+x\d+)"
+                           r"|(\d+)-(\d+)-(\d+)-(\d+))$"))
 
     @staticmethod
     def process(image, size_or_bbox, *args, **kwargs):
@@ -222,7 +224,7 @@ class Border(Processor):
         draw = ImageDraw.Draw(image)
 
         # The rectangle gets drawn *inside* the upper left, but *outside* the
-        # lower right (why, eff-bot, why?), so we have to subtract the width
+        # lower right (why, eff-bot, why?), so we have to subtract the width 
         # from the bottom right point so that the border will be inside the
         # image's bounds. Also, we have to draw a line instead of a rectangle
         # because rects don't support the "width" argument.
@@ -265,7 +267,7 @@ class Filter(Processor):
 
 class Mask(Processor):
     """
-    Create a thumbnail at the specified size
+    Create a black mask of the non-transparent parts of the image
     """
     @staticmethod
     def code():

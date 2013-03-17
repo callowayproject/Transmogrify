@@ -99,7 +99,7 @@ if HAS_DJANGO:
         warnings.warn(ERR_MSG % 'TRANSMOGRIFY_PATH_ALIASES', DeprecationWarning)
 
     FALLBACK_SERVERS = getattr(settings, "TRANSMOGRIFY_FALLBACK_SERVERS", "")
-    if PATH_ALIASES is None:
+    if FALLBACK_SERVERS is None:
         USER_SETTINGS['FALLBACK_SERVERS'] = FALLBACK_SERVERS
         warnings.warn(ERR_MSG % 'TRANSMOGRIFY_FALLBACK_SERVERS', DeprecationWarning)
 
@@ -134,6 +134,15 @@ else:
     USER_SETTINGS['ORIG_PATH_HANDLER'] = os.environ.get("TRANSMOGRIFY_ORIG_PATH_HANDLER", "")
     USER_SETTINGS['ORIG_BASE_PATH'] = os.environ.get("TRANSMOGRIFY_ORIG_BASE_PATH", "/home/media/")
 
+
+    PATH_ALIASES = {}
+
+    # Fallback Servers 
+    FALLBACK_SERVERS = (
+        # Format is 
+        # (regex, repl, host), 
+        # (r"^/media/(.*), "\1", "http://www.example.com/"),
+        )
 
 PROCESSORS = {}
 for attr in processors.__all__:

@@ -1,18 +1,17 @@
 import unittest
 import os
-import urllib
-import shutil
+from django.template import Template, Context
 from StringIO import StringIO
-
+import wsgi_handler
+from transmogrify import Transmogrify
+import processors
+import utils
+import urllib
+import settings
+import shutil
 from webob import Request
 import mock
 from PIL import Image
-
-from transmogrify import Transmogrify
-import utils
-import settings
-import wsgi_handler
-
 try:
     from django.test import TestCase
     from django.template import Template, Context
@@ -21,20 +20,78 @@ except ImportError:
     HAS_DJANGO = False
 
 HERE = os.path.abspath(os.path.dirname(__file__))
-TESTDATA = os.path.abspath(os.path.join(HERE, 'testdata'))
+
+class TestParseActionTuples(unittest.TestCase):
+    def test(self):
+        self.assertEqual(
+            ("c05-v2-final-orioles-12-x-large", []),
+            utils.parse_action_tuples("c05-v2-final-orioles-12-x-large")
+        )
+
+        self.assertEqual(
+            ("c05-v2-final-orioles-12-x-large", [("r", "100x100")]),
+            utils.parse_action_tuples(
+                "c05-v2-final-orioles-12-x-large_r100x100"
+            )
+        )
+
+        self.assertEqual(
+            ("final-orioles-12-x-large", [("r", "100x100")]),
+            utils.parse_action_tuples("final-orioles-12-x-large_r100x100")
+        )
+
+        self.assertEqual(
+            ("foo_bar", []),
+            utils.parse_action_tuples("foo_bar")
+        )
+
+        self.assertEqual(
+            ("foo_bar", [("r", "100")]),
+            utils.parse_action_tuples("foo_bar_r100")
+        )
+
+        self.assertEqual(
+            ("c1088", []),
+            utils.parse_action_tuples("c1088")
+        )
+
+        self.assertEqual(
+            ("c1088-1_1", []),
+            utils.parse_action_tuples("c1088-1_1")
+        )
 
 
-def get_test_filepath(filename):
-    return os.path.abspath(os.path.join(TESTDATA, filename))
+        self.assertEqual(
+            ("c1088", [("c", "0-0-100-100")]),
+            utils.parse_action_tuples("c1088_c0-0-100-100")
+        )
+
+
+class TestParseSize(unittest.TestCase):
+    def test(self):
+        image = mock.Mock()
+        image.size = [100, 200]
+
+        self.assertEqual((200, 400),
+                         processors.Processor.parse_size(image,
+                                                         "200"))
+
+        self.assertEqual((200, 400),
+                         processors.Processor.parse_size(image,
+                                                         "x400"))
+
+        self.assertEqual((300, 400),
+                         processors.Processor.parse_size(image,
+                                                         "300x400"))
 
 
 class TestTransmogrify(unittest.TestCase):
     """Testing the features of Transmogrify"""
     def setUp(self):
-        self.square_img = get_test_filepath('square_img.jpg')
-        self.vert_img = get_test_filepath('vert_img.jpg')
-        self.horiz_img = get_test_filepath('horiz_img.jpg')
-        self.cropname_img = get_test_filepath('horiz_img-cropped.jpg')
+        self.square_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'square_img.jpg'))
+        self.vert_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'vert_img.jpg'))
+        self.horiz_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img.jpg'))
+        self.cropname_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img-cropped.jpg'))
 
     def testThumbnail(self):
         expected_square = (300, 300)
@@ -101,18 +158,18 @@ class TestTransmogrify(unittest.TestCase):
         self.assertEqual(expected_square, img.size)
 
     def testCropBBOX(self):
-        expected_square = (300, 300)
-        transmog = Transmogrify(self.square_img, [('c', '100-100-400-400'), ])
+        expected_square = (300,300)
+        transmog = Transmogrify(self.square_img, [('c', '100-100-400-400'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
 
-        transmog = Transmogrify(self.vert_img, [('c', '0-100-300-400'), ])
+        transmog = Transmogrify(self.vert_img, [('c', '0-100-300-400'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
 
-        transmog = Transmogrify(self.horiz_img, [('c', '0-410-300-710'), ])
+        transmog = Transmogrify(self.horiz_img, [('c', '0-410-300-710'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
@@ -120,17 +177,18 @@ class TestTransmogrify(unittest.TestCase):
         # 810 is larger than the image, PIL adds black to the extra space.
         # who knows if this is desirable but at least it doesn't raise
         # an exception.
-        transmog = Transmogrify(self.horiz_img, [('c', '0-510-300-810'), ])
+        transmog = Transmogrify(self.horiz_img, [('c', '0-510-300-810'),])
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
         self.assertEqual(expected_square, img.size)
 
     def testCrapname(self):
-        transmog = Transmogrify(self.horiz_img, [('c', '0-510-300-810'), ])
+        transmog = Transmogrify(self.horiz_img, [('c', '0-510-300-810'),])
         transmog.cropname = "cropped"
 
         self.assertEqual(transmog.get_processed_filename(),
                          self.cropname_img)
+
 
     def testLetterbox(self):
         transmog = Transmogrify(self.square_img, [('l', '300x300-888'), ])
@@ -393,6 +451,243 @@ class TestWSGIHandler(unittest.TestCase):
         self.assertTrue(os.path.exists(get_test_filepath("vert_img-testcrop.jpg")))
 
 
+class TestMakeDirs(TestCase):
+    def setUp(self):
+        self.test_root = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), 'testdata', "makedirs"))
+
+    def tearDown(self):
+        dirs = [
+            os.path.join(self.test_root, "didnotexist"),
+            os.path.join(self.test_root, "partiallyexists", "foo", "bar"),
+            ]
+
+        for item in dirs:
+            if os.path.exists(item):
+                shutil.rmtree(item)
+
+    def test_didnotexist(self):
+        path = os.path.join(self.test_root,
+                            "didnotexist", "foo", "bar", "baz")
+        wsgi_handler.makedirs(path)
+        self.assertTrue(os.path.isdir(path))
+
+    def test_exists(self):
+        path = os.path.join(self.test_root,
+                            "exists", "foo", "bar", "baz")
+        wsgi_handler.makedirs(path)
+        self.assertTrue(os.path.isdir(path))
+
+    def test_partiallyexists(self):
+        path = os.path.join(self.test_root,
+                            "partiallyexists", "foo", "bar", "baz")
+        wsgi_handler.makedirs(path)
+        self.assertTrue(os.path.isdir(path))
+
+    def test_nondirbit(self):
+        path = os.path.join(self.test_root,
+                            "nondirbit", "foo", "bar", "baz")
+
+        self.assertRaises(OSError, wsgi_handler.makedirs, path)
+
+
+class TestMatchFallback(TestCase):
+    def test_match_fallback(self):
+        fallback_servers = (
+            (r"^domain/(example.com/.+)", r"", r"http://\1"),
+            (r"^media/(.+)", r"\1", "http://example.com/"),
+            (r"^static/(.+)", r"static-files/\1", "http://static.example.com/"),
+            )
+
+        self.assertEqual("http://example.com/foo/bar/baz.jpg",
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "media/foo/bar/baz.jpg"))
+
+        self.assertEqual("http://static.example.com/static-files/foo/bar/baz.jpg",
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "static/foo/bar/baz.jpg"))
+
+
+        self.assertEqual("http://example.com/bar/baz.jpg",
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "domain/example.com/bar/baz.jpg"))
+
+        self.assertEqual(None,
+                         wsgi_handler.match_fallback(fallback_servers,
+                                                     "foo/bar/baz.jpg"))
+
+class TestDoFallback(TestCase):
+    def setUp(self):
+        self.testdata_root = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata'))
+        self.fallback_servers = (
+            (r"media/(.+)", r"\1", "http://i.usatoday.com/"),
+            )
+
+        self.base_path = self.testdata_root
+
+        self.expected_url = \
+            "http://i.usatoday.com/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg"
+
+        self.path_info =\
+            "media/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal_r115.jpg"
+
+        self.output_file = os.path.join(self.base_path,
+            "media/life/gallery/2012/l120523_untamed/02untamed-pg-horizontal.jpg")
+
+        # clean the slate
+        self.tearDown()
+
+    def tearDown(self):
+        test_root = os.path.join(self.testdata_root, "media/life")
+        if os.path.exists(test_root):
+            shutil.rmtree(test_root)
+
+
+    @mock.patch("shutil.move")
+    @mock.patch("os.path.exists")
+    @mock.patch("urllib.URLopener")
+    def test_200(self, mock_opener, mock_exists, mock_move):
+        ##
+        # Setup mocks
+        ##
+        instance = mock_opener.return_value
+        instance.retrieve.return_value = ("/tmp/sometmpfilename", mock.Mock())
+
+        mock_exists.return_value = False
+
+        ##
+        # Execute
+        ##
+        success = wsgi_handler.do_fallback(self.fallback_servers,
+                                           self.base_path,
+                                           self.path_info)
+
+        ##
+        # Test
+        ##
+
+        self.assertTrue(success)
+
+        # Ensure that the URLopener instance was called with the
+        # correct parameters
+        instance.retrieve.assert_called_with(self.expected_url)
+
+        # Ensure the directory tree was created.
+        self.assertTrue(os.path.isdir(os.path.dirname(self.output_file)))
+
+        # Ensure that shutil.move was called correctly
+        mock_move.assert_called_with("/tmp/sometmpfilename",
+                                     self.output_file)
+
+    @mock.patch("shutil.move")
+    @mock.patch("os.path.exists")
+    @mock.patch("urllib.URLopener")
+    def test_non200(self, mock_opener, mock_exists, mock_move):
+        ##
+        # Setup mocks
+        ##
+        instance = mock_opener.return_value
+        http_error = IOError('http error', 404, 'NOT FOUND', mock.Mock())
+        instance.retrieve.side_effect = http_error
+        mock_exists.return_value = False
+
+        ##
+        # Execute
+        ##
+        result = wsgi_handler.do_fallback(self.fallback_servers,
+                                          self.base_path,
+                                          self.path_info)
+
+
+        # assert that do_fallback did not create the
+        # object and the reason was because of the http_error
+        self.assertEqual((False, (http_error, (self.expected_url, self.output_file))),
+                          result)
+
+        # Ensure the directory tree was not created.
+        self.assertTrue(
+            not os.path.isdir(os.path.dirname(self.output_file)),
+            os.path.dirname(self.output_file))
+
+        # Ensure that the URLopener instance was called with the
+        # correct parameters
+        instance.retrieve.assert_called_with(self.expected_url)
+
+        # Ensure that the move never happend
+        self.assertFalse(mock_move.called)
+
+class TestWSGIHandler(unittest.TestCase):
+
+    def setUp(self):
+        self.tearDown()
+
+        settings.BASE_PATH = os.path.join(HERE, "testdata")
+        settings.FALLBACK_SERVERS = ((r"dummy", r"", "notused"))
+        reload(utils)
+
+    def tearDown(self):
+        for filename in ["vert_img_r222.jpg", "vert_img-testcrop.jpg"]:
+            absfn = os.path.join(HERE, "testdata", filename)
+
+        if os.path.exists(absfn):
+            os.remove(absfn)
+
+        reload(settings)
+
+    def doShaHash(self, value):
+        import hashlib
+        return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
+
+    def test_local(self):
+        security_hash = self.doShaHash("_r222")
+        req = Request.blank("/")
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['REQUEST_URI'] = "/vert_img_r222.jpg?" + security_hash
+
+        resp = req.get_response(wsgi_handler.app)
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img_r222.jpg?" + security_hash,
+                         resp.location)
+        self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
+                                                    "vert_img_r222.jpg")))
+
+    def test_direct_mode(self):
+        security_hash = self.doShaHash("_r222")
+        qs = urllib.urlencode({"key": security_hash,
+                               "path": "/vert_img_r222.jpg"})
+
+        req = Request.blank("/")
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['QUERY_STRING'] = qs
+
+        resp = req.get_response(wsgi_handler.app)
+
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img_r222.jpg?" + security_hash , resp.location)
+        self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
+                                                    "vert_img_r222.jpg")))
+
+    def test_cropname(self):
+        security_hash = self.doShaHash("_r222")
+        qs = urllib.urlencode({"key": security_hash,
+                               "path": "/vert_img_r222.jpg",
+                               "cropname": "testcrop"})
+
+        req = Request.blank("/")
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['QUERY_STRING'] = qs
+
+        resp = req.get_response(wsgi_handler.app)
+
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img-testcrop.jpg?" + security_hash , resp.location)
+        self.assertTrue(os.path.exists(os.path.join(settings.BASE_PATH,
+                                                    "vert_img-testcrop.jpg")))
+
+
 if HAS_DJANGO:
     # Note: By default the secret key is empty, so we can test just a straight
     # SHA1 hash of the action
@@ -481,6 +776,7 @@ if HAS_DJANGO:
             t = Template("{% load transmogrifiers %}{% mask /test/picture.jpg %}")
             self.assertEqual(t.render(Context({})), u'/test/picture_m.jpg?%s' % self.doShaHash("_m"))
 
+
     class TemplateFilterTest(TestCase):
         def doShaHash(self, value):
             import hashlib
@@ -546,6 +842,7 @@ if HAS_DJANGO:
             t = Template('{% load transmogrifiers %}{{ img_url|resize:"x100" }}')
             self.assertEqual(t.render(context), '/test/picture_c0-0-300-300_rx100.jpg?%s' % self.doShaHash("_c0-0-300-300_rx100"))
 
+
     class ViewTest(TestCase):
         def doShaHash(self, value):
             import hashlib
@@ -568,6 +865,7 @@ if HAS_DJANGO:
             result = utils.generate_url("http://example.com/media/foo.jpg",
                                         "_r200")
             self.assertEqual(expected, result)
+
 
 if __name__ == "__main__":
     unittest.main()

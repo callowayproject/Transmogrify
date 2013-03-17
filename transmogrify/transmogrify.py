@@ -5,11 +5,12 @@ from settings import PROCESSORS, SECRET_KEY
 
 
 class Transmogrify(object):
-    def __init__(self, original_file, action_tuples=[], **kwargs):
+    def __init__(self, original_file, action_tuples=[], quality=80, **kwargs):
         self.im = Image.open(original_file)
         self.actions = action_tuples
         self.original_file = original_file
         self.cropname = None
+        self.quality = quality
 
     def save(self):
         """
@@ -23,7 +24,7 @@ class Transmogrify(object):
             self.im = action.process(self.im, arg)
 
         filename = self.get_processed_filename()
-        self.im.save(filename, quality=85)
+        self.im.save(filename, quality=self.quality)
 
     def apply_action_tuples(self, actions):
         """
