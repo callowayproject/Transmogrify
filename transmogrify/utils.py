@@ -90,6 +90,12 @@ def parse_action_tuples(filename):
 
     return base_file_name, action_tuples
 
+def resolve_file_path(filepath):
+    """
+
+    """
+    a = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE).communicate()[0]
+
 
 def process_url(url, server_name="", document_root=None):
     """
@@ -125,8 +131,8 @@ def process_url(url, server_name="", document_root=None):
                  urllib.unquote(resolved_uri))
         requested_path = os.path.join(*parts)
     else:
-        parts = (os.path.join(base_path, urllib.unquote(resolved_uri)))
-        requested_path = os.path.abspath(*parts)
+        path = os.path.join(base_path, urllib.unquote(resolved_uri))
+        requested_path = os.path.abspath(path)
     if not requested_path.startswith(base_path):
         # Apparently, there was an attempt to put some directory traversal
         # hacks into the path. (../../../vulnerable_file.exe)
