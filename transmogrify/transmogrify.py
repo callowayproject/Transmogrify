@@ -5,10 +5,11 @@ from settings import PROCESSORS, SECRET_KEY
 
 
 class Transmogrify(object):
-    def __init__(self, original_file, action_tuples=[], quality=80, **kwargs):
+    def __init__(self, original_file, action_tuples=[], quality=80, output_path=None, **kwargs):
         self.im = Image.open(original_file)
-        self.actions = action_tuples
+        self.output_path = output_path
         self.original_file = original_file
+        self.actions = action_tuples
         self.cropname = None
         self.quality = quality
 
@@ -38,7 +39,7 @@ class Transmogrify(object):
         base_filename, ext = os.path.splitext(filename)
         action_string = self.get_action_string()
         cropname = self.cropname
-
+        parent_dir = self.output_path or parent_dir
         if cropname:
             return os.path.join(parent_dir, "%s-%s%s" % (base_filename, cropname, ext))
         else:
