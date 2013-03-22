@@ -90,12 +90,6 @@ def parse_action_tuples(filename):
 
     return base_file_name, action_tuples
 
-def resolve_file_path(filepath):
-    """
-
-    """
-    a = subprocess.Popen(["ls", "-l"], stdout=subprocess.PIPE).communicate()[0]
-
 
 def process_url(url, server_name="", document_root=None):
     """

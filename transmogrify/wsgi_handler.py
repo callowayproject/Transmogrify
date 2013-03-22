@@ -5,17 +5,17 @@ WSGI handler for mogrifying images.
 """
 
 import os
-import sys
 import re
+import urllib
+import urlparse
+import shutil
+import wsgiref.util
 from settings import DEBUG, FALLBACK_SERVERS, BASE_PATH
 from utils import process_url, Http404, parse_action_tuples
 from transmogrify import Transmogrify
 from hashlib import sha1
 from contextlib import contextmanager
-import time
-from pprint import pformat, pprint
-import urllib, urlparse, shutil
-import wsgiref.util
+
 
 @contextmanager
 def lock_file(lock):
@@ -42,7 +42,7 @@ def makedirs(dirname):
             os.mkdir(root)
         elif not os.path.isdir(root):
             raise OSError("%s is exists, but is not a directory." % (root, ))
-        else: # exists and is a dir
+        else:  # exists and is a dir
             pass
 
 
@@ -114,7 +114,6 @@ def app(environ, start_response):
 
         # rewrite the environ to look like a 404 handler
         environ['REQUEST_URI'] = path + "?" + key
-
 
     request_uri = environ['REQUEST_URI']
     path_and_query = request_uri.lstrip("/")
