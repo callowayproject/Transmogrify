@@ -1,6 +1,5 @@
 import os
 import processors
-import warnings
 
 DEFAULT_SETTINGS = {
     'SECRET_KEY': "",
@@ -30,6 +29,7 @@ def bool_from_env(key, default=False):
     except (KeyError, ValueError):
         return default
 
+
 def lists_from_env(key):
     """
     Splits a string in the format "a,b:c,d,e:f" into
@@ -42,107 +42,61 @@ def lists_from_env(key):
     except (KeyError, ValueError):
         return ()
 
-try:
-    from django.conf import settings
-    HAS_DJANGO = True
-except ImportError:
-    HAS_DJANGO = False
+settings_file = os.environ.get("TRANSMOGRIFY_SETTINGS", "")
 
-if HAS_DJANGO:
-    ERR_MSG = "settings.%s is deprecated; use settings.TRANSMOGRIFY_SETTINGS instead."
+if settings_file:
+    settings_mod = __import__(settings_file)
+    USER_SETTINGS.update(dict([(x, getattr(settings_mod, x)) for x in dir(settings_mod) if not x.startswith("_")]))
 
-    SECRET_KEY = getattr(settings, "TRANSMOGRIFY_SECRET", None)
-    if SECRET_KEY is None:
-        USER_SETTINGS['SECRET_KEY'] = SECRET_KEY
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_SECRET', DeprecationWarning)
+# Shared secret
+if "TRANSMOGRIFY_SECRET" in os.environ:
+    USER_SETTINGS['SECRET_KEY'] = os.environ.get("TRANSMOGRIFY_SECRET")
 
-    # Debug mode
-    DEBUG = getattr(settings, "TRANSMOGRIFY_DEBUG", None)
-    if DEBUG is None:
-        USER_SETTINGS['DEBUG'] = DEBUG
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_DEBUG', DeprecationWarning)
+# Debug mode
+if "TRANSMOGRIFY_DEBUG" in os.environ:
+    USER_SETTINGS['DEBUG'] = bool_from_env("TRANSMOGRIFY_DEBUG")
 
-    # Document root, or vhost root if using vhosts
-    BASE_PATH = getattr(settings, "TRANSMOGRIFY_BASE_PATH", None)
-    if BASE_PATH is None:
-        USER_SETTINGS['BASE_PATH'] = BASE_PATH
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_BASE_PATH', DeprecationWarning)
+# Document root, or vhost root if using vhosts
+if "TRANSMOGRIFY_BASE_PATH" in os.environ:
+    USER_SETTINGS['BASE_PATH'] = os.environ.get("TRANSMOGRIFY_BASE_PATH")
 
-    # vhosts looks for files in the combination:
-    #  BASE_PATH + servername + VHOST_DOC_BASE
-    USE_VHOSTS = getattr(settings, "TRANSMOGRIFY_USE_VHOSTS", None)
-    if USE_VHOSTS is None:
-        USER_SETTINGS['USE_VHOSTS'] = USE_VHOSTS
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_USE_VHOSTS', DeprecationWarning)
-
-    # Document root under each vhost
-    VHOST_DOC_BASE = getattr(settings, "TRANSMOGRIFY_VHOST_DOC_BASE", None)
-    if VHOST_DOC_BASE is None:
-        USER_SETTINGS['VHOST_DOC_BASE'] = VHOST_DOC_BASE
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_VHOST_DOC_BASE', DeprecationWarning)
-
-    NO_IMAGE_URL = getattr(settings, "TRANSMOGRIFY_NO_IMG_URL", None)
-    if NO_IMAGE_URL is None:
-        USER_SETTINGS['NO_IMAGE_URL'] = NO_IMAGE_URL
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_NO_IMAGE_URL', DeprecationWarning)
-
-    # A dictionary of URL paths to real paths
-    # e.g. {'/media/': '/assets/'} would change a request like
-    # /media/images/spanish_inquisition.png
-    # to
-    # /assets/images/spanish_inquisition.png
-    # The changed request path is then added to BASE_PATH for original file
-    # location
-    PATH_ALIASES = getattr(settings, "TRANSMOGRIFY_PATH_ALIASES", None)
-    if PATH_ALIASES is None:
-        USER_SETTINGS['PATH_ALIASES'] = PATH_ALIASES
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_PATH_ALIASES', DeprecationWarning)
-
-    FALLBACK_SERVERS = getattr(settings, "TRANSMOGRIFY_FALLBACK_SERVERS", "")
-    if FALLBACK_SERVERS is None:
-        USER_SETTINGS['FALLBACK_SERVERS'] = FALLBACK_SERVERS
-        warnings.warn(ERR_MSG % 'TRANSMOGRIFY_FALLBACK_SERVERS', DeprecationWarning)
-
-else:
-    # Shared secret
-    USER_SETTINGS['SECRET_KEY'] = os.environ.get("TRANSMOGRIFY_SECRET", "")
-
-    # Debug mode
-    USER_SETTINGS['DEBUG'] = bool_from_env("TRANSMOGRIFY_DEBUG", False)
-
-    # Document root, or vhost root if using vhosts
-    USER_SETTINGS['BASE_PATH'] = os.environ.get("TRANSMOGRIFY_BASE_PATH", "/home/media/")
-
-    # vhosts looks for files in the combination:
-    #  BASE_PATH + servername + VHOST_DOC_BASE
+# vhosts looks for files in the combination:
+#  BASE_PATH + servername + VHOST_DOC_BASE
+if "TRANSMOGRIFY_USE_VHOSTS" in os.environ:
     USER_SETTINGS['USE_VHOSTS'] = bool_from_env("TRANSMOGRIFY_USE_VHOSTS", False)
 
-    # Document root under each vhost
+# Document root under each vhost
+if "TRANSMOGRIFY_VHOST_DOC_BASE" in os.environ:
     USER_SETTINGS['VHOST_DOC_BASE'] = os.environ.get("TRANSMOGRIFY_VHOST_DOC_BASE", "")
 
+if "TRANSMOGRIFY_NO_IMG_URL" in os.environ:
     USER_SETTINGS['NO_IMAGE_URL'] = os.environ.get("TRANSMOGRIFY_NO_IMG_URL", "")
 
-    # Environment path aliases should be
+# Environment path aliases should be
+if "TRANSMOGRIFY_PATH_ALIASES" in os.environ:
     USER_SETTINGS['PATH_ALIASES'] = dict(lists_from_env("TRANSMOGRIFY_PATH_ALIASES"))
 
-    # Fallback Servers
+# Fallback Servers
+# Format is
+# (regex, repl, host),
+# (r"^/media/(.*), "\1", "http://www.example.com/"),
+if "TRANSMOGRIFY_FAILBACK_SERVERS" in os.environ:
+    USER_SETTINGS['FALLBACK_SERVERS'] = dict(lists_from_env("TRANSMOGRIFY_FAILBACK_SERVERS"))
+
+if "TRANSMOGRIFY_ORIG_PATH_HANDLER" in os.environ:
+    USER_SETTINGS['ORIG_PATH_HANDLER'] = os.environ.get("TRANSMOGRIFY_ORIG_PATH_HANDLER", "")
+
+if "TRANSMOGRIFY_ORIG_BASE_PATH" in os.environ:
+    USER_SETTINGS['ORIG_BASE_PATH'] = os.environ.get("TRANSMOGRIFY_ORIG_BASE_PATH", "/home/media/")
+
+PATH_ALIASES = {}
+
+# Fallback Servers
+FALLBACK_SERVERS = (
     # Format is
     # (regex, repl, host),
     # (r"^/media/(.*), "\1", "http://www.example.com/"),
-    USER_SETTINGS['FALLBACK_SERVERS'] = dict(lists_from_env("TRANSMOGRIFY_FAILBACK_SERVERS"))
-
-    USER_SETTINGS['ORIG_PATH_HANDLER'] = os.environ.get("TRANSMOGRIFY_ORIG_PATH_HANDLER", "")
-    USER_SETTINGS['ORIG_BASE_PATH'] = os.environ.get("TRANSMOGRIFY_ORIG_BASE_PATH", "/home/media/")
-
-
-    PATH_ALIASES = {}
-
-    # Fallback Servers 
-    FALLBACK_SERVERS = (
-        # Format is 
-        # (regex, repl, host), 
-        # (r"^/media/(.*), "\1", "http://www.example.com/"),
-        )
+    )
 
 PROCESSORS = {}
 for attr in processors.__all__:
