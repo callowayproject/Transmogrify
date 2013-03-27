@@ -8,7 +8,7 @@ import os
 from settings import DEBUG
 from utils import process_url, Http404
 from transmogrify import Transmogrify
-from hashcompat import sha_constructor
+from hashlib import sha1
 from contextlib import contextmanager
 import time
 
@@ -29,7 +29,7 @@ def handle_request():
     path = os.environ["REQUEST_URI"]
 
     # Acquire lockfile
-    lock = '/tmp/%s' % sha_constructor(path).hexdigest()
+    lock = '/tmp/%s' % sha1(path).hexdigest()
     if os.path.isfile(lock):
         doRedirect(path)
         return

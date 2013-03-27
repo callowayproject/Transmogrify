@@ -2,6 +2,9 @@
 Transmogrify
 ============
 
+* Now only supports Python 2.5+
+
+
 Transmogrify is a Python-based image manipulator. It allows for
 dynamic alteration of images using the URL of the image. The biggest
 benefit is to the web designer, as images can be scaled to fit the

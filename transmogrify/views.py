@@ -8,6 +8,7 @@ from transmogrify import Transmogrify
 
 HEXDIGEST_RE = re.compile(r"^[a-f0-9]{40}$")
 
+
 def transmogrify_serve(request, path, document_root=None, show_indexes=False):
     if HEXDIGEST_RE.match(request.META['QUERY_STRING']):
         try:
@@ -20,4 +21,3 @@ def transmogrify_serve(request, path, document_root=None, show_indexes=False):
         except utils.Http404, e:
             raise Http404(e)
     return serve(request, path, document_root, show_indexes)
-

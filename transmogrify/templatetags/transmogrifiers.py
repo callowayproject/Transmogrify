@@ -1,5 +1,5 @@
 import os
-from transmogrify.hashcompat import sha_constructor
+from hashlib import sha1
 from transmogrify import settings
 from transmogrify import utils
 from django import template
@@ -68,7 +68,7 @@ def no_param_shortcut(parser, token):
         imageurl = bits.next()
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
-    
+
     return MogrifyNode(imageurl, [(tagname, ),])
 
 
@@ -111,12 +111,14 @@ class MogrifyNode(template.Node):
         self.imageurl, self.actions = template.Variable(imageurl), actions
 
     def render(self, context):
+        action_list = []
         imageurl = resolve(self.imageurl, context)
 
         if not imageurl:
             imageurl = settings.NO_IMAGE_URL
 
-        action_list = []
+        if not imageurl:
+            return ""
 
         for action in self.actions:
             action_code = ACTIONS[action[0]]
@@ -159,6 +161,12 @@ def mogrify_filter(action):
         if "?" in imageurl:
             imageurl, _ = imageurl.split("?", 1)
 
+        if not imageurl:
+            imageurl = settings.NO_IMAGE_URL
+
+        if not imageurl:
+            return ""
+
         # build the action list
         action_code = ACTIONS[action]
         args = "-".join(arg_list)
@@ -193,7 +201,7 @@ register.tag('thumbnail', one_param_shortcut)
 register.tag('crop', one_param_shortcut)
 register.tag('forcefit', one_param_shortcut)
 register.tag('resize', one_param_shortcut)
-register.tag('filter', one_param_shortcut)
+register.tag('addfilter', one_param_shortcut)
 register.tag('border', two_param_shortcut)
 register.tag('letterbox', two_param_shortcut)
 register.tag('mask', no_param_shortcut)
