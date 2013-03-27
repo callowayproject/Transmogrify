@@ -5,15 +5,11 @@ WSGI handler for mogrifying images.
 """
 
 import os
-import re
-import urllib
 import urlparse
-import shutil
-import wsgiref.util
-from settings import DEBUG, FALLBACK_SERVERS, BASE_PATH
-from utils import process_url, Http404, parse_action_tuples
-from transmogrify import Transmogrify
 from hashlib import sha1
+from settings import DEBUG
+from utils import process_url, Http404
+from transmogrify import Transmogrify
 from contextlib import contextmanager
 
 

@@ -120,6 +120,7 @@ def process_url(url, server_name="", document_root=None):
 
     base_path = document_root or BASE_PATH
     orig_base_path = ORIG_BASE_PATH or base_path
+
     if USE_VHOSTS:
         if not os.path.exists(os.path.join(BASE_PATH, server_name)):
             raise Http404("Bad server: %s" % server_name)
