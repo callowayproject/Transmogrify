@@ -1547,6 +1547,8 @@ def after_install(options, home_dir):
     requirements = os.path.join(os.path.dirname(home_dir), 'requirements.txt')
     if os.path.exists(requirements):
         subprocess.call([os.path.join(home_dir, 'bin', 'pip'), 'install' , '-r', 'requirements.txt'])
+    else:
+        subprocess.call([os.path.join(home_dir, 'bin', 'pip'), 'install' , 'transmogrify'])
 
 
 def convert(s):
