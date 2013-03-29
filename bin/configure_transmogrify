@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+import os
+import random
+import sys
+
+CHARS = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+
+
+def main(options):
+    current_dir = os.path.realpath(os.path.expanduser(os.path.dirname(__file__)))
+
+    # Default options
+    opts = {
+        'DEBUG': False,
+        'ORIG_BASE_PATH': os.path.join(current_dir, 'originals'),
+        'BASE_PATH': os.path.join(current_dir, 'modified'),
+        'NO_IMAGE_URL': '',
+        'PATH_ALIASES': {},
+        'SECRET_KEY': ''.join([random.choice(CHARS) for i in xrange(50)]),
+    }
+
+    def prompt(attr, text, default=None):
+        """Prompt the user for certain values"""
+        if hasattr(options, attr):
+            if getattr(options, attr):
+                return getattr(options, attr)
+
+        default_text = default and ' [%s]: ' % default or ': '
+        new_val = None
+        while not new_val:
+            new_val = raw_input(text + default_text) or default
+        return new_val
+
+    opts['SECRET_KEY'] = prompt(
+        'secret_key',
+        'Specify your Secret Key, or use this random key',
+        opts['SECRET_KEY'])
+    opts['ORIG_BASE_PATH'] = os.path.realpath(os.path.expanduser(prompt(
+        'orig_base_path',
+        'Where are your original files stored',
+        opts['ORIG_BASE_PATH'])))
+    opts['BASE_PATH'] = os.path.realpath(os.path.expanduser(prompt(
+        'base_path',
+        'Where will your modified files be stored',
+        opts['BASE_PATH'])))
+    output_file = os.path.realpath(os.path.expanduser(prompt(
+        'output_file',
+        'Where would you like to store the settings',
+        'transmogrify_settings.py')))
+    if output_file:
+        with open(output_file, 'w') as f:
+            f.writelines(['%s = %s\n' % (key, repr(val)) for key, val in opts.items()])
+
+
+if __name__ == '__main__':
+    from optparse import OptionParser
+    parser = OptionParser()
+    parser.add_option('-o', '--originals', dest='orig_base_path',
+                      help='Where your original files are stored.')
+    parser.add_option('-d', '--destination', dest='base_path',
+                      help='Where your modified files will go.')
+    parser.add_option('-s', '--secret', dest='secret_key',
+                      help='The URL of the project page.')
+    parser.add_option('-n', '--noimage', dest='no_image_url',
+                      help='The URL to return if no image is found.')
+    parser.add_option('-f', '--filename', dest='output_file',
+                      help='The path of the file to write settings.')
+    (options, args) = parser.parse_args()
+
+    sys.exit(main(options))

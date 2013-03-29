@@ -26,5 +26,6 @@ setup(
     install_requires=read_file('requirements.txt'),
     include_package_data=True,
     packages=find_packages(),
+    scripts=['bin/configure_transmogrify'],
     zip_safe=False
 )
