@@ -5,17 +5,17 @@ WSGI handler for mogrifying images.
 """
 
 import os
-import sys
 import re
+import urllib
+import urlparse
+import shutil
+import wsgiref.util
 from settings import DEBUG, FALLBACK_SERVERS, BASE_PATH
 from utils import process_url, Http404, parse_action_tuples
 from transmogrify import Transmogrify
-from hashcompat import sha_constructor
+from hashlib import sha1
 from contextlib import contextmanager
-import time
-from pprint import pformat, pprint
-import urllib, urlparse, shutil
-import wsgiref.util
+
 
 @contextmanager
 def lock_file(lock):
@@ -42,16 +42,17 @@ def makedirs(dirname):
             os.mkdir(root)
         elif not os.path.isdir(root):
             raise OSError("%s is exists, but is not a directory." % (root, ))
-        else: # exists and is a dir
+        else:  # exists and is a dir
             pass
-        
+
 
 def match_fallback(fallback_servers, path_info):
     for pattern, replace, server in fallback_servers:
         if re.match(pattern, path_info):
 
             new_path = re.sub(pattern, replace, path_info)
-            return (new_path, server)
+            new_server = re.sub(pattern, server, path_info)
+            return urlparse.urljoin(new_server, new_path)
 
 
 def do_fallback(fallback_servers, base_path, path_info):
@@ -89,6 +90,7 @@ def do_fallback(fallback_servers, base_path, path_info):
 def app(environ, start_response):
     cropname = None
     server = environ['SERVER_NAME']
+    quality = 80
 
     if "path=" in environ.get("QUERY_STRING", ""):
         # I should probably require a POST for this, but meh, let's not
@@ -108,20 +110,20 @@ def app(environ, start_response):
             return ["path and key are required query parameters"]
 
         cropname = query_dict.get("cropname", [None])[0]
+        quality = 100
 
-        # rewrite the environ to look like a 404 handler 
+        # rewrite the environ to look like a 404 handler
         environ['REQUEST_URI'] = path + "?" + key
-
 
     request_uri = environ['REQUEST_URI']
     path_and_query = request_uri.lstrip("/")
     requested_path = urlparse.urlparse(path_and_query).path
-        
+
     if path_and_query is "":
         return do404(environ, start_response, "Not Found", DEBUG)
 
     # Acquire lockfile
-    lock = '/tmp/%s' % sha_constructor(path_and_query).hexdigest()
+    lock = '/tmp/%s' % sha1(path_and_query).hexdigest()
 
     if os.path.isfile(lock):
         return doRedirect(environ, start_response, request_uri)
@@ -139,7 +141,11 @@ def app(environ, start_response):
         except Http404, e:
             return do404(environ, start_response, e.message, DEBUG)
 
-        new_file = Transmogrify(url_parts['original_file'], url_parts['actions'])
+        new_file = Transmogrify(
+            url_parts['original_file'],
+            url_parts['actions'],
+            quality=quality
+        )
         new_file.cropname = cropname
         new_file.save()
 
@@ -167,7 +173,7 @@ def do404(environ, start_response, why, debug):
         message = "<h2>%s</h2>" % why
     else:
         message = "File not found"
-    
+
     start_response("404 Not Found", [("Content-Type", "text/html")])
     return [ERROR_404 % message]
 
@@ -197,9 +203,9 @@ class DemoApp(object):
         def sr(status, headers):
             response['status'] = status
             response['headers'] = headers
-        
+
         result = self.app(environ, sr)
-        
+
         if response['status'] == '404 Not Found':
             request_uri = wsgiref.util.request_uri(environ)
             p = urlparse.urlparse(request_uri)
