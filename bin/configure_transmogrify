@@ -62,7 +62,7 @@ if __name__ == '__main__':
     parser.add_option('-d', '--destination', dest='base_path',
                       help='Where your modified files will go.')
     parser.add_option('-s', '--secret', dest='secret_key',
-                      help='The URL of the project page.')
+                      help='Your secret key.')
     parser.add_option('-n', '--noimage', dest='no_image_url',
                       help='The URL to return if no image is found.')
     parser.add_option('-f', '--filename', dest='output_file',
