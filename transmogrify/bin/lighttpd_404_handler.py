@@ -32,7 +32,7 @@ def handle_request():
     new_file = Transmogrify(url_parts['original_file'], url_parts['actions'])
     new_file.save()
 
-    print "Location: /%s" % os.environ['REQUEST_URI']
+    print "Location: %s" % os.environ['REQUEST_URI']
     print
 
     # Remove lockfile
