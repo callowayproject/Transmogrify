@@ -1,0 +1,10 @@
+#!/bin/bash
+#set -e
+HOMEDIR="/etc/transmogrify"
+CONF="$HOMEDIR/conf/gunicorn_conf.py"
+NAME=transmogrify
+cd $HOMEDIR
+source virtualenv/bin/activate
+TRANSMOGRIFY_SETTINGS=transmogrify_settings exec $HOMEDIR/virtualenv/bin/python \
+   /etc/transmogrify/virtualenv/bin/gunicorn \
+   --config $CONF transmogrify.wsgi:app
