@@ -1,0 +1,151 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; Transmogrify 1.0.1b1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1.0.1b1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="Transmogrify 1.0.1b1 documentation" href="index.html" />
+    <link rel="next" title="Django Template Tag" href="templatetag.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+  </head>
+  <body>
+<div id="docstitle">
+	<p>Transmogrify 1.0.1b1 documentation</p>
+</div>
+<div id="header">
+	<div id="title"><h1>Installation</h1></div>
+	<ul id="headerButtons">
+		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
+		<li id="page_buttons">
+			<div class="headerButton"><a href="genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="templatetag.html" title="Django Template Tag" accesskey="N">next</a></div>
+			<div class="headerButton"><a href="getting_started.html" title="Getting Started" accesskey="P">previous</a></div>
+		</li>
+	</ul>
+</div>
+
+<div id="sphinxsidebar">
+  <div class="sphinxsidebarwrapper">
+	<ul><li class="toctree-l1"><a href="index.html">Main Page</a></li></ul>
+	<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-transmogrify">Install Transmogrify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-settings-file">Create settings file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-wsgi-server">Install WSGI server</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="templatetag.html">Django Template Tag</a></li>
+<li class="toctree-l1"><a class="reference internal" href="webserver_integration/index.html">Web Server Integration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
+</ul>
+
+    <div id="searchbox" style="display: none">
+      
+        <form class="search" action="search.html" method="get">
+			<div class="search-wrapper">
+			<span class="search-left"></span>
+			<input class="prettysearch" type="text" name="q" size="18" />
+			<span class="search-right">&nbsp;</span>
+			</div>
+          <input type="submit" value="Search" class="searchbutton" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        <p class="searchtip" style="font-size: 90%">
+        Enter search terms or a module, class or function name.
+        </p>
+    </div>
+    <script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</div>
+
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-transmogrify">
+<h2>Install Transmogrify<a class="headerlink" href="#install-transmogrify" title="Permalink to this headline">¶</a></h2>
+<p>Create a &#8220;home&#8221; for transmogrify</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> mkdir -p /etc/transmogrify
+<span class="gp">#</span> <span class="nb">cd</span> /etc/transmogrify
+</pre></div>
+</div>
+<p>Download and run the bootstrap program:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py | python
+</pre></div>
+</div>
+<p>You can install the latest development release using this command:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py --dev | python
+</pre></div>
+</div>
+<p>These create a python <tt class="docutils literal"><span class="pre">virtualenv</span></tt> and installs Transmogrify.</p>
+</div>
+<div class="section" id="create-settings-file">
+<h2>Create settings file<a class="headerlink" href="#create-settings-file" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Execute <tt class="docutils literal"><span class="pre">source</span> <span class="pre">virtualenv/bin/activate</span></tt> to activate the Transmogrify&#8217;s virtualenv.</li>
+<li>Execute <tt class="docutils literal"><span class="pre">configure_transmogrify</span></tt></li>
+<li>Answer the questions.</li>
+</ol>
+<div class="highlight-console"><div class="highlight"><pre><span class="go">Specify your Secret Key, or use this random key [p9pmpo)-l@c=ux06#ucezz@t4f1j6*_re%-area6xk&amp;_ic#u0r]:</span>
+<span class="go">Where are your original files stored [/etc/transmogrify/originals]:</span>
+<span class="go">Where will your modified files be stored [/etc/transmogrify/modified]:</span>
+<span class="go">Where would you like to store the settings [transmogrify_settings.py]:</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-wsgi-server">
+<h2>Install WSGI server<a class="headerlink" href="#install-wsgi-server" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="gunicorn">
+<h3>Gunicorn<a class="headerlink" href="#gunicorn" title="Permalink to this headline">¶</a></h3>
+</div>
+<div class="section" id="uwsgi">
+<h3>uWSGI<a class="headerlink" href="#uwsgi" title="Permalink to this headline">¶</a></h3>
+</div>
+</div>
+</div>
+
+
+          </div> 
+        </div>
+      </div>
+    <div class="footer">
+    <p>
+      &copy; Copyright 2010, The Washington Times.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.
+	</p>
+    </div>
+      <div class="clearer"></div>
+    </div>
+	<div id="breadcrumbs">
+		Installation
+		</ul>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="_static/toc.js"></script>
+  </body>
+</html>

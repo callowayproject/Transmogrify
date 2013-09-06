@@ -37,7 +37,7 @@ Usage:
 ******
 
 ::
-    
+
     {% transmogrify url [action [param]] [action2 [param2] ...] %}
 
 Available actions:
@@ -50,8 +50,11 @@ Available actions:
     Thumbnail to a given height. Width is set to maintain aspect ratio.
 
 ``thumbnail <width>x<height>``
-    Thumbnail to fit a given size. The image is reduced to fit 
+    Thumbnail to fit a given size. The image is reduced to fit
     proportionally within the specified size.
+
+``autocrop <width>x<height>``
+    Scale and crop to the given size. Cropping is done by analyzing the image.
 
 ``crop <width>x<height>``
     Crop to a given size. Crops are centered within the image.
@@ -60,17 +63,17 @@ Available actions:
     Resize the image proportionally to fit within the specified size.
 
 ``forcefit <width>x<height>``
-    Force the image to fit within the specified box; could result in a 
+    Force the image to fit within the specified box; could result in a
     distorted image.
 
 ``letterbox <width>x<height> <color>``
-    Resize the image proportionally to fit within the specified size, 
+    Resize the image proportionally to fit within the specified size,
     and fill the remaining space with the specified color. Color should
     be in ``#RRGGBB`` or ``#RGB`` format.
 
 ``filter <filter>``
     Run an image filter; filter can be:
-    
+
     * ``blur``
     * ``contour``
     * ``detail``
@@ -339,6 +342,33 @@ Example:
 .. image:: example_imgs/horiz_img_c100x100.jpg
 .. image:: example_imgs/square_img_c100x100.jpg
 .. image:: example_imgs/vert_img_c100x100.jpg
+
+
+autocrop
+========
+
+A shortcut to the ``transmogrify`` tag's ``autocrop`` action. It scales and crops the image based on analysis.
+
+Usage:
+******
+
+::
+
+    {% autocrop <image_url> <width>x<height> %}
+
+Example:
+********
+
+**Crop the image to fit a 100x100 bix**
+
+::
+
+    {% autocrop img 100x100 %}
+
+.. image:: example_imgs/horiz_img_a100x100.jpg
+.. image:: example_imgs/square_img_a100x100.jpg
+.. image:: example_imgs/vert_img_a100x100.jpg
+
 
 .. _filter_tag:
 

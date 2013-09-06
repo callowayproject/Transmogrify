@@ -1,8 +1,57 @@
-
+============
 Installation
 ============
 
+Install Transmogrify
+====================
+
+Create a "home" for transmogrify
+
+.. code-block:: console
+
+   # mkdir -p /etc/transmogrify
+   # cd /etc/transmogrify
+
+Download and run the bootstrap program:
+
+.. code-block:: console
+
+   # curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py | python
+
+You can install the latest development release using this command:
+
+.. code-block:: console
+
+   # curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py --dev | python
 
 
-Dependencies
-************
+These create a python ``virtualenv`` and installs Transmogrify.
+
+
+Create settings file
+====================
+
+#. Execute ``source virtualenv/bin/activate`` to activate the Transmogrify's virtualenv.
+
+#. Execute ``configure_transmogrify``
+
+#. Answer the questions.
+
+.. code-block:: console
+
+   Specify your Secret Key, or use this random key [p9pmpo)-l@c=ux06#ucezz@t4f1j6*_re%-area6xk&_ic#u0r]:
+   Where are your original files stored [/etc/transmogrify/originals]:
+   Where will your modified files be stored [/etc/transmogrify/modified]:
+   Where would you like to store the settings [transmogrify_settings.py]:
+
+
+Install WSGI server
+===================
+
+Gunicorn
+--------
+
+
+uWSGI
+-----
+
