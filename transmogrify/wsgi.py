@@ -47,7 +47,7 @@ def app(environ, start_response):
     server = environ['SERVER_NAME']
     quality = 80
 
-    request_uri = environ['REQUEST_URI']
+    request_uri = environ.get('REQUEST_URI', environ.get('RAW_URI', ''))
     path_and_query = request_uri.lstrip("/")
     if path_and_query is "":
         return do404(environ, start_response, "Not Found", DEBUG)
@@ -60,7 +60,6 @@ def app(environ, start_response):
     with lock_file(lock):
         try:
             url_parts = process_url(path_and_query, server)
-            print url_parts
             output_path, _ = os.path.split(url_parts['requested_file'])
             makedirs(output_path)
         except Http404, e:
