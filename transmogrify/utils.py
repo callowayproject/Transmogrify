@@ -140,7 +140,10 @@ def process_url(url, server_name="", document_root=None):
 
     base_file_name, action_tuples = parse_action_tuples(requested_file)
 
-    original_file = os.path.join(orig_base_path, parent_dir, base_file_name + ext)
+    if USE_VHOSTS:
+        original_file = os.path.join(orig_base_path, server_name, parent_dir, base_file_name + ext)
+    else:
+        original_file = os.path.join(orig_base_path, parent_dir, base_file_name + ext)
 
     base_uri = os.path.dirname(resolved_uri)
     original_uri = urlparse.urljoin(base_uri, base_filename + ext)

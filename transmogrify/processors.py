@@ -6,7 +6,7 @@ import re
 SIZE_RE = re.compile(r"^((\d+)|(x\d+)|(\d+x\d+))$")
 
 __all__ = ["Thumbnail", "Crop", "ForceFit", "Resize", "LetterboxResize",
-           "Border", "Filter", "Mask"]
+           "Border", "Filter", "Mask", "AutoCrop"]
 
 
 class Processor(object):
@@ -85,9 +85,9 @@ class Thumbnail(Processor):
 
 class Crop(Processor):
     """
-    Crop out a centered box in the existing image.
+    Crop out a box in the image.
 
-    The one argument in the param_string is the size
+    Accepts either a size (W | xH | WXH) or bounding box (L-T-R-B)
     """
     @staticmethod
     def code():
@@ -224,7 +224,7 @@ class Border(Processor):
         draw = ImageDraw.Draw(image)
 
         # The rectangle gets drawn *inside* the upper left, but *outside* the
-        # lower right (why, eff-bot, why?), so we have to subtract the width 
+        # lower right (why, eff-bot, why?), so we have to subtract the width
         # from the bottom right point so that the border will be inside the
         # image's bounds. Also, we have to draw a line instead of a rectangle
         # because rects don't support the "width" argument.
@@ -287,3 +287,26 @@ class Mask(Processor):
     @staticmethod
     def param_pattern():
         return re.compile(r'^$')
+
+
+class AutoCrop(Processor):
+    """
+    Crops based on face detection and image gravity
+    """
+    @staticmethod
+    def code():
+        return "a"
+
+    @staticmethod
+    def param_pattern():
+        return SIZE_RE
+
+    @staticmethod
+    def process(image, size, *args, **kwargs):
+        """
+        Automatically crop the image based on image gravity and face detection
+        """
+        from autodetect import smart_crop
+        box_width, box_height = AutoCrop.parse_size(image, size)
+        scaled_size, rect = smart_crop(box_width, box_height, image.filename)
+        return image.resize(scaled_size, Image.ANTIALIAS).crop(tuple(rect))

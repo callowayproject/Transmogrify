@@ -1,22 +1,23 @@
 import os
-from hashlib import sha1
 from transmogrify import settings
 from transmogrify import utils
 from django import template
 from django.utils.text import smart_split
 
 ACTIONS = {
-    'thumbnail':'t',
-    'crop':'c',
+    'thumbnail': 't',
+    'crop': 'c',
     'forcefit': 's',
     'resize': 'r',
     'letterbox': 'l',
     'filter': 'f',
     'border': 'b',
     'mask': 'm',
+    'autocrop': 'a',
 }
 FILTERS = ["blur", "contour", "edge_enhance", "edge_enhance_more", "emboss",
            "find_edges", "smooth", "smooth_more", "sharpen"]
+
 
 def resolve(var, context):
     """
@@ -26,6 +27,7 @@ def resolve(var, context):
         return var.resolve(context)
     except template.VariableDoesNotExist:
         return var.var
+
 
 def transmogrify(parser, token):
     """
@@ -69,7 +71,7 @@ def no_param_shortcut(parser, token):
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
 
-    return MogrifyNode(imageurl, [(tagname, ),])
+    return MogrifyNode(imageurl, [(tagname, ), ])
 
 
 def one_param_shortcut(parser, token):
@@ -84,7 +86,7 @@ def one_param_shortcut(parser, token):
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
 
-    return MogrifyNode(imageurl, [(tagname, param1),])
+    return MogrifyNode(imageurl, [(tagname, param1), ])
 
 
 def two_param_shortcut(parser, token):
@@ -101,8 +103,7 @@ def two_param_shortcut(parser, token):
     except StopIteration:
         raise template.TemplateSyntaxError("%r tag requires at least the image url" % tagname)
 
-    return MogrifyNode(imageurl, [(tagname, param1, param2),])
-
+    return MogrifyNode(imageurl, [(tagname, param1, param2), ])
 
 
 class MogrifyNode(template.Node):
@@ -199,6 +200,7 @@ for action in ACTIONS:
 register.tag(transmogrify)
 register.tag('thumbnail', one_param_shortcut)
 register.tag('crop', one_param_shortcut)
+register.tag('autocrop', one_param_shortcut)
 register.tag('forcefit', one_param_shortcut)
 register.tag('resize', one_param_shortcut)
 register.tag('addfilter', one_param_shortcut)

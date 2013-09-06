@@ -5,6 +5,15 @@ square_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata',
 vert_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'vert_img.jpg'))
 horiz_img = os.path.abspath(os.path.join(os.path.dirname(__file__), 'testdata', 'horiz_img.jpg'))
 
+
+####
+#### AutoCrop
+####
+Transmogrify(square_img, [('a', '100x100'),]).save()
+Transmogrify(vert_img, [('a', '100x100'),]).save()
+Transmogrify(horiz_img, [('a', '100x100'),]).save()
+
+
 ####
 #### Thumbnail
 ####

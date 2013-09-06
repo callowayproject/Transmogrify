@@ -12,6 +12,7 @@ DEFAULT_SETTINGS = {
     'NO_IMAGE_URL': "",
     'PATH_ALIASES': {},
     'FALLBACK_SERVERS': (),
+    'OPENCV_PREFIX': '/usr/local/share/',
 }
 
 USER_SETTINGS = DEFAULT_SETTINGS.copy()
