@@ -17,7 +17,7 @@ def handle_request():
         print "Location: %s" % os.environ["REQUEST_URI"]
         print
         return
-    open(lock, 'w')
+    open(lock, 'w').close()
 
     if DEBUG:
         import cgitb
@@ -27,16 +27,19 @@ def handle_request():
         server = os.environ["SERVER_NAME"].split(":")[0]
         url_parts = process_url(os.environ['REQUEST_URI'], server)
     except Http404, e:
+        # Remove lockfile on failure
+        os.remove(lock)
         do404(e.message, DEBUG)
 
     new_file = Transmogrify(url_parts['original_file'], url_parts['actions'])
     new_file.save()
 
+    # Remove lockfile on success
+    os.remove(lock)
+
     print "Location: /%s" % os.environ['REQUEST_URI']
     print
-
-    # Remove lockfile
-    os.remove(lock)
+   
 
 def do404(why, debug):
     if debug:
