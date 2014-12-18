@@ -1841,7 +1841,10 @@ def create_bootstrap_script(extra_text, python_version=''):
 def adjust_options(options, args):
     options.unzip_setuptools = True
     options.system_site_packages = False
-    if not args:        args.append('virtualenv')def after_install(options, home_dir):
+    if not args:
+        args.append('virtualenv')
+
+def after_install(options, home_dir):
     import os.path
     import subprocess
     requirements = os.path.join(os.path.dirname(home_dir), 'requirements.txt')
