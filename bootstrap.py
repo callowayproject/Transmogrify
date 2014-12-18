@@ -1838,6 +1838,13 @@ def create_bootstrap_script(extra_text, python_version=''):
                + content)
     return content.replace('##EXT' 'END##', extra_text)
 
+def extend_parser(parser):
+    parser.add_option(
+        '--dev',
+        dest="development",
+        action="store_true",
+        help="Use the development version of Transmogrify from Github")
+
 def adjust_options(options, args):
     options.unzip_setuptools = True
     options.system_site_packages = False
@@ -1847,9 +1854,17 @@ def adjust_options(options, args):
 def after_install(options, home_dir):
     import os.path
     import subprocess
-    requirements = os.path.join(os.path.dirname(home_dir), 'requirements.txt')
+    rootdir = os.path.dirname(home_dir)
+    requirements = os.path.join(rootdir, 'requirements.txt')
+    os.mkdir(os.path.join(rootdir, 'conf'), 0764)
+    os.mkdir(os.path.join(rootdir, 'originals'), 0764)
+    os.mkdir(os.path.join(rootdir, 'modified'), 0764)
     if os.path.exists(requirements):
         subprocess.call([os.path.join(home_dir, 'bin', 'pip'), 'install' , '-r', 'requirements.txt'])
+    elif options.development:
+        subprocess.call([os.path.join(home_dir, 'bin', 'pip'), 'install', 'https://github.com/callowayproject/Transmogrify/archive/master.zip'])
+    else:
+        subprocess.call([os.path.join(home_dir, 'bin', 'pip'), 'install' , 'transmogrify'])
 
 
 def convert(s):
