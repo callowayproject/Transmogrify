@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; Transmogrify 1.0.1b1 documentation</title>
+    <title>Installation &mdash; Transmogrify 1.0.1b2 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.1b1',
+        VERSION:     '1.0.1b2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Transmogrify 1.0.1b1 documentation" href="index.html" />
+    <link rel="top" title="Transmogrify 1.0.1b2 documentation" href="index.html" />
     <link rel="next" title="Django Template Tag" href="templatetag.html" />
     <link rel="prev" title="Getting Started" href="getting_started.html" /> 
   </head>
-  <body>
+  <body role="document">
 <div id="docstitle">
-	<p>Transmogrify 1.0.1b1 documentation</p>
+	<p>Transmogrify 1.0.1b2 documentation</p>
 </div>
 <div id="header">
 	<div id="title"><h1>Installation</h1></div>
@@ -48,12 +48,7 @@
 	<ul><li class="toctree-l1"><a href="index.html">Main Page</a></li></ul>
 	<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#install-transmogrify">Install Transmogrify</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-settings-file">Create settings file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-wsgi-server">Install WSGI server</a></li>
-</ul>
-</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="templatetag.html">Django Template Tag</a></li>
 <li class="toctree-l1"><a class="reference internal" href="webserver_integration/index.html">Web Server Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
@@ -88,6 +83,28 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="install-optional-pillow-requirements">
+<h2>Install optional Pillow requirements<a class="headerlink" href="#install-optional-pillow-requirements" title="Permalink to this headline">¶</a></h2>
+<p>Pillow requires certain native libraries in order to decode certain types of files.</p>
+<p>Typically you will need these libraries (these are the Ubuntu names):</p>
+<ul class="simple">
+<li>libjpeg</li>
+<li>libjpeg-dev</li>
+<li>libfreetype6</li>
+<li>libfreetype6-dev</li>
+<li>zlib1g-dev</li>
+</ul>
+<p>If you want Transmogrify to also better handle the conversion of CMYK images to RGB, you need to add <a class="reference external" href="http://www.littlecms.com/">littleCMS</a> libaries.</p>
+<ul class="simple">
+<li>liblcms</li>
+<li>liblcms-dev</li>
+<li>liblcms-utils</li>
+</ul>
+<p>Example:</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> sudo apt-get install python-dev libtiff5-dev libjpeg8-dev zlib1g-dev libfreetype6-dev liblcms2-dev libwebp-dev tcl8.6-dev tk8.6-dev python-tk
+</pre></div>
+</div>
+</div>
 <div class="section" id="install-transmogrify">
 <h2>Install Transmogrify<a class="headerlink" href="#install-transmogrify" title="Permalink to this headline">¶</a></h2>
 <p>Create a &#8220;home&#8221; for transmogrify</p>
@@ -95,21 +112,29 @@
 <span class="gp">#</span> <span class="nb">cd</span> /etc/transmogrify
 </pre></div>
 </div>
+<p>Download the setuptools and pip wheels</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> mkdir virtualenv_support
+<span class="gp">#</span> <span class="nb">cd </span>virtualenv_support/
+<span class="gp">#</span> sudo wget https://pypi.python.org/packages/py2.py3/p/pip/pip-1.5.6-py2.py3-none-any.whl#md5<span class="o">=</span>4d4fb4b69df6731c7aeaadd6300bc1f2
+<span class="gp">#</span> sudo wget https://pypi.python.org/packages/3.4/s/setuptools/setuptools-8.2-py2.py3-none-any.whl#md5<span class="o">=</span>44a36e437d09e3eb125a14c3a428b0f8
+<span class="gp">#</span> <span class="nb">cd</span> ..
+</pre></div>
+</div>
 <p>Download and run the bootstrap program:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py | python
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py <span class="p">|</span> python
 </pre></div>
 </div>
 <p>You can install the latest development release using this command:</p>
-<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py --dev | python
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> curl https://raw.github.com/callowayproject/Transmogrify/master/bootstrap.py --dev <span class="p">|</span> python
 </pre></div>
 </div>
-<p>These create a python <tt class="docutils literal"><span class="pre">virtualenv</span></tt> and installs Transmogrify.</p>
+<p>These create a python <code class="docutils literal"><span class="pre">virtualenv</span></code> and installs Transmogrify.</p>
 </div>
 <div class="section" id="create-settings-file">
 <h2>Create settings file<a class="headerlink" href="#create-settings-file" title="Permalink to this headline">¶</a></h2>
 <ol class="arabic simple">
-<li>Execute <tt class="docutils literal"><span class="pre">source</span> <span class="pre">virtualenv/bin/activate</span></tt> to activate the Transmogrify&#8217;s virtualenv.</li>
-<li>Execute <tt class="docutils literal"><span class="pre">configure_transmogrify</span></tt></li>
+<li>Execute <code class="docutils literal"><span class="pre">source</span> <span class="pre">virtualenv/bin/activate</span></code> to activate the Transmogrify&#8217;s virtualenv.</li>
+<li>Execute <code class="docutils literal"><span class="pre">configure_transmogrify</span></code></li>
 <li>Answer the questions.</li>
 </ol>
 <div class="highlight-console"><div class="highlight"><pre><span class="go">Specify your Secret Key, or use this random key [p9pmpo)-l@c=ux06#ucezz@t4f1j6*_re%-area6xk&amp;_ic#u0r]:</span>
@@ -119,14 +144,72 @@
 </pre></div>
 </div>
 </div>
+<div class="section" id="install-opencv">
+<h2>Install OpenCV<a class="headerlink" href="#install-opencv" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>Execute <code class="docutils literal"><span class="pre">source</span> <span class="pre">virtualenv/bin/activate</span></code> to activate the Transmogrify&#8217;s virtualenv.</li>
+<li>I&#8217;m using instructions found at <a class="reference external" href="http://karytech.blogspot.com/2012/05/opencv-24-on-ubuntu-1204.html">http://karytech.blogspot.com/2012/05/opencv-24-on-ubuntu-1204.html</a> to install the latest version.</li>
+</ol>
+</div>
 <div class="section" id="install-wsgi-server">
 <h2>Install WSGI server<a class="headerlink" href="#install-wsgi-server" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gunicorn">
 <h3>Gunicorn<a class="headerlink" href="#gunicorn" title="Permalink to this headline">¶</a></h3>
+<ol class="arabic">
+<li><p class="first">Make a file called <code class="docutils literal"><span class="pre">/etc/transmogrify/conf/gunicorn_conf.py</span></code></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">NAME</span> <span class="o">=</span> <span class="s">&#39;transmogrify&#39;</span>
+<span class="n">bind</span> <span class="o">=</span> <span class="s">&quot;unix:///var/run/</span><span class="si">%s</span><span class="s">.sock&quot;</span> <span class="o">%</span> <span class="n">NAME</span>
+<span class="n">pidfile</span> <span class="o">=</span> <span class="s">&quot;/var/run/</span><span class="si">%s</span><span class="s">.pid&quot;</span> <span class="o">%</span> <span class="n">NAME</span>
+<span class="n">user</span> <span class="o">=</span> <span class="s">&quot;www-data&quot;</span>
+<span class="n">group</span> <span class="o">=</span> <span class="s">&quot;www-data&quot;</span>
+<span class="n">accesslog</span> <span class="o">=</span> <span class="s">&quot;/var/log/gunicorn/</span><span class="si">%s</span><span class="s">.access.log&quot;</span> <span class="o">%</span> <span class="n">NAME</span>
+<span class="n">errorlog</span> <span class="o">=</span> <span class="s">&quot;/var/log/gunicorn/</span><span class="si">%s</span><span class="s">.error.log&quot;</span> <span class="o">%</span> <span class="n">NAME</span>
+<span class="n">proc_name</span> <span class="o">=</span> <span class="n">NAME</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">Create a script called <code class="docutils literal"><span class="pre">/etc/transmogrify/transmogrify</span></code></p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="c">#!/bin/bash</span>
+<span class="nv">HOMEDIR</span><span class="o">=</span><span class="s2">&quot;/etc/transmogrify&quot;</span>
+<span class="nv">CONF</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$HOMEDIR</span><span class="s2">/conf/gunicorn_conf.py&quot;</span>
+<span class="nv">NAME</span><span class="o">=</span>transmogrify
+<span class="nb">cd</span> <span class="nv">$HOMEDIR</span>
+<span class="nb">source </span>virtualenv/bin/activate
+<span class="nv">TRANSMOGRIFY_SETTINGS</span><span class="o">=</span>transmogrify_settings <span class="nb">exec</span> <span class="nv">$HOMEDIR</span>/virtualenv/bin/python <span class="se">\</span>
+   /etc/transmogrify/virtualenv/bin/gunicorn <span class="se">\</span>
+   --config <span class="nv">$CONF</span> transmogrify.wsgi:app
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make the script executable</p>
+<div class="highlight-console"><div class="highlight"><pre><span class="gp">#</span> chmod a+x transmogrify
+</pre></div>
+</div>
+</li>
+<li><p class="first">Make a startup script</p>
+<div class="highlight-bash"><div class="highlight"><pre>description <span class="s2">&quot;Transmogrify&quot;</span>
+start on runlevel <span class="o">[</span>2345<span class="o">]</span>
+stop on runlevel <span class="o">[</span>06<span class="o">]</span>
+respawn
+respawn limit <span class="m">10</span> 5
+
+script
+    /etc/transmogrify/transmogrify
+end script
+</pre></div>
+</div>
+</li>
+</ol>
 </div>
 <div class="section" id="uwsgi">
 <h3>uWSGI<a class="headerlink" href="#uwsgi" title="Permalink to this headline">¶</a></h3>
 </div>
+</div>
+<div class="section" id="change-permissions">
+<h2>Change Permissions<a class="headerlink" href="#change-permissions" title="Permalink to this headline">¶</a></h2>
+<ol class="arabic simple">
+<li>sudo chown -r www-data:www-data /etc/transmogrify</li>
+</ol>
 </div>
 </div>
 
@@ -137,7 +220,7 @@
     <div class="footer">
     <p>
       &copy; Copyright 2010, The Washington Times.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.2b1.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3b2.
 	</p>
     </div>
       <div class="clearer"></div>

@@ -1,5 +1,4 @@
 #!/bin/bash
-#set -e
 HOMEDIR="/etc/transmogrify"
 CONF="$HOMEDIR/conf/gunicorn_conf.py"
 NAME=transmogrify

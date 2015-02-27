@@ -19,6 +19,8 @@ You will have access to the following tags:
 
 * :ref:`forcefit_tag`
 
+* :ref:`autocrop_tag`
+
 * :ref:`crop_tag`
 
 * :ref:`filter_tag`
@@ -343,6 +345,8 @@ Example:
 .. image:: example_imgs/square_img_c100x100.jpg
 .. image:: example_imgs/vert_img_c100x100.jpg
 
+
+.. _autocrop_tag:
 
 autocrop
 ========

@@ -46,6 +46,14 @@ def create_securityhash(action_tuples):
     return security_hash
 
 
+def create_purge_securityhash():
+    """
+    Create a SHA1 hsh based on the KEY and 'PURGE'
+    """
+    security_hash = sha1('PURGE' + SECRET_KEY).hexdigest()
+    return security_hash
+
+
 def generate_url(url, action_string):
     security_hash = sha1(action_string + SECRET_KEY).hexdigest()
     base_url, ext = os.path.splitext(url)
@@ -56,7 +64,10 @@ def generate_url(url, action_string):
 def is_valid_security(action_tuples, security_hash):
     if DEBUG and security_hash == "debug":
         return True
-    return create_securityhash(action_tuples) == security_hash
+    if action_tuples == 'PURGE':
+        return create_purge_securityhash() == security_hash
+    else:
+        return create_securityhash(action_tuples) == security_hash
 
 
 def resolve_request_path(requested_uri):
@@ -93,7 +104,7 @@ def parse_action_tuples(filename):
     return base_file_name, action_tuples
 
 
-def process_url(url, server_name="", document_root=None):
+def process_url(url, server_name="", document_root=None, check_security=True):
     """
     Goes through the url and returns a dictionary of fields.
 
@@ -151,7 +162,7 @@ def process_url(url, server_name="", document_root=None):
     if not os.path.exists(original_file):
         msg = "Original file does not exist. %r %r" % (url, original_file, )
         raise Http404(msg)
-    if action_tuples and not is_valid_security(action_tuples, security_hash):
+    if check_security and action_tuples and not is_valid_security(action_tuples, security_hash):
         raise Http404("Invalid security token.")
     output = {
         'actions': action_tuples,
@@ -164,3 +175,18 @@ def process_url(url, server_name="", document_root=None):
         'orignial_uri': original_uri,
     }
     return output
+
+
+def get_cached_files(url, server_name="", document_root=None):
+    """
+    Given a URL, return a list of paths of all cached variations of that file.
+
+    Doesn't include the original file.
+    """
+    import glob
+    url_info = process_url(url, server_name, document_root, check_security=False)
+
+    # get path to cache directory with basename of file (no extension)
+    filedir = os.path.dirname(url_info['requested_file'])
+    fileglob = '{0}*{1}'.format(url_info['base_filename'], url_info['ext'])
+    return glob.glob(os.path.join(filedir, fileglob))

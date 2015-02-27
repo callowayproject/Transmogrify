@@ -32,7 +32,10 @@ class Processor(object):
         (width, height) tuple.
         """
         bits = size.split("x")
-        ratio = float(image.size[0]) / float(image.size[1])
+        if image.size[0] == 0 or image.size[1] == 0:
+            ratio = 1.0
+        else:
+            ratio = float(image.size[0]) / float(image.size[1])
 
         if len(bits) == 1 or not bits[1]:
             width = int(bits[0])
@@ -52,6 +55,9 @@ class Processor(object):
         """
         im_width, im_height = image.size
         out_width, out_height = fit_to_width, fit_to_height
+        if im_width == 0 or im_height == 0:
+            return (fit_to_width, fit_to_height)
+
         w_scale = float(fit_to_width) / float(im_width)
         h_scale = float(fit_to_height) / float(im_height)
         if w_scale < h_scale:
