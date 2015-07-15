@@ -1,12 +1,19 @@
 import os
 from hashlib import sha1
 from PIL import Image
+import images2gif
 from settings import PROCESSORS, SECRET_KEY
 
 
 class Transmogrify(object):
     def __init__(self, original_file, action_tuples=[], quality=80, output_path=None, **kwargs):
         self.im = Image.open(original_file)
+        if 'duration' in self.im.info and self.im.format == 'GIF':
+            self.duration = int(self.im.info['duration']) / 1000.0
+            self.frames = images2gif.readGif(original_file, False)
+        else:
+            self.duration = None
+            self.frames = []
         self.output_path = output_path
         self.original_file = original_file
         self.actions = action_tuples
@@ -20,12 +27,17 @@ class Transmogrify(object):
 
         Then save the mogrified image.
         """
+        filename = self.get_processed_filename()
         for action, arg in self.actions:
             action = PROCESSORS[action]
-            self.im = action.process(self.im, arg)
-
-        filename = self.get_processed_filename()
-        self.im.save(filename, quality=self.quality)
+            if self.frames:
+                new_frames = []
+                for frame in self.frames:
+                    new_frames.append(action.process(frame, arg))
+                images2gif.writeGif(filename, new_frames)
+            else:
+                self.im = action.process(self.im, arg)
+                self.im.save(filename, quality=self.quality)
 
     def apply_action_tuples(self, actions):
         """
