@@ -131,8 +131,6 @@ def app(environ, start_response):
 
 
 def do_redirect(environ, start_response, path):
-    if get_path(environ) == path:
-        return do_500(environ, start_response, 'Redirect Loop Detected')
     start_response("302 Found", [("Location", path)])
     return []
 
