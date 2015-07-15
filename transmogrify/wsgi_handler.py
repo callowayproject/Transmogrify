@@ -69,8 +69,8 @@ def do_fallback(fallback_servers, base_path, path_info):
     if not match:
         return (False, "no matching fallback")
 
-    remote_path, fallback_server = match
-    fallback_url = urlparse.urljoin(fallback_server, remote_path)
+    fallback_url = match
+    # fallback_url = urlparse.urljoin(fallback_server, remote_path)
     output_file = os.path.join(base_path, path_info)
 
     if not os.path.lexists(output_file):
@@ -126,7 +126,7 @@ def app(environ, start_response):
     lock = '/tmp/%s' % sha1(path_and_query).hexdigest()
 
     if os.path.isfile(lock):
-        return doRedirect(environ, start_response, request_uri)
+        return do_redirect(environ, start_response, request_uri)
 
     with lock_file(lock):
 
@@ -159,10 +159,10 @@ def app(environ, start_response):
             urlbits[2] = os.path.join(requested_dir, filename)
             request_uri = urlparse.urlunsplit(urlbits)
 
-        return doRedirect(environ, start_response, request_uri)
+        return do_redirect(environ, start_response, request_uri)
 
 
-def doRedirect(environ, start_response, path):
+def do_redirect(environ, start_response, path):
     start_response("302 Found", [("Location", path)])
     return []
 
@@ -192,6 +192,7 @@ ERROR_404 = """
 </html>
 """
 
+
 class DemoApp(object):
     def __init__(self):
         from static import Cling
@@ -200,6 +201,7 @@ class DemoApp(object):
 
     def __call__(self, environ, start_response):
         response = {}
+
         def sr(status, headers):
             response['status'] = status
             response['headers'] = headers
