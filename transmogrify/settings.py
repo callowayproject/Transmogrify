@@ -97,7 +97,7 @@ FALLBACK_SERVERS = (
     # Format is
     # (regex, repl, host),
     # (r"^/media/(.*), "\1", "http://www.example.com/"),
-    )
+)
 
 PROCESSORS = {}
 for attr in processors.__all__:
