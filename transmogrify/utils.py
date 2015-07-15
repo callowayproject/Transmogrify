@@ -94,7 +94,8 @@ def parse_action_tuples(filename):
             continue
         if is_valid_actionstring(action):
             action_tuples.insert(0, (action[0], action[1:]))
-            bits.pop()  # pop the remaining underscore off the stack
+            if bits and bits[-1] == '_':
+                bits.pop()  # pop the remaining underscore off the stack
         else:
             bits.append(action)
             break
