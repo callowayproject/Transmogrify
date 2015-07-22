@@ -7,7 +7,6 @@ WSGI handler for mogrifying images.
 import os
 import urlparse
 from hashlib import sha1
-from settings import DEBUG, BASE_PATH
 from utils import process_url, Http404
 from transmogrify import Transmogrify
 from contextlib import contextmanager
@@ -62,6 +61,7 @@ def handle_purge(environ, start_response):
     Handle a PURGE request.
     """
     from utils import is_valid_security, get_cached_files
+    from settings import DEBUG
     server = environ['SERVER_NAME']
     try:
         request_uri = get_path(environ)
@@ -83,6 +83,8 @@ def handle_purge(environ, start_response):
 
 
 def app(environ, start_response):
+    from settings import DEBUG
+
     cropname = None
     server = environ['SERVER_NAME']
     quality = 80
@@ -105,6 +107,10 @@ def app(environ, start_response):
             url_parts = process_url(path_and_query, server)
             output_path, _ = os.path.split(url_parts['requested_file'])
             makedirs(output_path)
+            if not os.path.exists(url_parts['original_file']):
+                raise Http404
+            if not os.path.isfile(url_parts['original_file']):
+                raise Http404
         except Http404 as e:
             return do_404(environ, start_response, e.message, DEBUG)
 
@@ -131,6 +137,8 @@ def app(environ, start_response):
 
 
 def do_redirect(environ, start_response, path):
+    # if get_path(environ) == path:
+    #     return do_500(environ, start_response, 'Redirect Loop Detected')
     start_response("302 Found", [("Location", path)])
     return []
 
@@ -190,6 +198,8 @@ ERROR = """
 class DemoApp(object):
     def __init__(self):
         from static import Cling
+        from settings import BASE_PATH
+
         self.app = Cling(BASE_PATH)
         self.fallback = app
 

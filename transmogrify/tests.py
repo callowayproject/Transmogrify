@@ -22,7 +22,6 @@ except ImportError:
 HERE = os.path.abspath(os.path.dirname(__file__))
 TESTDATA = os.path.abspath(os.path.join(HERE, 'testdata'))
 os.environ['TRANSMOGRIFY_SECRET'] = 'secret'
-from settings import (SECRET_KEY, PATH_ALIASES, DEBUG, ORIG_BASE_PATH)  # NOQA
 
 
 def get_test_filepath(filename):
@@ -62,7 +61,7 @@ class TestParseActionTuples(unittest.TestCase):
         )
 
         self.assertEqual(
-            ("c1088", []),
+            ("", [("c", "1088")]),
             utils.parse_action_tuples("c1088")
         )
 
@@ -72,7 +71,7 @@ class TestParseActionTuples(unittest.TestCase):
         )
 
         self.assertEqual(
-            ("c1088", [("c", "0-0-100-100")]),
+            ("", [("c", "1088"), ("c", "0-0-100-100")]),
             utils.parse_action_tuples("c1088_c0-0-100-100")
         )
 
@@ -254,6 +253,8 @@ class UrlProcessingTest(TestCase):
 
     def test_aliases(self):
         import utils
+        import os
+        os.environ['TRANSMOGRIFY_PATH_ALIASES'] = '/media/,/testdata/'
         utils.PATH_ALIASES = {'/media/': '/testdata/'}
         url = "/media/horiz_img_r200.jpg"
         url += "?%s" % self.do_sha_hash('_r200')
@@ -434,7 +435,7 @@ class TestWSGIHandler(unittest.TestCase):
         reload(utils)
 
     def tearDown(self):
-        for filename in ["vert_img_r222.jpg", "vert_img-testcrop.jpg"]:
+        for filename in ["vert_img_r222.jpg", "vert_img-testcrop.jpg", ]:
             absfn = get_test_filepath(filename)
 
         if os.path.exists(absfn):
@@ -465,6 +466,7 @@ class TestWSGIHandler(unittest.TestCase):
                                "path": "/vert_img_r222.jpg"})
 
         req = Request.blank("/")
+        req.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = TESTDATA
         req.environ['SERVER_NAME'] = 'testserver'
         req.environ['QUERY_STRING'] = qs
 
@@ -475,6 +477,21 @@ class TestWSGIHandler(unittest.TestCase):
         self.assertEqual("/vert_img_r222.jpg?" + security_hash, resp.location)
         self.assertTrue(os.path.exists(get_test_filepath("vert_img_r222.jpg")))
 
+    def test_original(self):
+        qs = urllib.urlencode({"path": "/vert_img.jpg"})
+
+        req = Request.blank("/")
+        req.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = TESTDATA
+        req.environ['SERVER_NAME'] = 'testserver'
+        req.environ['QUERY_STRING'] = qs
+
+        resp = req.get_response(wsgi_handler.app)
+
+        self.assertEqual("", resp.body)
+        self.assertEqual("302 Found", resp.status)
+        self.assertEqual("/vert_img.jpg", resp.location)
+        self.assertTrue(os.path.exists(get_test_filepath("vert_img.jpg")))
+
     def test_cropname(self):
         security_hash = self.do_sha_hash("_r222")
         qs = urllib.urlencode({"key": security_hash,
@@ -482,6 +499,7 @@ class TestWSGIHandler(unittest.TestCase):
                                "cropname": "testcrop"})
 
         req = Request.blank("/")
+        req.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = TESTDATA
         req.environ['SERVER_NAME'] = 'testserver'
         req.environ['QUERY_STRING'] = qs
 

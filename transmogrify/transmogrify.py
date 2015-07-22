@@ -2,18 +2,20 @@ import os
 from hashlib import sha1
 from PIL import Image
 import images2gif
-from settings import PROCESSORS, SECRET_KEY
 
 
 class Transmogrify(object):
     def __init__(self, original_file, action_tuples=[], quality=80, output_path=None, **kwargs):
-        self.im = Image.open(original_file)
-        if 'duration' in self.im.info and self.im.format == 'GIF':
-            self.duration = int(self.im.info['duration']) / 1000.0
-            self.frames = images2gif.readGif(original_file, False)
+        if not os.path.exists(original_file) or not os.path.isfile(original_file):
+            self.im = None
         else:
-            self.duration = None
-            self.frames = []
+            self.im = Image.open(original_file)
+            if 'duration' in self.im.info and self.im.format == 'GIF':
+                self.duration = int(self.im.info['duration']) / 1000.0
+                self.frames = images2gif.readGif(original_file, False)
+            else:
+                self.duration = None
+                self.frames = []
         self.output_path = output_path
         self.original_file = original_file
         self.actions = action_tuples
@@ -27,7 +29,17 @@ class Transmogrify(object):
 
         Then save the mogrified image.
         """
+        from settings import PROCESSORS
+
         filename = self.get_processed_filename()
+        if not self.actions:
+            if self.frames:
+                new_frames = [frame for frame in self.frames]
+                images2gif.writeGif(filename, new_frames)
+            else:
+                if self.im is None:
+                    return
+                self.im.save(filename, quality=self.quality)
         for action, arg in self.actions:
             action = PROCESSORS[action]
             if self.frames:
@@ -36,6 +48,8 @@ class Transmogrify(object):
                     new_frames.append(action.process(frame, arg))
                 images2gif.writeGif(filename, new_frames)
             else:
+                if self.im is None:
+                    return
                 self.im = action.process(self.im, arg)
                 self.im.save(filename, quality=self.quality)
 
@@ -62,5 +76,7 @@ class Transmogrify(object):
         return "".join(code)
 
     def get_security_hash(self):
+        from settings import SECRET_KEY
+
         action_string = self.get_action_string()
         return sha1(action_string + SECRET_KEY).hexdigest()

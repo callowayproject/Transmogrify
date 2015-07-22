@@ -23,8 +23,6 @@ import re
 import urllib
 import urlparse
 from hashlib import sha1
-from settings import (BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, PROCESSORS,
-                      SECRET_KEY, PATH_ALIASES, DEBUG, ORIG_BASE_PATH)
 
 
 class Http404(Exception):
@@ -32,6 +30,7 @@ class Http404(Exception):
 
 
 def is_valid_actionstring(action_string):
+    from settings import PROCESSORS
     code, arg = action_string[0], action_string[1:]
 
     return code in PROCESSORS and PROCESSORS[code].param_pattern().match(arg)
@@ -41,6 +40,8 @@ def create_securityhash(action_tuples):
     """
     Create a SHA1 hash based on the KEY and action string
     """
+    from settings import SECRET_KEY
+
     action_string = "".join(["_%s%s" % a for a in action_tuples])
     security_hash = sha1(action_string + SECRET_KEY).hexdigest()
     return security_hash
@@ -50,11 +51,14 @@ def create_purge_securityhash():
     """
     Create a SHA1 hsh based on the KEY and 'PURGE'
     """
+    from settings import SECRET_KEY
     security_hash = sha1('PURGE' + SECRET_KEY).hexdigest()
     return security_hash
 
 
 def generate_url(url, action_string):
+    from settings import SECRET_KEY
+
     security_hash = sha1(action_string + SECRET_KEY).hexdigest()
     base_url, ext = os.path.splitext(url)
 
@@ -62,6 +66,8 @@ def generate_url(url, action_string):
 
 
 def is_valid_security(action_tuples, security_hash):
+    from settings import DEBUG
+
     if DEBUG and security_hash == "debug":
         return True
     if action_tuples == 'PURGE':
@@ -76,6 +82,8 @@ def resolve_request_path(requested_uri):
 
     Returns resolved_uri
     """
+    from settings import PATH_ALIASES
+
     for key, val in PATH_ALIASES.items():
         if re.match(key, requested_uri):
             return re.sub(key, val, requested_uri)
@@ -123,6 +131,8 @@ def process_url(url, server_name="", document_root=None, check_security=True):
 
     The ``document_root`` parameter overrides the ``BASE_PATH`` setting.
     """
+    from settings import (BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, ORIG_BASE_PATH)
+
     try:
         request_uri, security_hash = url.split("?", 1)
     except ValueError:

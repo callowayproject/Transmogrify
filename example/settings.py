@@ -83,5 +83,11 @@ TEMPLATE_DIRS = (
 INSTALLED_APPS = (
     'transmogrify',
 )
+TRANSMOGRIFY_SETTINGS = {
+    'ORIG_BASE_PATH': os.path.join(PROJ_ROOT, "testdata"),
+    'BASE_PATH': os.path.join(PROJ_ROOT, "testdata"),
 
+}
 TRANSMOGRIFY_SECRET = "whatevs"
+os.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
+os.environ['TRANSMOGRIFY_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
