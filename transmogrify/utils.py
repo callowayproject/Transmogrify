@@ -137,6 +137,7 @@ def process_url(url, server_name="", document_root=None, check_security=True):
         request_uri, security_hash = url.split("?", 1)
     except ValueError:
         request_uri, security_hash = url, ""
+    request_uri = urllib.unquote(request_uri)
     resolved_uri = resolve_request_path(request_uri)
     resolved_uri = resolved_uri.lstrip("/")
 
