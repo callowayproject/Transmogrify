@@ -2,17 +2,21 @@ import os
 import processors
 
 DEFAULT_SETTINGS = {
-    'SECRET_KEY': "",
-    'DEBUG': False,
-    'ORIG_PATH_HANDLER': None,
-    'ORIG_BASE_PATH': "/home/media/",
-    'USE_VHOSTS': False,
     'BASE_PATH': "/home/media/",
-    'VHOST_DOC_BASE': "",
-    'NO_IMAGE_URL': "",
-    'PATH_ALIASES': {},
+    'DEBUG': False,
+    'EXTERNAL_PREFIX': "/external/",
     'FALLBACK_SERVERS': (),
+    'IMAGE_OPTIMIZATION_CMD': '',
+    'NO_IMAGE_URL': "",
     'OPENCV_PREFIX': '/usr/local/share/',
+    'ORIG_BASE_PATH': "/home/media/",
+    'ORIG_PATH_HANDLER': None,
+    'PATH_ALIASES': {},
+    'SECRET_KEY': "",
+    'USE_VHOSTS': False,
+    'VALID_DOMAINS': [],
+    'VHOST_DOC_BASE': "",
+    'VALID_IMAGE_EXTENSIONS': ['jpeg', 'jpg', 'gif', 'png', ]
 }
 
 USER_SETTINGS = DEFAULT_SETTINGS.copy()
@@ -52,6 +56,8 @@ if settings_file:
 # Shared secret
 if "TRANSMOGRIFY_SECRET" in os.environ:
     USER_SETTINGS['SECRET_KEY'] = os.environ.get("TRANSMOGRIFY_SECRET")
+if "TRANSMOGRIFY_SECRET_KEY" in os.environ:
+    USER_SETTINGS['SECRET_KEY'] = os.environ.get("TRANSMOGRIFY_SECRET_KEY")
 
 # Debug mode
 if "TRANSMOGRIFY_DEBUG" in os.environ:
@@ -82,13 +88,17 @@ if "TRANSMOGRIFY_PATH_ALIASES" in os.environ:
 # (regex, repl, host),
 # (r"^/media/(.*), "\1", "http://www.example.com/"),
 if "TRANSMOGRIFY_FAILBACK_SERVERS" in os.environ:
-    USER_SETTINGS['FALLBACK_SERVERS'] = dict(lists_from_env("TRANSMOGRIFY_FAILBACK_SERVERS"))
+    USER_SETTINGS['FALLBACK_SERVERS'] = dict(lists_from_env("TRANSMOGRIFY_FALLBACK_SERVERS"))
 
 if "TRANSMOGRIFY_ORIG_PATH_HANDLER" in os.environ:
     USER_SETTINGS['ORIG_PATH_HANDLER'] = os.environ.get("TRANSMOGRIFY_ORIG_PATH_HANDLER", "")
 
 if "TRANSMOGRIFY_ORIG_BASE_PATH" in os.environ:
     USER_SETTINGS['ORIG_BASE_PATH'] = os.environ.get("TRANSMOGRIFY_ORIG_BASE_PATH", "/home/media/")
+
+if "TRANSMOGRIFY_EXTERNAL_PREFIX" in os.environ:
+    USER_SETTINGS['EXTERNAL_PREFIX'] = os.environ.get("TRANSMOGRIFY_EXTERNAL_PREFIX", "/external/")
+
 
 PATH_ALIASES = {}
 

@@ -29,6 +29,24 @@ class Http404(Exception):
     pass
 
 
+def download_url(url, destination):
+    """
+    Download an external URL to the destination
+    """
+    import os
+    import urllib
+    from settings import VALID_IMAGE_EXTENSIONS
+    base_name, ext = os.path.splitext(url)
+    ext = ext.lstrip('.')
+
+    if ext not in VALID_IMAGE_EXTENSIONS:
+        raise Exception("Invalid image extension")
+
+    base_path, filename = os.path.split(destination)
+    os.makedirs(base_path)
+    urllib.urlretrieve(url, destination)
+
+
 def is_valid_actionstring(action_string):
     from settings import PROCESSORS
     code, arg = action_string[0], action_string[1:]
@@ -128,18 +146,27 @@ def process_url(url, server_name="", document_root=None, check_security=True):
     security_hash: e315d4515574cec417b1845392ba687dd98c17ce
     requested_path /path/to/media_root/img/photos/2008/05/12/WIZARDS_0034_05022035_r329x151.jpg
     original_file: /path/to/media_root/img/photos/2008/05/12/WIZARDS_0034_05022035.jpg
+    is_external:   False
 
     The ``document_root`` parameter overrides the ``BASE_PATH`` setting.
     """
-    from settings import (BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, ORIG_BASE_PATH)
+    from settings import (BASE_PATH, ORIG_BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, EXTERNAL_PREFIX)
 
     try:
         request_uri, security_hash = url.split("?", 1)
     except ValueError:
         request_uri, security_hash = url, ""
-    request_uri = urllib.unquote(request_uri)
+
+    external_prefix = EXTERNAL_PREFIX.lstrip("/")
+    is_external = request_uri.startswith(external_prefix)
     resolved_uri = resolve_request_path(request_uri)
     resolved_uri = resolved_uri.lstrip("/")
+    resolved_uri = urllib.unquote(resolved_uri)
+    if is_external:
+        external_url = urllib.unquote(resolved_uri.replace(external_prefix, ''))
+        resolved_uri = resolved_uri.replace("http://", '').replace('https://', '')
+    else:
+        external_url = ''
 
     base_path = document_root or BASE_PATH
     orig_base_path = ORIG_BASE_PATH or base_path
@@ -148,10 +175,10 @@ def process_url(url, server_name="", document_root=None, check_security=True):
         if not os.path.exists(os.path.join(BASE_PATH, server_name)):
             raise Http404("Bad server: %s" % server_name)
         parts = (base_path, server_name, VHOST_DOC_BASE,
-                 urllib.unquote(resolved_uri))
+                 resolved_uri)
         requested_path = os.path.join(*parts)
     else:
-        path = os.path.join(base_path, urllib.unquote(resolved_uri))
+        path = os.path.join(base_path, resolved_uri)
         requested_path = os.path.abspath(path)
     if not requested_path.startswith(base_path):
         # Apparently, there was an attempt to put some directory traversal
@@ -170,8 +197,15 @@ def process_url(url, server_name="", document_root=None, check_security=True):
 
     base_uri = os.path.dirname(resolved_uri)
     original_uri = urlparse.urljoin(base_uri, base_filename + ext)
+    original_is_missing = not os.path.exists(original_file)
 
-    if not os.path.exists(original_file):
+    if original_is_missing and is_external:
+        try:
+            download_url(external_url, original_file)
+        except Exception as e:
+            msg = "Error downloading external URL: %s" % e
+            raise Http404(msg)
+    elif original_is_missing:
         msg = "Original file does not exist. %r %r" % (url, original_file, )
         raise Http404(msg)
     if check_security and action_tuples and not is_valid_security(action_tuples, security_hash):
@@ -185,6 +219,8 @@ def process_url(url, server_name="", document_root=None, check_security=True):
         'requested_file': requested_path,
         'original_file': original_file,
         'orignial_uri': original_uri,
+        'is_external': is_external,
+        'external_url': external_url,
     }
     return output
 
