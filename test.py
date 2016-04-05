@@ -1,1 +1,0 @@
-Specify your Secret Key, or use this random key [)y%&3rwv8jz1vuqg2a!r4s+7i!4ce8g+9&4rp!188+&ub%3n@6]: 
