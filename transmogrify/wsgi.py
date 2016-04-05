@@ -247,4 +247,5 @@ if __name__ == '__main__':
     purge_hash = create_purge_securityhash()
     print "try http://localhost:3031/horiz_img_c0-410-300-710.jpg?%s" % security_hash
     print "try purging http://localhost:3031/horiz_img_c0-410-300-710.jpg?%s" % purge_hash
+    print create_securityhash([('r', '200x22')])
     s.serve_forever()
