@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Settings &mdash; Transmogrify 1.0.1b2 documentation</title>
+    <title>Settings &mdash; Transmogrify 1.2 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.0.1b2',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,14 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Transmogrify 1.0.1b2 documentation" href="../index.html" />
+    <link rel="top" title="Transmogrify 1.2 documentation" href="../index.html" />
     <link rel="up" title="Reference" href="index.html" />
+    <link rel="next" title="Locating and storing images" href="finding_files.html" />
     <link rel="prev" title="Reference" href="index.html" /> 
   </head>
   <body role="document">
 <div id="docstitle">
-	<p>Transmogrify 1.0.1b2 documentation</p>
+	<p>Transmogrify 1.2 documentation</p>
 </div>
 <div id="header">
 	<div id="title"><h1>Settings</h1></div>
@@ -37,6 +38,7 @@
 		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
 		<li id="page_buttons">
 			<div class="headerButton"><a href="../genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="finding_files.html" title="Locating and storing images" accesskey="N">next</a></div>
 			<div class="headerButton"><a href="index.html" title="Reference" accesskey="P">previous</a></div>
 		</li>
 	</ul>
@@ -45,12 +47,16 @@
 <div id="sphinxsidebar">
   <div class="sphinxsidebarwrapper">
 	<ul><li class="toctree-l1"><a href="../index.html">Main Page</a></li></ul>
-	<ul>
+	<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../templatetag.html">Django Template Tag</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webserver_integration/index.html">Web Server Integration</a></li>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Reference</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finding_files.html">Locating and storing images</a></li>
+</ul>
+</li>
 </ul>
 
     <div id="searchbox" style="display: none">
@@ -82,49 +88,70 @@
             
   <div class="section" id="settings">
 <span id="id1"></span><h1>Settings<a class="headerlink" href="#settings" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="transmogrify-secret">
-<span id="id2"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_SECRET</span></code><a class="headerlink" href="#transmogrify-secret" title="Permalink to this headline">¶</a></h2>
-<p>This is any string that is shared between the various servers involved. It is used to create the SHA1 hash. The SHA1 hash is simply used to prevent external sites from requesting arbitrary image alterations.</p>
-<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;&quot;</span></code></p>
-</div>
-<div class="section" id="transmogrify-debug">
-<span id="id3"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_DEBUG</span></code><a class="headerlink" href="#transmogrify-debug" title="Permalink to this headline">¶</a></h2>
-<p>This turns on debug mode, which returns more descriptive error messages and stack traces.</p>
-<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">False</span></code></p>
-</div>
-<div class="section" id="transmogrify-base-path">
-<span id="id4"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_BASE_PATH</span></code><a class="headerlink" href="#transmogrify-base-path" title="Permalink to this headline">¶</a></h2>
-<p>This is the root from where the images are located. If <code class="docutils literal"><span class="pre">TRANSMOGRIFY_BASE_PATH</span></code> is <code class="docutils literal"><span class="pre">/home/media/</span></code>, a request for file <code class="docutils literal"><span class="pre">/images/spanish_inquisition.png</span></code> is looked for at <code class="docutils literal"><span class="pre">/home/media/images/spanish_inquisition.png</span></code>. The request&#8217;s path can be altered with <a class="reference internal" href="#transmogrify-path-aliases"><em>TRANSMOGRIFY_PATH_ALIASES</em></a>.</p>
+<p>Transmogrify&#8217;s settings can be specified via a settings file, or via environment variables, or both. The <code class="docutils literal"><span class="pre">TRANSMOGRIFY_SETTINGS</span></code> environment variable specifies the python file to import. You may also specify one or more settings as environment variables by prefixing <code class="docutils literal"><span class="pre">TRANSMOGRIFY_</span></code> to the name of the setting, such as <code class="docutils literal"><span class="pre">TRANSMOGRIFY_SECRET_KEY</span></code>.</p>
+<div class="section" id="base-path">
+<span id="transmogrify-base-path"></span><h2><code class="docutils literal"><span class="pre">BASE_PATH</span></code><a class="headerlink" href="#base-path" title="Permalink to this headline">¶</a></h2>
 <p><strong>Default:</strong> <code class="docutils literal"><span class="pre">/home/media/</span></code></p>
+<p>This is the root from where the modified images are located. If <code class="docutils literal"><span class="pre">BASE_PATH</span></code> is <code class="docutils literal"><span class="pre">/home/media/</span></code>, a request for file <code class="docutils literal"><span class="pre">/images/spanish_inquisition.png</span></code> is looked for at <code class="docutils literal"><span class="pre">/home/media/images/spanish_inquisition.png</span></code>. The request&#8217;s path can be altered with <a class="reference internal" href="#transmogrify-path-aliases"><span class="std std-ref">PATH_ALIASES</span></a>.</p>
 </div>
-<div class="section" id="transmogrify-path-aliases">
-<span id="id5"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_PATH_ALIASES</span></code><a class="headerlink" href="#transmogrify-path-aliases" title="Permalink to this headline">¶</a></h2>
-<p>Typically the location of the original file to modify is derived from:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">TRANSMOGRIFY_BASE_PATH</span> <span class="o">+</span> <span class="n">requested_url</span>
+<div class="section" id="debug">
+<span id="transmogrify-debug"></span><h2><code class="docutils literal"><span class="pre">DEBUG</span></code><a class="headerlink" href="#debug" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">False</span></code></p>
+<p>This turns on debug mode, which returns more descriptive error messages and stack traces.</p>
+</div>
+<div class="section" id="external-prefix">
+<span id="id2"></span><h2><code class="docutils literal"><span class="pre">EXTERNAL_PREFIX</span></code><a class="headerlink" href="#external-prefix" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;/external/&quot;</span></code></p>
+<p>Image requests prefixed with this path are considered external images that must be fetched from the URL-encoded path before any modifications are made.</p>
+<p>Any false-y value (e.g. empty string, <code class="docutils literal"><span class="pre">False</span></code>, or <code class="docutils literal"><span class="pre">None</span></code>) turns this off.</p>
+</div>
+<div class="section" id="fallback-servers">
+<span id="id3"></span><h2><code class="docutils literal"><span class="pre">FALLBACK_SERVERS</span></code><a class="headerlink" href="#fallback-servers" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">()</span></code></p>
+<p>TBD</p>
+</div>
+<div class="section" id="image-optimization-cmd">
+<span id="transmogrify-image-optimization-cmd"></span><h2><code class="docutils literal"><span class="pre">IMAGE_OPTIMIZATION_CMD</span></code><a class="headerlink" href="#image-optimization-cmd" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;&quot;</span></code></p>
+<p>A  <a class="reference external" href="https://docs.python.org/2/library/string.html#format-string-syntax">python template string</a> including the command and options to optimize images. It must include &#8220;<code class="docutils literal"><span class="pre">{filename}</span></code>&#8221; for substitution of the file path to optimize.</p>
+<p>Any false-y value (e.g. empty string, <code class="docutils literal"><span class="pre">False</span></code>, or <code class="docutils literal"><span class="pre">None</span></code>) turns this off.</p>
+<p>Example:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="s">&quot;IMAGE_OPTIMIZATION_CMD&quot;</span><span class="p">:</span> <span class="s">&quot;/usr/bin/picopt -GQaYM {filename}&quot;</span>
 </pre></div>
 </div>
-<p>Sometimes this isn&#8217;t very useful, as the actual paths of the files don&#8217;t make for good URLs. <code class="docutils literal"><span class="pre">TRANSMOGRIFY_PATH_ALIASES</span></code> allows you to set regular expressions to alter incoming URLs.</p>
-<p><code class="docutils literal"><span class="pre">TRANSMOGRIFY_PATH_ALIASES</span></code> is a dictionary of <code class="docutils literal"><span class="pre">{'&lt;url_regex&gt;':</span> <span class="pre">'&lt;sub_regex&gt;'}</span></code>. Each request is matched against the keys. The first match is substituted using that key&#8217;s value. For example if your images were stored in <code class="docutils literal"><span class="pre">/home/www/assets/images/</span></code>, but the URL was <code class="docutils literal"><span class="pre">/media/images/</span></code>, you would set:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="n">TRANSMOGRIFY_BASE_PATH</span> <span class="o">=</span> <span class="s">&quot;/home/www&quot;</span>
-<span class="n">TRANSMOGRIFY_PATH_ALIASES</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;/media/&#39;</span><span class="p">:</span><span class="s">&#39;/assets/&#39;</span><span class="p">}</span>
-</pre></div>
 </div>
-<p>so requests for <code class="docutils literal"><span class="pre">/media/images/sample.jpg</span></code> converts into <code class="docutils literal"><span class="pre">/assets/images/sample.jpg</span></code> and when added to <code class="docutils literal"><span class="pre">/home/www</span></code> you get the file.</p>
+<div class="section" id="no-img-url">
+<span id="transmogrify-no-img-url"></span><h2><code class="docutils literal"><span class="pre">NO_IMG_URL</span></code><a class="headerlink" href="#no-img-url" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;&quot;</span></code></p>
+<p>Allows for a generic image to return if the original file isn&#8217;t found.</p>
+</div>
+<div class="section" id="opencv-prefix">
+<span id="transmogrify-opencv-prefix"></span><h2><code class="docutils literal"><span class="pre">OPENCV_PREFIX</span></code><a class="headerlink" href="#opencv-prefix" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;/usr/local/share/&quot;</span></code></p>
+<p>OpenCV is used for automatic face detection, if requested for automatic cropping.</p>
+</div>
+<div class="section" id="orig-base-path">
+<h2><code class="docutils literal"><span class="pre">ORIG_BASE_PATH</span></code><a class="headerlink" href="#orig-base-path" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;/home/media/&quot;</span></code></p>
+<p>This is where the original images are stored.</p>
+</div>
+<div class="section" id="path-aliases">
+<span id="transmogrify-path-aliases"></span><h2><code class="docutils literal"><span class="pre">PATH_ALIASES</span></code><a class="headerlink" href="#path-aliases" title="Permalink to this headline">¶</a></h2>
 <p><strong>Default:</strong> <code class="docutils literal"><span class="pre">{}</span></code></p>
 </div>
-<div class="section" id="transmogrify-use-vhosts">
-<span id="id6"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_USE_VHOSTS</span></code><a class="headerlink" href="#transmogrify-use-vhosts" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="secret-key">
+<span id="transmogrify-secret"></span><h2><code class="docutils literal"><span class="pre">SECRET_KEY</span></code><a class="headerlink" href="#secret-key" title="Permalink to this headline">¶</a></h2>
+<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;&quot;</span></code></p>
+<p>This is any string that is shared between the various servers involved. It is used to create the SHA1 hash. The SHA1 hash is simply used to prevent external sites from requesting arbitrary image alterations.</p>
+</div>
+<div class="section" id="use-vhosts">
+<span id="transmogrify-use-vhosts"></span><h2><code class="docutils literal"><span class="pre">USE_VHOSTS</span></code><a class="headerlink" href="#use-vhosts" title="Permalink to this headline">¶</a></h2>
 <p>Allows for the use of simple lighttpd vhosts. This hasn&#8217;t been fully tested yet.</p>
 <p><strong>Default:</strong> <code class="docutils literal"><span class="pre">False</span></code></p>
 </div>
-<div class="section" id="transmogrify-vhost-doc-base">
-<span id="id7"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_VHOST_DOC_BASE</span></code><a class="headerlink" href="#transmogrify-vhost-doc-base" title="Permalink to this headline">¶</a></h2>
-<p>Used with <a class="reference internal" href="#transmogrify-use-vhosts"><em>TRANSMOGRIFY_USE_VHOSTS</em></a> to locate the original document.</p>
-<p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;&quot;</span></code></p>
-</div>
-<div class="section" id="transmogrify-no-img-url">
-<span id="id8"></span><h2><code class="docutils literal"><span class="pre">TRANSMOGRIFY_NO_IMG_URL</span></code><a class="headerlink" href="#transmogrify-no-img-url" title="Permalink to this headline">¶</a></h2>
-<p>Allows for a generic image to return if the original file isn&#8217;t found.</p>
+<div class="section" id="vhost-doc-base">
+<span id="transmogrify-vhost-doc-base"></span><h2><code class="docutils literal"><span class="pre">VHOST_DOC_BASE</span></code><a class="headerlink" href="#vhost-doc-base" title="Permalink to this headline">¶</a></h2>
+<p>Used with <a class="reference internal" href="#transmogrify-use-vhosts"><span class="std std-ref">USE_VHOSTS</span></a> to locate the original document.</p>
 <p><strong>Default:</strong> <code class="docutils literal"><span class="pre">&quot;&quot;</span></code></p>
 </div>
 </div>
@@ -135,8 +162,8 @@
       </div>
     <div class="footer">
     <p>
-      &copy; Copyright 2010, The Washington Times.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3b2.
+      &copy; Copyright 2016, The Calloway Project.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.
 	</p>
     </div>
       <div class="clearer"></div>

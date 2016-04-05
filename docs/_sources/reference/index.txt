@@ -8,5 +8,6 @@ Reference
 .. toctree::
    :maxdepth: 3
    :glob:
-   
+
    settings
+   finding_files

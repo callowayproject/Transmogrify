@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Locating and storing images &mdash; Transmogrify 1.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '1.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="Transmogrify 1.2 documentation" href="../index.html" />
+    <link rel="up" title="Reference" href="index.html" />
+    <link rel="prev" title="Settings" href="settings.html" /> 
+  </head>
+  <body role="document">
+<div id="docstitle">
+	<p>Transmogrify 1.2 documentation</p>
+</div>
+<div id="header">
+	<div id="title"><h1>Locating and storing images</h1></div>
+	<ul id="headerButtons">
+		<li id="toc_button"><div class="headerButton"><a href="#">Table of Contents</a></div></li>
+		<li id="page_buttons">
+			<div class="headerButton"><a href="../genindex.html" title="General Index" accesskey="I">index</a></div>
+			<div class="headerButton"><a href="settings.html" title="Settings" accesskey="P">previous</a></div>
+		</li>
+	</ul>
+</div>
+
+<div id="sphinxsidebar">
+  <div class="sphinxsidebarwrapper">
+	<ul><li class="toctree-l1"><a href="../index.html">Main Page</a></li></ul>
+	<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../templatetag.html">Django Template Tag</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../webserver_integration/index.html">Web Server Integration</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Locating and storing images</a></li>
+</ul>
+</li>
+</ul>
+
+    <div id="searchbox" style="display: none">
+      
+        <form class="search" action="../search.html" method="get">
+			<div class="search-wrapper">
+			<span class="search-left"></span>
+			<input class="prettysearch" type="text" name="q" size="18" />
+			<span class="search-right">&nbsp;</span>
+			</div>
+          <input type="submit" value="Search" class="searchbutton" />
+          <input type="hidden" name="check_keywords" value="yes" />
+          <input type="hidden" name="area" value="default" />
+        </form>
+        <p class="searchtip" style="font-size: 90%">
+        Enter search terms or a module, class or function name.
+        </p>
+    </div>
+    <script type="text/javascript">$('#searchbox').show(0);</script>
+  </div>
+</div>
+
+
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="locating-and-storing-images">
+<span id="finding-files"></span><h1>Locating and storing images<a class="headerlink" href="#locating-and-storing-images" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="original-files">
+<h2>Original files<a class="headerlink" href="#original-files" title="Permalink to this headline">¶</a></h2>
+<p>You store your original files in either <code class="docutils literal"><span class="pre">ORIG_BASE_PATH</span></code> or <code class="docutils literal"><span class="pre">ORIG_BASE_PATH/VIRTUAL_HOST/</span></code></p>
+</div>
+<div class="section" id="how-local-images-are-located-and-stored">
+<h2>How local images are located and stored<a class="headerlink" href="#how-local-images-are-located-and-stored" title="Permalink to this headline">¶</a></h2>
+<p>The basic structure of the file path is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">ORIG_BASE_PATH</span> <span class="o">+</span> <span class="n">REQUESTED_PATH</span>
+</pre></div>
+</div>
+<p>or if using virtual hosts:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">ORIG_BASE_PATH</span> <span class="o">+</span> <span class="n">VIRTUAL_HOST</span> <span class="o">+</span> <span class="n">REQUESTED_PATH</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="how-external-images-are-located-and-stored">
+<h2>How external images are located and stored<a class="headerlink" href="#how-external-images-are-located-and-stored" title="Permalink to this headline">¶</a></h2>
+<p>The basic structure of the file path is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">ORIG_BASE_PATH</span> <span class="o">+</span> <span class="n">EXTERNAL_PREFIX</span> <span class="o">+</span> <span class="n">EXTERNAL_URL</span>
+</pre></div>
+</div>
+<p>or if using virtual hosts:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">ORIG_BASE_PATH</span> <span class="o">+</span> <span class="n">VIRTUAL_HOST</span> <span class="o">+</span> <span class="n">EXTERNAL_PREFIX</span> <span class="o">+</span> <span class="n">EXTERNAL_URL</span>
+</pre></div>
+</div>
+<p>In the case of external images, the file&#8217;s entire URL becomes its name, because the file&#8217;s entire URL is URL-encoded into the request. This allows the HTTP server front end to look for the file easily.</p>
+</div>
+<div class="section" id="modifying-the-requested-file-path">
+<h2>Modifying the requested file path<a class="headerlink" href="#modifying-the-requested-file-path" title="Permalink to this headline">¶</a></h2>
+<p>The setting <a class="reference internal" href="settings.html#transmogrify-path-aliases"><span class="std std-ref">PATH_ALIASES</span></a> allows you to set regular expressions to alter incoming URLs.</p>
+<p><code class="docutils literal"><span class="pre">PATH_ALIASES</span></code> is a dictionary of <code class="docutils literal"><span class="pre">{'&lt;url_regex&gt;':</span> <span class="pre">'&lt;sub_regex&gt;'}</span></code>. Each request is matched against the keys. The first match is substituted using that key&#8217;s value. For example if your images were stored in <code class="docutils literal"><span class="pre">/home/www/assets/images/</span></code>, but the URL was <code class="docutils literal"><span class="pre">/media/images/</span></code>, you would set:</p>
+<div class="highlight-default"><div class="highlight"><pre><span class="n">ORIG_BASE_PATH</span> <span class="o">=</span> <span class="s">&quot;/home/www&quot;</span>
+<span class="n">PATH_ALIASES</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;/media/&#39;</span><span class="p">:</span><span class="s">&#39;/assets/&#39;</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>so requests for <code class="docutils literal"><span class="pre">/media/images/sample.jpg</span></code> converts into <code class="docutils literal"><span class="pre">/assets/images/sample.jpg</span></code> and when added to <code class="docutils literal"><span class="pre">/home/www</span></code> you get the file.</p>
+</div>
+</div>
+
+
+          </div> 
+        </div>
+      </div>
+    <div class="footer">
+    <p>
+      &copy; Copyright 2016, The Calloway Project.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.
+	</p>
+    </div>
+      <div class="clearer"></div>
+    </div>
+	<div id="breadcrumbs">
+		<a href="index.html" accesskey="U">Reference</a><img src="../_static/triangle_closed.png" height="9" width="9" alt="&gt;">
+		Locating and storing images
+		</ul>
+	</div>
+	<script type="text/javascript" charset="utf-8" src="../_static/toc.js"></script>
+  </body>
+</html>

@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Reference &mdash; Transmogrify 1.0.1b2 documentation</title>
+    <title>Reference &mdash; Transmogrify 1.2 documentation</title>
     
-    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '1.0.1b2',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="../_static/jquery.js"></script>
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
-    <link rel="top" title="Transmogrify 1.0.1b2 documentation" href="../index.html" />
+    <link rel="top" title="Transmogrify 1.2 documentation" href="../index.html" />
     <link rel="next" title="Settings" href="settings.html" />
     <link rel="prev" title="Django Development Server Integration" href="../webserver_integration/django_devserver.html" /> 
   </head>
   <body role="document">
 <div id="docstitle">
-	<p>Transmogrify 1.0.1b2 documentation</p>
+	<p>Transmogrify 1.2 documentation</p>
 </div>
 <div id="header">
 	<div id="title"><h1>Reference</h1></div>
@@ -51,7 +51,11 @@
 <li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../templatetag.html">Django Template Tag</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../webserver_integration/index.html">Web Server Integration</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="settings.html">Settings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finding_files.html">Locating and storing images</a></li>
+</ul>
+</li>
 </ul>
 
     <div id="searchbox" style="display: none">
@@ -86,13 +90,25 @@
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="settings.html">Settings</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-secret"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_SECRET</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-debug"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_DEBUG</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-base-path"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_BASE_PATH</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-path-aliases"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_PATH_ALIASES</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-use-vhosts"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_USE_VHOSTS</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-vhost-doc-base"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_VHOST_DOC_BASE</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="settings.html#transmogrify-no-img-url"><code class="docutils literal"><span class="pre">TRANSMOGRIFY_NO_IMG_URL</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#base-path"><code class="docutils literal"><span class="pre">BASE_PATH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#debug"><code class="docutils literal"><span class="pre">DEBUG</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#external-prefix"><code class="docutils literal"><span class="pre">EXTERNAL_PREFIX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#fallback-servers"><code class="docutils literal"><span class="pre">FALLBACK_SERVERS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#image-optimization-cmd"><code class="docutils literal"><span class="pre">IMAGE_OPTIMIZATION_CMD</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#no-img-url"><code class="docutils literal"><span class="pre">NO_IMG_URL</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#opencv-prefix"><code class="docutils literal"><span class="pre">OPENCV_PREFIX</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#orig-base-path"><code class="docutils literal"><span class="pre">ORIG_BASE_PATH</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#path-aliases"><code class="docutils literal"><span class="pre">PATH_ALIASES</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#secret-key"><code class="docutils literal"><span class="pre">SECRET_KEY</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#use-vhosts"><code class="docutils literal"><span class="pre">USE_VHOSTS</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="settings.html#vhost-doc-base"><code class="docutils literal"><span class="pre">VHOST_DOC_BASE</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="finding_files.html">Locating and storing images</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="finding_files.html#original-files">Original files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finding_files.html#how-local-images-are-located-and-stored">How local images are located and stored</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finding_files.html#how-external-images-are-located-and-stored">How external images are located and stored</a></li>
+<li class="toctree-l2"><a class="reference internal" href="finding_files.html#modifying-the-requested-file-path">Modifying the requested file path</a></li>
 </ul>
 </li>
 </ul>
@@ -105,8 +121,8 @@
       </div>
     <div class="footer">
     <p>
-      &copy; Copyright 2010, The Washington Times.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3b2.
+      &copy; Copyright 2016, The Calloway Project.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.
 	</p>
     </div>
       <div class="clearer"></div>

@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Django Template Tag &mdash; Transmogrify 1.0.1b2 documentation</title>
+    <title>Django Template Tag &mdash; Transmogrify 1.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.1b2',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Transmogrify 1.0.1b2 documentation" href="index.html" />
+    <link rel="top" title="Transmogrify 1.2 documentation" href="index.html" />
     <link rel="next" title="Web Server Integration" href="webserver_integration/index.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
   </head>
   <body role="document">
 <div id="docstitle">
-	<p>Transmogrify 1.0.1b2 documentation</p>
+	<p>Transmogrify 1.2 documentation</p>
 </div>
 <div id="header">
 	<div id="title"><h1>Django Template Tag</h1></div>
@@ -49,7 +49,18 @@
 	<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Django Template Tag</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Django Template Tag</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#transmogrify">transmogrify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#thumbnail">thumbnail</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#resize">resize</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#letterbox">letterbox</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#forcefit">forcefit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#crop">crop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#autocrop">autocrop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#filter">filter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#border">border</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="webserver_integration/index.html">Web Server Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
 </ul>
@@ -84,20 +95,20 @@
   <div class="section" id="django-template-tag">
 <h1>Django Template Tag<a class="headerlink" href="#django-template-tag" title="Permalink to this headline">¶</a></h1>
 <p>In the template, first:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% load transmogrifiers %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">load</span> <span class="n">transmogrifiers</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>You will have access to the following tags:</p>
 <ul class="simple">
-<li><a class="reference internal" href="#transmogrify-tag"><em>transmogrify</em></a></li>
-<li><a class="reference internal" href="#thumbnail-tag"><em>thumbnail</em></a></li>
-<li><a class="reference internal" href="#resize-tag"><em>resize</em></a></li>
-<li><a class="reference internal" href="#letterbox-tag"><em>letterbox</em></a></li>
-<li><a class="reference internal" href="#forcefit-tag"><em>forcefit</em></a></li>
-<li><a class="reference internal" href="#autocrop-tag"><em>autocrop</em></a></li>
-<li><a class="reference internal" href="#crop-tag"><em>crop</em></a></li>
-<li><a class="reference internal" href="#filter-tag"><em>filter</em></a></li>
-<li><a class="reference internal" href="#border-tag"><em>border</em></a></li>
+<li><a class="reference internal" href="#transmogrify-tag"><span class="std std-ref">transmogrify</span></a></li>
+<li><a class="reference internal" href="#thumbnail-tag"><span class="std std-ref">thumbnail</span></a></li>
+<li><a class="reference internal" href="#resize-tag"><span class="std std-ref">resize</span></a></li>
+<li><a class="reference internal" href="#letterbox-tag"><span class="std std-ref">letterbox</span></a></li>
+<li><a class="reference internal" href="#forcefit-tag"><span class="std std-ref">forcefit</span></a></li>
+<li><a class="reference internal" href="#autocrop-tag"><span class="std std-ref">autocrop</span></a></li>
+<li><a class="reference internal" href="#crop-tag"><span class="std std-ref">crop</span></a></li>
+<li><a class="reference internal" href="#filter-tag"><span class="std std-ref">filter</span></a></li>
+<li><a class="reference internal" href="#border-tag"><span class="std std-ref">border</span></a></li>
 </ul>
 <div class="section" id="transmogrify">
 <span id="transmogrify-tag"></span><h2>transmogrify<a class="headerlink" href="#transmogrify" title="Permalink to this headline">¶</a></h2>
@@ -105,7 +116,7 @@
 fly. This tag allows for multiple actions on an image. There are shortcuts for doing just one action.</p>
 <div class="section" id="usage">
 <h3>Usage:<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify url [action [param]] [action2 [param2] ...] %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">url</span> <span class="p">[</span><span class="n">action</span> <span class="p">[</span><span class="n">param</span><span class="p">]]</span> <span class="p">[</span><span class="n">action2</span> <span class="p">[</span><span class="n">param2</span><span class="p">]</span> <span class="o">...</span><span class="p">]</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -156,43 +167,43 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <div class="section" id="examples">
 <h3>Examples:<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h3>
 <p>Thumbnail 200px wide:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img thumbnail &quot;200&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">thumbnail</span> <span class="s">&quot;200&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Thumbnail 200px high:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img thumbnail &quot;x200&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">thumbnail</span> <span class="s">&quot;x200&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Thumbnail to fit within 200x200:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img thumbnail &quot;200x200&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">thumbnail</span> <span class="s">&quot;200x200&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Resize to fit within a 400x400px box:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img resize &quot;400x400&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">resize</span> <span class="s">&quot;400x400&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Resize to be 400px wide:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img resize &quot;400&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">resize</span> <span class="s">&quot;400&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Resize to be 400px high:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img resize &quot;x400&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">resize</span> <span class="s">&quot;x400&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Force the image to fit 75x75, distorting the image if the aspect isn&#8217;t right:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img forcefit &quot;75x75&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">forcefit</span> <span class="s">&quot;75x75&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Resize the image to fit 100x100 and sharpen:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img resize &quot;100x100&quot; filter &quot;sharpen&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">resize</span> <span class="s">&quot;100x100&quot;</span> <span class="nb">filter</span> <span class="s">&quot;sharpen&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Resize the image to fit 100x100, smooth, and add a 1px black border:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img resize &quot;100x100&quot; filter &quot;smooth&quot; border &quot;1&quot; &quot;#000&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">resize</span> <span class="s">&quot;100x100&quot;</span> <span class="nb">filter</span> <span class="s">&quot;smooth&quot;</span> <span class="n">border</span> <span class="s">&quot;1&quot;</span> <span class="s">&quot;#000&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <p>Crop a 100x100 section out of the middle of image:</p>
-<div class="highlight-python"><div class="highlight"><pre>{% transmogrify img crop &quot;100x100&quot; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">transmogrify</span> <span class="n">img</span> <span class="n">crop</span> <span class="s">&quot;100x100&quot;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -202,16 +213,16 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">thumbnail</span></code> action. It creates a thumbnail.</p>
 <div class="section" id="id1">
 <h3>Usage:<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% thumbnail &lt;image_url&gt; &lt;width&gt; %}
-{% thumbnail &lt;image_url&gt; x&lt;height&gt; %}
-{% thumbnail &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">thumbnail</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">thumbnail</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">thumbnail</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id2">
 <h3>Examples:<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p><strong>Thumbnail 200px wide</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% thumbnail img 200 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">thumbnail</span> <span class="n">img</span> <span class="mi">200</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_t200.jpg" src="_images/horiz_img_t200.jpg" />
@@ -219,7 +230,7 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <img alt="_images/vert_img_t200.jpg" src="_images/vert_img_t200.jpg" />
 <hr class="docutils" />
 <p><strong>Thumbnail 200px high</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% thumbnail img x200 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">thumbnail</span> <span class="n">img</span> <span class="n">x200</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_tx200.jpg" src="_images/horiz_img_tx200.jpg" />
@@ -227,7 +238,7 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <img alt="_images/vert_img_tx200.jpg" src="_images/vert_img_tx200.jpg" />
 <hr class="docutils" />
 <p><strong>Thumbnail to fit within 200x200</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% thumbnail img 200x200 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">thumbnail</span> <span class="n">img</span> <span class="mi">200</span><span class="n">x200</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_t200x200.jpg" src="_images/horiz_img_t200x200.jpg" />
@@ -240,16 +251,16 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">resize</span></code> action. It resizes the image to fit the dimensions and maintains the aspect ratio.</p>
 <div class="section" id="id3">
 <h3>Usage:<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% resize &lt;image_url&gt; &lt;width&gt; %}
-{% resize &lt;image_url&gt; x&lt;height&gt; %}
-{% resize &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">resize</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">resize</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
+<span class="p">{</span><span class="o">%</span> <span class="n">resize</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id4">
 <h3>Examples:<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p><strong>Resize image to 500px wide</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% resize img 500 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">resize</span> <span class="n">img</span> <span class="mi">500</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_r500.jpg" src="_images/horiz_img_r500.jpg" />
@@ -261,7 +272,7 @@ HTML (#RRGGBB or #RGB) format.</dd>
 </div>
 <hr class="docutils" />
 <p><strong>Resize image to 500px high</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% resize img x500 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">resize</span> <span class="n">img</span> <span class="n">x500</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_rx500.jpg" src="_images/horiz_img_rx500.jpg" />
@@ -269,7 +280,7 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <img alt="_images/vert_img_rx500.jpg" src="_images/vert_img_rx500.jpg" />
 <hr class="docutils" />
 <p><strong>Resize image to fit within 500x500 pixel box</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% resize img 500x500 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">resize</span> <span class="n">img</span> <span class="mi">500</span><span class="n">x500</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_r500x500.jpg" src="_images/horiz_img_r500x500.jpg" />
@@ -282,14 +293,14 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">letterbox</span></code> action. It resizes the image to fit the dimensions and maintains the aspect ratio. The remaining space is filled with the color specified.</p>
 <div class="section" id="id5">
 <h3>Usage:<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% letterbox &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; &lt;color&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">letterbox</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">color</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="example">
 <h3>Example:<a class="headerlink" href="#example" title="Permalink to this headline">¶</a></h3>
 <p><strong>Resize image to fit within 500x500 pixel box, and fill the rest with red</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% letterbox img 500x500 #f00 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">letterbox</span> <span class="n">img</span> <span class="mi">500</span><span class="n">x500</span> <span class="c">#f00 %}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_l500x500-f00.jpg" src="_images/horiz_img_l500x500-f00.jpg" />
@@ -297,7 +308,7 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <img alt="_images/vert_img_l500x500-f00.jpg" src="_images/vert_img_l500x500-f00.jpg" />
 <hr class="docutils" />
 <p><strong>Resize image to fit within 400x500 pixel box, and fill the rest with a light yellow</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% letterbox img 500x500 #fffee1 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">letterbox</span> <span class="n">img</span> <span class="mi">500</span><span class="n">x500</span> <span class="c">#fffee1 %}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_l500x500-fffee1.jpg" src="_images/horiz_img_l500x500-fffee1.jpg" />
@@ -310,14 +321,14 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">forcefit</span></code> action. It resizes the image to fit the dimensions, possibly distorting the image in the process.</p>
 <div class="section" id="id6">
 <h3>Usage:<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% forcefit &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">forcefit</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id7">
 <h3>Example:<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p><strong>Resize image to fit within 300x300 pixel box</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% forcefit img 300x300 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">forcefit</span> <span class="n">img</span> <span class="mi">300</span><span class="n">x300</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_s300x300.jpg" src="_images/horiz_img_s300x300.jpg" />
@@ -330,14 +341,14 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">crop</span></code> action. It crops out a section of the center of an image.</p>
 <div class="section" id="id8">
 <h3>Usage:<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% crop &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">crop</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id9">
 <h3>Example:<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
 <p><strong>Crop a 100x100 section out of the middle of image</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% crop img 100x100 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">crop</span> <span class="n">img</span> <span class="mi">100</span><span class="n">x100</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_c100x100.jpg" src="_images/horiz_img_c100x100.jpg" />
@@ -350,14 +361,14 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">autocrop</span></code> action. It scales and crops the image based on analysis.</p>
 <div class="section" id="id10">
 <h3>Usage:<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% autocrop &lt;image_url&gt; &lt;width&gt;x&lt;height&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">autocrop</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">width</span><span class="o">&gt;</span><span class="n">x</span><span class="o">&lt;</span><span class="n">height</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id11">
 <h3>Example:<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
 <p><strong>Crop the image to fit a 100x100 bix</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% autocrop img 100x100 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">autocrop</span> <span class="n">img</span> <span class="mi">100</span><span class="n">x100</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 <img alt="_images/horiz_img_a100x100.jpg" src="_images/horiz_img_a100x100.jpg" />
@@ -370,7 +381,7 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">filter</span></code> action. It applies the specified filter (one of <code class="docutils literal"><span class="pre">blur</span></code>, <code class="docutils literal"><span class="pre">contour</span></code>, <code class="docutils literal"><span class="pre">detail</span></code>, <code class="docutils literal"><span class="pre">edge_enhance</span></code>, <code class="docutils literal"><span class="pre">edge_enhance_more</span></code>, <code class="docutils literal"><span class="pre">emboss</span></code>, <code class="docutils literal"><span class="pre">find_edges</span></code>, <code class="docutils literal"><span class="pre">smooth</span></code>, <code class="docutils literal"><span class="pre">smooth_more</span></code>, <code class="docutils literal"><span class="pre">sharpen</span></code>) to the image. Only one filter can be specified.</p>
 <div class="section" id="id12">
 <h3>Usage:<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% filter &lt;image_url&gt; &lt;filtername&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="nb">filter</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">filtername</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -412,14 +423,14 @@ HTML (#RRGGBB or #RGB) format.</dd>
 <p>A shortcut to the <code class="docutils literal"><span class="pre">transmogrify</span></code> tag&#8217;s <code class="docutils literal"><span class="pre">border</span></code> action. It applies a border of the specified width and color to the image.</p>
 <div class="section" id="id14">
 <h3>Usage:<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-python"><div class="highlight"><pre>{% border &lt;image_url&gt; &lt;border_width&gt; &lt;color&gt; %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">border</span> <span class="o">&lt;</span><span class="n">image_url</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">border_width</span><span class="o">&gt;</span> <span class="o">&lt;</span><span class="n">color</span><span class="o">&gt;</span> <span class="o">%</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="id15">
 <h3>Example:<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
 <p><strong>Add a 3 pixel light-yellow border around the image</strong></p>
-<div class="highlight-python"><div class="highlight"><pre>{% border img 3 #fffee1 %}
+<div class="highlight-default"><div class="highlight"><pre><span class="p">{</span><span class="o">%</span> <span class="n">border</span> <span class="n">img</span> <span class="mi">3</span> <span class="c">#fffee1 %}</span>
 </pre></div>
 </div>
 <img alt="_images/square_img_r300x300_b3-fffee1.jpg" src="_images/square_img_r300x300_b3-fffee1.jpg" />
@@ -433,8 +444,8 @@ HTML (#RRGGBB or #RGB) format.</dd>
       </div>
     <div class="footer">
     <p>
-      &copy; Copyright 2010, The Washington Times.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3b2.
+      &copy; Copyright 2016, The Calloway Project.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.
 	</p>
     </div>
       <div class="clearer"></div>

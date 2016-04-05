@@ -6,15 +6,15 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; Transmogrify 1.0.1b2 documentation</title>
+    <title>Installation &mdash; Transmogrify 1.2 documentation</title>
     
-    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1.0.1b2',
+        VERSION:     '1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -23,13 +23,13 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Transmogrify 1.0.1b2 documentation" href="index.html" />
+    <link rel="top" title="Transmogrify 1.2 documentation" href="index.html" />
     <link rel="next" title="Django Template Tag" href="templatetag.html" />
     <link rel="prev" title="Getting Started" href="getting_started.html" /> 
   </head>
   <body role="document">
 <div id="docstitle">
-	<p>Transmogrify 1.0.1b2 documentation</p>
+	<p>Transmogrify 1.2 documentation</p>
 </div>
 <div id="header">
 	<div id="title"><h1>Installation</h1></div>
@@ -48,7 +48,15 @@
 	<ul><li class="toctree-l1"><a href="index.html">Main Page</a></li></ul>
 	<ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#install-optional-pillow-requirements">Install optional Pillow requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-transmogrify">Install Transmogrify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-settings-file">Create settings file</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-opencv">Install OpenCV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-wsgi-server">Install WSGI server</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#change-permissions">Change Permissions</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="templatetag.html">Django Template Tag</a></li>
 <li class="toctree-l1"><a class="reference internal" href="webserver_integration/index.html">Web Server Integration</a></li>
 <li class="toctree-l1"><a class="reference internal" href="reference/index.html">Reference</a></li>
@@ -186,7 +194,7 @@
 </pre></div>
 </div>
 </li>
-<li><p class="first">Make a startup script</p>
+<li><p class="first">Make a startup script (this is an Ubuntu upstart script: <code class="docutils literal"><span class="pre">/etc/init/transmogrify.conf</span></code>)</p>
 <div class="highlight-bash"><div class="highlight"><pre>description <span class="s2">&quot;Transmogrify&quot;</span>
 start on runlevel <span class="o">[</span>2345<span class="o">]</span>
 stop on runlevel <span class="o">[</span>06<span class="o">]</span>
@@ -198,6 +206,8 @@ script
 end script
 </pre></div>
 </div>
+</li>
+<li><p class="first">Make a webserver configuration (this is an nGinx config: <code class="docutils literal"><span class="pre">/etc/nginx/sites-available/transmogrify</span></code>)</p>
 </li>
 </ol>
 </div>
@@ -219,8 +229,8 @@ end script
       </div>
     <div class="footer">
     <p>
-      &copy; Copyright 2010, The Washington Times.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.3b2.
+      &copy; Copyright 2016, The Calloway Project.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.4.
 	</p>
     </div>
       <div class="clearer"></div>
