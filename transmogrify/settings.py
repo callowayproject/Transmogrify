@@ -16,7 +16,8 @@ DEFAULT_SETTINGS = {
     'USE_VHOSTS': False,
     'VALID_DOMAINS': [],
     'VHOST_DOC_BASE': "",
-    'VALID_IMAGE_EXTENSIONS': ['jpeg', 'jpg', 'gif', 'png', ]
+    'VALID_IMAGE_EXTENSIONS': ['jpeg', 'jpg', 'gif', 'png', ],
+    'ALLOWED_PROCESSORS': ['__all__', ],
 }
 
 USER_SETTINGS = DEFAULT_SETTINGS.copy()
@@ -99,6 +100,8 @@ if "TRANSMOGRIFY_ORIG_BASE_PATH" in os.environ:
 if "TRANSMOGRIFY_EXTERNAL_PREFIX" in os.environ:
     USER_SETTINGS['EXTERNAL_PREFIX'] = os.environ.get("TRANSMOGRIFY_EXTERNAL_PREFIX", "/external/")
 
+if "TRANSMOGRIFY_ALLOWED_PROCESSORS" in os.environ:
+    USER_SETTINGS['ALLOWED_PROCESSORS'] = os.environ.get("TRANSMOGRIFY_ALLOWED_PROCESSORS", "__all__,").split(",")
 
 PATH_ALIASES = {}
 
@@ -110,9 +113,11 @@ FALLBACK_SERVERS = (
 )
 
 PROCESSORS = {}
+ALLOW_ALL_PROCESSORS = '__all__' in USER_SETTINGS['ALLOWED_PROCESSORS']
 for attr in processors.__all__:
     item = getattr(processors, attr)
     if issubclass(item, processors.Processor):
-        PROCESSORS[item.code()] = item
+        if ALLOW_ALL_PROCESSORS or item.code in USER_SETTINGS['ALLOWED_PROCESSORS']:
+            PROCESSORS[item.code()] = item
 
 globals().update(USER_SETTINGS)
