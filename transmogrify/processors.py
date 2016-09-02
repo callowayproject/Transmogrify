@@ -277,7 +277,7 @@ class Mask(Processor):
     """
     @staticmethod
     def code():
-        return "m"
+        return "§"
 
     @staticmethod
     def process(image, *args, **kwargs):
