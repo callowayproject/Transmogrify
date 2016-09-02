@@ -12,7 +12,7 @@ class Transmogrify(object):
             self.im = Image.open(original_file)
             if 'duration' in self.im.info and self.im.format == 'GIF':
                 self.duration = int(self.im.info['duration']) / 1000.0
-                self.frames = images2gif.readGif(original_file, False)
+                self.frames = images2gif.read_gif(original_file, False)
             else:
                 self.duration = None
                 self.frames = []
@@ -35,7 +35,7 @@ class Transmogrify(object):
         if not self.actions:
             if self.frames:
                 new_frames = [frame for frame in self.frames]
-                images2gif.writeGif(filename, new_frames)
+                images2gif.write_gif(filename, new_frames)
             else:
                 if self.im is None:
                     return
@@ -46,7 +46,7 @@ class Transmogrify(object):
                 new_frames = []
                 for frame in self.frames:
                     new_frames.append(action.process(frame, arg))
-                images2gif.writeGif(filename, new_frames)
+                images2gif.write_gif(filename, new_frames)
             else:
                 if self.im is None:
                     return
