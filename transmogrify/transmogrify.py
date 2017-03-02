@@ -22,7 +22,6 @@ class Transmogrify(object):
         self.output_path = output_path
         self.original_file = original_file
         self.actions = action_tuples
-        self.cropname = None
         self.quality = quality
 
     def save(self):
@@ -91,12 +90,8 @@ class Transmogrify(object):
         parent_dir, filename = os.path.split(self.original_file)
         base_filename, ext = os.path.splitext(filename)
         action_string = self.get_action_string()
-        cropname = self.cropname
         parent_dir = self.output_path or parent_dir
-        if cropname:
-            return os.path.join(parent_dir, "%s-%s%s" % (base_filename, cropname, ext))
-        else:
-            return os.path.join(parent_dir, "%s%s%s" % (base_filename, action_string, ext))
+        return os.path.join(parent_dir, "%s%s%s" % (base_filename, action_string, ext))
 
     def get_action_string(self):
         code = ["_%s%s" % (action, param) for action, param in self.actions]

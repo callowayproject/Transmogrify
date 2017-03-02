@@ -25,10 +25,6 @@ import urlparse
 from hashlib import sha1
 
 
-class Http404(Exception):
-    pass
-
-
 def download_url(url, destination):
     """
     Download an external URL to the destination
