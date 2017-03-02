@@ -1,20 +1,35 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-from setuptools import setup, find_packages
-import transmogrify
 import os
+from setuptools import setup, find_packages
 
 
-def read_file(the_file):
-    current_dir = os.path.normpath(os.path.dirname(__file__))
-    return open(os.path.join(current_dir, the_file)).read()
+def read_file(filename):
+    """Read a file into a string"""
+    path = os.path.abspath(os.path.dirname(__file__))
+    filepath = os.path.join(path, filename)
+    try:
+        return open(filepath).read()
+    except IOError:
+        return ''
 
+
+def get_readme():
+    """Return the README file contents. Supports text,rst, and markdown"""
+    for name in ('README', 'README.rst', 'README.md'):
+        if os.path.exists(name):
+            return read_file(name)
+    return ''
+
+# Use the docstring of the __init__ file to be the description
+DESC = " ".join(__import__('fabulous').__doc__.splitlines()).strip()
 
 setup(
     name='transmogrify',
-    version=transmogrify.get_version(),
-    description='Allows for the dynamic alteration of images using the URL.',
-    long_description=read_file('README.rst'),
+    version=__import__('transmogrify').get_version().replace(' ', '-'),
+    description=DESC,
+    long_description=get_readme(),
     author='Corey Oordt',
     author_email='coreyoordt@gmail.com',
     url='http://github.com/callowayproject/Transmogrify/',
@@ -25,7 +40,7 @@ setup(
     ],
     install_requires=read_file('requirements.txt'),
     include_package_data=True,
-    packages=find_packages(),
+    packages=find_packages(exclude=['example', ]),
     scripts=['bin/configure_transmogrify'],
     zip_safe=False
 )
