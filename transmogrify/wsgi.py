@@ -24,7 +24,11 @@ def lock_file(lock):
 
 
 def makedirs(dirname):
-    assert dirname.startswith("/"), "dirname must be absolute"
+    if dirname.startswith("s3://"):
+        # S3 will make the directories when we submit the file
+        return
+    else:
+        assert dirname.startswith("/"), "dirname must be absolute"
 
     bits = dirname.split(os.sep)[1:]
 
@@ -39,6 +43,20 @@ def makedirs(dirname):
             raise OSError("%s is exists, but is not a directory." % (root, ))
         else:  # exists and is a dir
             pass
+
+
+def validate_original_file(original_file):
+    """
+    Check to make sure the original file exists
+    """
+    if original_file.startswith("s3://"):
+        import s3
+        s3.validate_original_file(original_file)
+    else:
+        if not os.path.exists(original_file):
+            raise Http404
+        if not os.path.isfile(original_file):
+            raise Http404
 
 
 def get_path(environ):
@@ -107,10 +125,7 @@ def app(environ, start_response):
             url_parts = process_url(path_and_query, server)
             output_path, _ = os.path.split(url_parts['requested_file'])
             makedirs(output_path)
-            if not os.path.exists(url_parts['original_file']):
-                raise Http404
-            if not os.path.isfile(url_parts['original_file']):
-                raise Http404
+            validate_original_file(url_parts['original_file'])
         except Http404 as e:
             return do_404(environ, start_response, e.message, DEBUG)
 

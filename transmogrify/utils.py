@@ -179,7 +179,11 @@ def process_url(url, server_name="", document_root=None, check_security=True):
         requested_path = os.path.join(*parts)
     else:
         path = os.path.join(base_path, resolved_uri)
-        requested_path = os.path.abspath(path)
+        if base_path.startswith('s3://'):
+            requested_path = path
+        else:
+            requested_path = os.path.abspath(path)
+
     if not requested_path.startswith(base_path):
         # Apparently, there was an attempt to put some directory traversal
         # hacks into the path. (../../../vulnerable_file.exe)
@@ -197,7 +201,12 @@ def process_url(url, server_name="", document_root=None, check_security=True):
 
     base_uri = os.path.dirname(resolved_uri)
     original_uri = urlparse.urljoin(base_uri, base_filename + ext)
-    original_is_missing = not os.path.exists(original_file)
+
+    if original_file.startswith('s3://'):
+        import s3
+        original_is_missing = s3.validate_original_file(original_file)
+    else:
+        original_is_missing = not os.path.exists(original_file)
 
     if original_is_missing and is_external:
         try:

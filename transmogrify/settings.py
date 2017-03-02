@@ -18,6 +18,7 @@ DEFAULT_SETTINGS = {
     'VHOST_DOC_BASE': "",
     'VALID_IMAGE_EXTENSIONS': ['jpeg', 'jpg', 'gif', 'png', ],
     'ALLOWED_PROCESSORS': ['__all__', ],
+    'CHECK_SECURITY': True,
 }
 
 USER_SETTINGS = DEFAULT_SETTINGS.copy()

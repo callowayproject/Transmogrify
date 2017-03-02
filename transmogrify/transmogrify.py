@@ -6,16 +6,19 @@ import images2gif
 
 class Transmogrify(object):
     def __init__(self, original_file, action_tuples=[], quality=80, output_path=None, **kwargs):
-        if not os.path.exists(original_file) or not os.path.isfile(original_file):
+        if original_file.startswith('s3://'):
+            import s3
+            self.im = Image.open(s3.get_file(original_file))
+        elif not os.path.exists(original_file) or not os.path.isfile(original_file):
             self.im = None
         else:
             self.im = Image.open(original_file)
-            if 'duration' in self.im.info and self.im.format == 'GIF':
-                self.duration = int(self.im.info['duration']) / 1000.0
-                self.frames = images2gif.read_gif(original_file, False)
-            else:
-                self.duration = None
-                self.frames = []
+        if 'duration' in self.im.info and self.im.format == 'GIF':
+            self.duration = int(self.im.info['duration']) / 1000.0
+            self.frames = images2gif.read_gif(original_file, False)
+        else:
+            self.duration = None
+            self.frames = []
         self.output_path = output_path
         self.original_file = original_file
         self.actions = action_tuples
@@ -39,7 +42,19 @@ class Transmogrify(object):
             else:
                 if self.im is None:
                     return
-                self.im.save(filename, quality=self.quality)
+                if filename.startswith('s3://'):
+                    import cStringIO
+                    import s3
+                    output = cStringIO.StringIO()
+                    _, fmt = os.path.splitext(filename)
+                    fmt = fmt.lower().replace('.', '')
+                    if fmt == 'jpg':
+                        fmt = 'jpeg'
+                    self.im.save(output, format=fmt, quality=self.quality)
+                    output.reset()
+                    s3.put_file(output, filename)
+                else:
+                    self.im.save(filename, quality=self.quality)
         for action, arg in self.actions:
             action = PROCESSORS[action]
             if self.frames:
@@ -51,7 +66,19 @@ class Transmogrify(object):
                 if self.im is None:
                     return
                 self.im = action.process(self.im, arg)
-                self.im.save(filename, quality=self.quality)
+                if filename.startswith('s3://'):
+                    import cStringIO
+                    import s3
+                    output = cStringIO.StringIO()
+                    _, fmt = os.path.splitext(filename)
+                    fmt = fmt.lower().replace('.', '')
+                    if fmt == 'jpg':
+                        fmt = 'jpeg'
+                    self.im.save(output, format=fmt, quality=self.quality)
+                    output.reset()
+                    s3.put_file(output, filename)
+                else:
+                    self.im.save(filename, quality=self.quality)
 
     def apply_action_tuples(self, actions):
         """
