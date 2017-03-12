@@ -5,9 +5,9 @@ Apache 404 handler for mogrifying images.
 """
 
 import os
-from settings import DEBUG
-from utils import process_url, Http404
-from transmogrify import Transmogrify
+from transmogrify.settings import DEBUG
+from transmogrify.utils import process_url, Http404
+from transmogrify.transmogrify import Transmogrify
 from hashlib import sha1
 from contextlib import contextmanager
 import time
