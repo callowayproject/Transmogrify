@@ -6,9 +6,8 @@ WSGI handler for mogrifying images.
 
 import os
 from hashlib import sha1
-from utils import process_url
-from transmogrify import Transmogrify
 from contextlib import contextmanager
+from .core import Transmogrify
 from .network import Http404, do_404, handle_purge, do_redirect, get_path
 
 
@@ -23,47 +22,8 @@ def lock_file(lock):
         os.remove(lock)
 
 
-def makedirs(dirname):
-    if dirname.startswith("s3://"):
-        # S3 will make the directories when we submit the file
-        return
-    else:
-        assert dirname.startswith("/"), "dirname must be absolute"
-
-    bits = dirname.split(os.sep)[1:]
-
-    root = "/"
-
-    for bit in bits:
-        root = os.path.join(root, bit)
-
-        if not os.path.lexists(root):
-            os.mkdir(root)
-        elif not os.path.isdir(root):
-            raise OSError("%s is exists, but is not a directory." % (root, ))
-        else:  # exists and is a dir
-            pass
-
-
-def validate_original_file(original_file):
-    """
-    Check to make sure the original file exists
-    """
-    if original_file.startswith("s3://"):
-        import s3
-        s3.validate_original_file(original_file)
-    else:
-        if not os.path.exists(original_file):
-            raise Http404
-        if not os.path.isfile(original_file):
-            raise Http404
-
-
 def app(environ, start_response):
     from settings import DEBUG
-
-    server = environ['SERVER_NAME']
-    quality = 80
 
     request_uri = get_path(environ)
     path_and_query = request_uri.lstrip('/')
@@ -80,20 +40,11 @@ def app(environ, start_response):
 
     with lock_file(lock):
         try:
-            url_parts = process_url(path_and_query, server)
-            output_path, _ = os.path.split(url_parts['requested_file'])
-            makedirs(output_path)
-            validate_original_file(url_parts['original_file'])
+            server = environ['SERVER_NAME']
+            new_file = Transmogrify(path_and_query, server)
+            new_file.save()
         except Http404 as e:
             return do_404(environ, start_response, e.message, DEBUG)
-
-        new_file = Transmogrify(
-            url_parts['original_file'],
-            url_parts['actions'],
-            quality=quality,
-            output_path=output_path
-        )
-        new_file.save()
 
         return do_redirect(environ, start_response, request_uri)
 
@@ -102,7 +53,7 @@ if __name__ == '__main__':
     from wsgiref.simple_server import make_server
     from utils import create_securityhash, create_purge_securityhash
     from .network import DemoApp
-    s = make_server("", 3031, DemoApp())
+    s = make_server("", 3031, DemoApp(fallback=app))
     print "Serving on port 3031"
     security_hash = create_securityhash([('c', '0-410-300-710')])
     purge_hash = create_purge_securityhash()
