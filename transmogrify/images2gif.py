@@ -575,7 +575,12 @@ def write_gif(filename, images, duration=0.1, repeat=True, dither=False,
     images = gif_writer.convert_images_to_pil(images, dither, nq)
 
     # Write
-    fp = open(filename, 'wb')
+    if isinstance(filename, basestring):
+        fp = open(filename, 'wb')
+    elif hasattr(filename, 'write'):
+        fp = filename
+    else:
+        return
     try:
         gif_writer.write_gif_to_file(fp, images, duration, loops, xy, dispose)
     finally:
