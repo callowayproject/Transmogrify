@@ -107,11 +107,12 @@ ERROR = """
 
 
 class DemoApp(object):
-    def __init__(self):
+    def __init__(self, fallback):
         from static import Cling
         from settings import BASE_PATH
 
         self.app = Cling(BASE_PATH)
+        self.fallback = fallback
 
     def __call__(self, environ, start_response):
         import wsgiref
