@@ -1,9 +1,14 @@
+import subprocess
 import os
+
 try:
     from PIL import Image
     from PIL.ImageCms import profileToProfile
 except ImportError:
     profileToProfile = lambda im, *args, **kwargs: im  # NOQA
+
+from .settings import IMAGE_OPTIMIZATION_CMD
+from .utils import is_tool
 
 
 def convert_to_rgb(img):
@@ -22,6 +27,26 @@ def get_output_filename(input_filename):
     parent_dir, filename = os.path.split(input_filename)
     base_filename, ext = os.path.splitext(filename)
     return os.path.join(parent_dir, "%s.optim%s" % (base_filename, ext))
+
+
+def optimize(image, fmt='jpeg', quality=80):
+    """
+    Optimize the image if the IMAGE_OPTIMIZATION_CMD is set.
+
+    IMAGE_OPTIMIZATION_CMD must accept piped input
+    """
+    from io import BytesIO
+    from PIL import Image
+
+    if IMAGE_OPTIMIZATION_CMD and is_tool(IMAGE_OPTIMIZATION_CMD):
+        image_buffer = BytesIO()
+        image.save(image_buffer, format=fmt, quality=quality)
+        p1 = subprocess.Popen([IMAGE_OPTIMIZATION_CMD], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        output_optim, output_err = p1.communicate(image_buffer.read())
+        im = Image.open(BytesIO(output_optim))
+        return im
+    else:
+        return image
 
 
 def test_rgb_conversion(input_filename):
