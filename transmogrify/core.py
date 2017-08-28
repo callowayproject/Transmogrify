@@ -2,10 +2,17 @@ import os
 from hashlib import sha1
 from PIL import Image
 import images2gif
+import optimize
 
 
 class Transmogrify(object):
-    def __init__(self, original_file, action_tuples=[], quality=80, output_path=None, **kwargs):
+    def __init__(self, path_and_query, server="", **kwargs):
+        from .utils import process_url
+
+        url_parts = process_url(path_and_query, server)
+        original_file = url_parts['original_file']
+        output_path, _ = os.path.split(url_parts['requested_file'])
+
         if original_file.startswith('s3://'):
             import s3
             self.im = Image.open(s3.get_file(original_file))
@@ -13,16 +20,23 @@ class Transmogrify(object):
             self.im = None
         else:
             self.im = Image.open(original_file)
-        if 'duration' in self.im.info and self.im.format == 'GIF':
+        if self.im and 'duration' in self.im.info and self.im.format == 'GIF':
             self.duration = int(self.im.info['duration']) / 1000.0
-            self.frames = images2gif.read_gif(original_file, False)
+            self.frames = images2gif.read_gif(original_file, True)
         else:
             self.duration = None
             self.frames = []
         self.output_path = output_path
         self.original_file = original_file
-        self.actions = action_tuples
-        self.quality = quality
+        self.actions = url_parts['actions']
+        self.quality = kwargs.get('quality', 80)
+        self.filename = self.get_processed_filename()
+
+        _, fmt = os.path.splitext(self.filename)
+        fmt = fmt.lower().replace('.', '')
+        if fmt == 'jpg':
+            fmt = 'jpeg'
+        self.format = fmt
 
     def save(self):
         """
@@ -32,52 +46,38 @@ class Transmogrify(object):
         Then save the mogrified image.
         """
         from settings import PROCESSORS
+        from .filesystem import makedirs
 
-        filename = self.get_processed_filename()
-        if not self.actions:
-            if self.frames:
-                new_frames = [frame for frame in self.frames]
-                images2gif.write_gif(filename, new_frames)
-            else:
-                if self.im is None:
-                    return
-                if filename.startswith('s3://'):
-                    import cStringIO
-                    import s3
-                    output = cStringIO.StringIO()
-                    _, fmt = os.path.splitext(filename)
-                    fmt = fmt.lower().replace('.', '')
-                    if fmt == 'jpg':
-                        fmt = 'jpeg'
-                    self.im.save(output, format=fmt, quality=self.quality)
-                    output.reset()
-                    s3.put_file(output, filename)
-                else:
-                    self.im.save(filename, quality=self.quality)
+        if self.im is None:
+            return
+        makedirs(self.output_path)
         for action, arg in self.actions:
             action = PROCESSORS[action]
             if self.frames:
                 new_frames = []
                 for frame in self.frames:
                     new_frames.append(action.process(frame, arg))
-                images2gif.write_gif(filename, new_frames)
+                self.frames = new_frames
             else:
-                if self.im is None:
-                    return
                 self.im = action.process(self.im, arg)
-                if filename.startswith('s3://'):
-                    import cStringIO
-                    import s3
-                    output = cStringIO.StringIO()
-                    _, fmt = os.path.splitext(filename)
-                    fmt = fmt.lower().replace('.', '')
-                    if fmt == 'jpg':
-                        fmt = 'jpeg'
-                    self.im.save(output, format=fmt, quality=self.quality)
-                    output.reset()
-                    s3.put_file(output, filename)
-                else:
-                    self.im.save(filename, quality=self.quality)
+
+        self.im = optimize.optimize(self.im, fmt=self.format, quality=self.quality)
+
+        if self.filename.startswith('s3://'):
+            import cStringIO
+            import s3
+            output = cStringIO.StringIO()
+            if self.frames:
+                images2gif.write_gif(output, self.frames)
+            else:
+                self.im.save(output, format=self.format, quality=self.quality)
+            output.reset()
+            s3.put_file(output, self.filename)
+        else:
+            if self.frames:
+                images2gif.write_gif(self.filename, self.frames)
+            else:
+                self.im.save(self.filename, quality=self.quality)
 
     def apply_action_tuples(self, actions):
         """
@@ -89,7 +89,11 @@ class Transmogrify(object):
     def get_processed_filename(self):
         parent_dir, filename = os.path.split(self.original_file)
         base_filename, ext = os.path.splitext(filename)
-        action_string = self.get_action_string()
+        cropname = getattr(self, 'cropname', None)
+        if cropname is not None:
+            action_string = "-%s" % self.cropname
+        else:
+            action_string = self.get_action_string()
         parent_dir = self.output_path or parent_dir
         return os.path.join(parent_dir, "%s%s%s" % (base_filename, action_string, ext))
 
