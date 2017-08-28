@@ -1,11 +1,11 @@
 """Allows for the dynamic alteration of images using the URL."""
 
 __version_info__ = {
-    'major': 1,
-    'minor': 3,
+    'major': 2,
+    'minor': 0,
     'micro': 0,
-    'releaselevel': 'beta',
-    'serial': 3
+    'releaselevel': 'final',
+    'serial': 1
 }
 
 
