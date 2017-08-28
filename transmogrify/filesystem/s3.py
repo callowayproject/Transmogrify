@@ -1,6 +1,4 @@
 import boto3
-from utils import Http404
-from settings import BASE_PATH, ORIG_BASE_PATH
 
 
 def _parse_s3_file(original_file):
@@ -13,7 +11,7 @@ def _parse_s3_file(original_file):
     return bucket, object_key
 
 
-def validate_original_file(original_file):
+def file_exists(original_file):
     """
     Validate the original file is in the S3 bucket
     """
@@ -25,7 +23,8 @@ def validate_original_file(original_file):
 
     if len(bucket_list) != 1:
         # If the path is a directory, S3 doesn't return anything
-        raise Http404
+        return False
+    return True
 
 
 def callback(bytes):
@@ -57,7 +56,7 @@ def put_file(buffer, modified_file):
     """
     import mimetypes
     import boto3
-    file_type, _ = mimetypes.guess_type('/resourcecarousel/externalresources/00ceb2a416e3071d909302d8b982706d_c0-84-388-375_r75x56.png')
+    file_type, _ = mimetypes.guess_type(modified_file)
 
     s3 = boto3.resource('s3')
     bucket_name, object_key = _parse_s3_file(modified_file)
