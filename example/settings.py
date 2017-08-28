@@ -1,8 +1,8 @@
-# Django settings for example project.
+import os
+import sys
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-import os, sys
 APP = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 PROJ_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(APP)
@@ -15,7 +15,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'dev.db',                      # Or path to database file if using sqlite3.
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
@@ -63,7 +63,6 @@ SECRET_KEY = 'g2_39yupn*6j4p*cg2%w643jiq-1n_annua*%i8+rq0dx9p=$n'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
-#     'django.template.loaders.eggs.load_template_source',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -88,6 +87,7 @@ TRANSMOGRIFY_SETTINGS = {
     'BASE_PATH': os.path.join(PROJ_ROOT, "testdata"),
 
 }
+
 TRANSMOGRIFY_SECRET = "whatevs"
 os.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
 os.environ['TRANSMOGRIFY_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")

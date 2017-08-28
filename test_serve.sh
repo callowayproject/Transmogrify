@@ -19,4 +19,4 @@ export TRANSMOGRIFY_BASE_PATH=`pwd`/modified
 export TRANSMOGRIFY_ORIG_BASE_PATH=`pwd`/originals
 export TRANSMOGRIFY_SECRET="debug"
 export TRANSMOGRIFY_DEBUG=1
-python transmogrify/wsgi.py
+python -m transmogrify.wsgi
