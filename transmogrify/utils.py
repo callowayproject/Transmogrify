@@ -23,14 +23,23 @@ import re
 import urllib
 import urlparse
 from hashlib import sha1
+import subprocess
+
+
+def is_tool(name):
+    try:
+        devnull = open(os.devnull)
+        subprocess.Popen([name], stdout=devnull, stderr=devnull).communicate()
+    except OSError as e:
+        if e.errno == os.errno.ENOENT:
+            return False
+    return True
 
 
 def download_url(url, destination):
     """
     Download an external URL to the destination
     """
-    import os
-    import urllib
     from settings import VALID_IMAGE_EXTENSIONS
     base_name, ext = os.path.splitext(url)
     ext = ext.lstrip('.')
@@ -146,6 +155,7 @@ def process_url(url, server_name="", document_root=None, check_security=True):
 
     The ``document_root`` parameter overrides the ``BASE_PATH`` setting.
     """
+    from .network import Http404
     from settings import (BASE_PATH, ORIG_BASE_PATH, USE_VHOSTS, VHOST_DOC_BASE, EXTERNAL_PREFIX)
 
     try:
@@ -200,7 +210,7 @@ def process_url(url, server_name="", document_root=None, check_security=True):
 
     if original_file.startswith('s3://'):
         import s3
-        original_is_missing = s3.validate_original_file(original_file)
+        original_is_missing = s3.file_exists(original_file)
     else:
         original_is_missing = not os.path.exists(original_file)
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFilter
@@ -259,7 +260,7 @@ class Filter(Processor):
 
     @staticmethod
     def param_pattern():
-        IMAGE_FILTERS = [o.lower() for o in dir(ImageFilter) if o == o.upper()]
+        IMAGE_FILTERS = [o.lower() for o in dir(ImageFilter) if o == o.upper()]  # NOQA
         return re.compile('^(%s)$' % ("|".join(IMAGE_FILTERS)), re.I)
 
     @staticmethod
