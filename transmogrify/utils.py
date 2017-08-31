@@ -209,7 +209,7 @@ def process_url(url, server_name="", document_root=None, check_security=True):
     original_uri = urlparse.urljoin(base_uri, base_filename + ext)
 
     if original_file.startswith('s3://'):
-        import s3
+        from filesystem import s3
         original_is_missing = s3.file_exists(original_file)
     else:
         original_is_missing = not os.path.exists(original_file)

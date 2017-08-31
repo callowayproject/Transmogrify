@@ -14,7 +14,7 @@ class Transmogrify(object):
         output_path, _ = os.path.split(url_parts['requested_file'])
 
         if original_file.startswith('s3://'):
-            import s3
+            from filesystem import s3
             self.im = Image.open(s3.get_file(original_file))
         elif not os.path.exists(original_file) or not os.path.isfile(original_file):
             self.im = None
@@ -65,7 +65,7 @@ class Transmogrify(object):
 
         if self.filename.startswith('s3://'):
             import cStringIO
-            import s3
+            from filesystem import s3
             output = cStringIO.StringIO()
             if self.frames:
                 images2gif.write_gif(output, self.frames)

@@ -31,7 +31,7 @@ def file_exists(original_file):
     Check to make sure the original file exists
     """
     if original_file.startswith("s3://"):
-        import s3
+        from filesystem import s3
         return s3.file_exists(original_file)
     else:
         if not os.path.exists(original_file):

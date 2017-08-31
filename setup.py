@@ -23,7 +23,7 @@ def get_readme():
     return ''
 
 # Use the docstring of the __init__ file to be the description
-DESC = " ".join(__import__('fabulous').__doc__.splitlines()).strip()
+DESC = " ".join(__import__('transmogrify').__doc__.splitlines()).strip()
 
 setup(
     name='transmogrify',
