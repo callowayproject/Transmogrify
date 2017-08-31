@@ -1,4 +1,8 @@
 import boto3
+import daiquiri
+
+daiquiri.setup()
+logger = daiquiri.getLogger()
 
 
 def _parse_s3_file(original_file):
@@ -41,6 +45,7 @@ def get_file(original_file):
     import boto3
     s3 = boto3.resource('s3')
     bucket_name, object_key = _parse_s3_file(original_file)
+    logger.info("Downloading {0} from {1}".format(object_key, bucket_name))
     bucket = s3.Bucket(bucket_name)
     output = cStringIO.StringIO()
     bucket.download_fileobj(object_key, output)
@@ -65,4 +70,5 @@ def put_file(buffer, modified_file):
         'ContentType': file_type
     }
     bucket = s3.Bucket(bucket_name)
+    logger.info("Uploading {0} to {1}".format(object_key, bucket_name))
     bucket.upload_fileobj(buffer, object_key, ExtraArgs=extra_args)

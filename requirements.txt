@@ -2,3 +2,4 @@ Pillow
 wsgiref
 gunicorn
 numpy
+daiquiri
