@@ -1,8 +1,9 @@
+import logging
 import boto3
 import daiquiri
 
-daiquiri.setup()
-logger = daiquiri.getLogger()
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger(__name__)
 
 
 def _parse_s3_file(original_file):
