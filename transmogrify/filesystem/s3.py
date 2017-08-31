@@ -25,7 +25,7 @@ def file_exists(original_file):
     bucket = s3.Bucket(bucket_name)
     bucket_iterator = bucket.objects.filter(Prefix=object_key)
     bucket_list = [x for x in bucket_iterator]
-
+    logger.info("Bucket List: {0}".format(", ".join(bucket_list)))
     if len(bucket_list) != 1:
         # If the path is a directory, S3 doesn't return anything
         return False
