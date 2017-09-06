@@ -25,11 +25,14 @@ def file_exists(original_file):
     bucket = s3.Bucket(bucket_name)
     bucket_iterator = bucket.objects.filter(Prefix=object_key)
     bucket_list = [x for x in bucket_iterator]
-    logger.info("Bucket List: {0}".format(", ".join(bucket_list)))
-    if len(bucket_list) != 1:
-        # If the path is a directory, S3 doesn't return anything
-        return False
-    return True
+    logger.debug("Bucket List: {0}".format(", ".join([x.key for x in bucket_list])))
+    logger.debug("bucket_list length: {0}".format(len(bucket_list)))
+    return len(bucket_list) == 1
+    # if len(bucket_list) != 1:
+    #     # If the path is a directory, S3 doesn't return anything
+    #     logger.debug("bucket_list is not equal to 1 ({0})".format(len(bucket_list)))
+    #     return False
+    # return True
 
 
 def callback(bytes):
@@ -46,7 +49,7 @@ def get_file(original_file):
     import boto3
     s3 = boto3.resource('s3')
     bucket_name, object_key = _parse_s3_file(original_file)
-    logger.info("Downloading {0} from {1}".format(object_key, bucket_name))
+    logger.debug("Downloading {0} from {1}".format(object_key, bucket_name))
     bucket = s3.Bucket(bucket_name)
     output = cStringIO.StringIO()
     bucket.download_fileobj(object_key, output)

@@ -24,6 +24,11 @@ import urllib
 import urlparse
 from hashlib import sha1
 import subprocess
+import logging
+import daiquiri
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger(__name__)
 
 
 def is_tool(name):
@@ -208,9 +213,9 @@ def process_url(url, server_name="", document_root=None, check_security=True):
     base_uri = os.path.dirname(resolved_uri)
     original_uri = urlparse.urljoin(base_uri, base_filename + ext)
 
-    if original_file.startswith('s3://'):
+    if original_file.startswith(u's3://'):
         from filesystem import s3
-        original_is_missing = s3.file_exists(original_file)
+        original_is_missing = not s3.file_exists(original_file)
     else:
         original_is_missing = not os.path.exists(original_file)
 
@@ -237,6 +242,7 @@ def process_url(url, server_name="", document_root=None, check_security=True):
         'is_external': is_external,
         'external_url': external_url,
     }
+    logger.debug("Processed {0} into {1}".format(url, str(output)))
     return output
 
 

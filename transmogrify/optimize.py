@@ -1,5 +1,7 @@
 import subprocess
 import os
+import logging
+import daiquiri
 
 try:
     from PIL import Image
@@ -9,6 +11,9 @@ except ImportError:
 
 from .settings import IMAGE_OPTIMIZATION_CMD
 from .utils import is_tool
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger(__name__)
 
 
 def convert_to_rgb(img):
@@ -41,8 +46,13 @@ def optimize(image, fmt='jpeg', quality=80):
     if IMAGE_OPTIMIZATION_CMD and is_tool(IMAGE_OPTIMIZATION_CMD):
         image_buffer = BytesIO()
         image.save(image_buffer, format=fmt, quality=quality)
+        image_buffer.seek(0)  # If you don't reset the file pointer, the read command returns an empty string
         p1 = subprocess.Popen([IMAGE_OPTIMIZATION_CMD], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         output_optim, output_err = p1.communicate(image_buffer.read())
+        if not output_optim:
+            logger.debug("No image buffer received from IMAGE_OPTIMIZATION_CMD")
+            logger.debug("output_err: {0}".format(output_err))
+            return image
         im = Image.open(BytesIO(output_optim))
         return im
     else:
