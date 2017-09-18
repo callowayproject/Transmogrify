@@ -1,5 +1,7 @@
 import os
+import logging
 import processors
+import daiquiri
 
 DEFAULT_SETTINGS = {
     'BASE_PATH': "/home/media/",
@@ -112,6 +114,13 @@ FALLBACK_SERVERS = (
     # (regex, repl, host),
     # (r"^/media/(.*), "\1", "http://www.example.com/"),
 )
+
+daiquiri.setup(level=logging.INFO)
+logger = daiquiri.getLogger(__name__)
+settings_string = ["Using settings:"]
+settings_string.extend(['%s: %s' % (key, val) for key, val in USER_SETTINGS.items()])
+logger.info("\n".join(settings_string))
+
 
 PROCESSORS = {}
 ALLOW_ALL_PROCESSORS = '__all__' in USER_SETTINGS['ALLOWED_PROCESSORS']
