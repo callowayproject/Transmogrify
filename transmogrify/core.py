@@ -63,6 +63,14 @@ class Transmogrify(object):
 
         self.im = optimize.optimize(self.im, fmt=self.format, quality=self.quality)
 
+        kwargs = {
+            'format': self.format,
+            'optimize': True,
+            'quality': self.quality,
+        }
+        if self.format == 'jpeg':
+            kwargs['progressive'] = True
+
         if self.filename.startswith('s3://'):
             import cStringIO
             from filesystem import s3
@@ -70,14 +78,14 @@ class Transmogrify(object):
             if self.frames:
                 images2gif.write_gif(output, self.frames)
             else:
-                self.im.save(output, format=self.format, quality=self.quality)
+                self.im.save(output, **kwargs)
             output.reset()
             s3.put_file(output, self.filename)
         else:
             if self.frames:
                 images2gif.write_gif(self.filename, self.frames)
             else:
-                self.im.save(self.filename, quality=self.quality)
+                self.im.save(self.filename, **kwargs)
 
     def apply_action_tuples(self, actions):
         """
