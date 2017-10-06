@@ -9,10 +9,10 @@ media/js/*.r*.js
 media/css/*.r*.css
 *DS_Store
 *.egg-info
-transmogrify/testdata/vert_img_*.jpg
-transmogrify/testdata/horiz_img_*.jpg
-transmogrify/testdata/square_img_*.jpg
-transmogrify/testdata/horiz_img-cropped.jpg
+transmogrify/tests/testdata/vert_img_*.jpg
+transmogrify/tests/testdata/horiz_img_*.jpg
+transmogrify/tests/testdata/square_img_*.jpg
+transmogrify/tests/testdata/horiz_img-cropped.jpg
 dist/
 build/
 testenv/
@@ -20,3 +20,8 @@ Eksponent.CropUp.1.0b7/
 cropup_3e3d52bbc980
 modified/
 originals/
+.tox
+.coverage
+junit*.xml
+coverage.xml
+.cache
