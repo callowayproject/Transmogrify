@@ -89,5 +89,5 @@ TRANSMOGRIFY_SETTINGS = {
 }
 
 TRANSMOGRIFY_SECRET = "whatevs"
-os.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
-os.environ['TRANSMOGRIFY_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
+# os.environ['TRANSMOGRIFY_ORIG_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
+# os.environ['TRANSMOGRIFY_BASE_PATH'] = os.path.join(APP, "transmogrify", "testdata")
