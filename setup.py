@@ -2,7 +2,21 @@
 # -*- coding: utf-8 -*-
 
 import os
+import sys
 from setuptools import setup, find_packages
+
+
+version = __import__('transmogrify').get_version()
+
+if sys.argv[-1] == 'publish':
+    os.system('python setup.py bdist_wheel upload -r natgeo')
+    print("You probably want to also tag the version now:")
+    print("  python setup.py tag")
+    sys.exit()
+elif sys.argv[-1] == 'tag':
+    cmd = "git tag -a %s -m 'version %s';git push --tags" % (version, version)
+    os.system(cmd)
+    sys.exit()
 
 
 def read_file(filename):
@@ -27,7 +41,7 @@ DESC = " ".join(__import__('transmogrify').__doc__.splitlines()).strip()
 
 setup(
     name='transmogrify',
-    version=__import__('transmogrify').get_version().replace(' ', '-'),
+    version=version.replace(' ', '-'),
     description=DESC,
     long_description=get_readme(),
     author='Corey Oordt',
@@ -40,7 +54,7 @@ setup(
     ],
     install_requires=read_file('requirements.txt'),
     include_package_data=True,
-    packages=find_packages(exclude=['example', ]),
+    packages=find_packages(exclude=['example*', ]),
     scripts=['bin/configure_transmogrify'],
     zip_safe=False
 )
