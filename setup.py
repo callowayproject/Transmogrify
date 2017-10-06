@@ -9,7 +9,7 @@ from setuptools import setup, find_packages
 version = __import__('transmogrify').get_version()
 
 if sys.argv[-1] == 'publish':
-    os.system('python setup.py bdist_wheel upload -r natgeo')
+    os.system('python setup.py bdist_wheel upload')
     print("You probably want to also tag the version now:")
     print("  python setup.py tag")
     sys.exit()
