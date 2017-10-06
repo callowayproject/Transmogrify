@@ -1,7 +1,7 @@
 import unittest
 import os
-import urllib
-import shutil
+# import urllib
+# import shutil
 
 # import wsgi_handler
 from transmogrify import wsgi as wsgi_handler
@@ -13,7 +13,7 @@ import mock
 from PIL import Image
 
 HERE = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-TESTDATA = os.path.abspath(os.path.join(HERE, 'testdata'))
+TESTDATA = os.path.abspath(settings.ORIG_BASE_PATH)
 os.environ['TRANSMOGRIFY_SECRET'] = 'secret'
 
 
@@ -21,7 +21,7 @@ def get_test_filepath(filename):
     """
     return a full filepath to the test data directory
     """
-    return os.path.abspath(os.path.join(TESTDATA, filename))
+    return os.path.abspath(os.path.join(settings.ORIG_BASE_PATH, filename))
 
 
 class TestParseActionTuples(unittest.TestCase):
@@ -46,6 +46,11 @@ class TestParseActionTuples(unittest.TestCase):
         self.assertEqual(
             ("foo_bar", []),
             utils.parse_action_tuples("foo_bar")
+        )
+
+        self.assertEqual(
+            ("foo_", []),
+            utils.parse_action_tuples("foo_")
         )
 
         self.assertEqual(
@@ -100,7 +105,7 @@ class TestTransmogrify(unittest.TestCase):
         expected_square = (300, 300)
         expected_vert = (168, 300)
         expected_horiz = (300, 208)
-        expected_animated = (300, 214)
+        # expected_animated = (300, 214)
         transmog = Transmogrify(utils.generate_url(self.square_img, '_r300x300'), "")
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
@@ -122,7 +127,7 @@ class TestTransmogrify(unittest.TestCase):
         expected_square = (300, 300)
         expected_vert = (168, 300)
         expected_horiz = (300, 208)
-        expected_animated = (300, 214)
+        # expected_animated = (300, 214)
         transmog = Transmogrify(utils.generate_url(self.square_img, '_r300x300'), "")
         transmog.save()
         img = Image.open(transmog.get_processed_filename())
@@ -232,6 +237,9 @@ class TestTransmogrify(unittest.TestCase):
         transmog.save()
         transmog = Transmogrify(utils.generate_url(self.horiz_img, '_b3-f00'))
         transmog.save()
+
+        security_hash = utils.generate_url(self.horiz_img, '_b3-f00').split('?')[1]
+        self.assertEqual(security_hash, transmog.get_security_hash())
         # transmog = Transmogrify(self.animated, [('b', '3-f00'), ])
         # transmog.save()
 
@@ -240,21 +248,37 @@ class UrlProcessingTest(unittest.TestCase):
     """
     Test aspects of URL processing.
     """
-    def setUp(self):
-        os.environ['TRANSMOGRIFY_PATH_ALIASES'] = '/media/,/testdata/'
-
     def do_sha_hash(self, value):
         import hashlib
         return hashlib.sha1(value + settings.SECRET_KEY).hexdigest()
 
     def test_aliases(self):
-        os.environ['TRANSMOGRIFY_PATH_ALIASES'] = '/media/,/testdata/'
-        # utils.PATH_ALIASES = {'/media/': '/testdata/'}
-        url = "/media/horiz_img_r200.jpg"
+        assert '^/assets/' in settings.PATH_ALIASES
+        url = "/assets/horiz_img_r200.jpg"
         url += "?%s" % self.do_sha_hash('_r200')
-        result = utils.process_url(url, document_root=HERE)
+        result = utils.process_url(url, document_root=TESTDATA)
         self.assertEquals(result['original_file'], get_test_filepath('horiz_img.jpg'))
 
+    def test_no_hash(self):
+        from transmogrify.network import Http404
+
+        self.assertRaises(Http404, utils.process_url, '/horiz_img_r200.jpg', document_root=TESTDATA)
+
+    def test_external_url(self):
+        result = utils.process_url('/external/http://example.com/foo.jpg', document_root=TESTDATA)
+
+        self.assertTrue(result['is_external'])
+        self.assertEquals(result['external_url'], 'http://example.com/foo.jpg')
+
+    def test_bad_prefix(self):
+        from transmogrify.network import Http404
+
+        self.assertRaises(Http404, utils.process_url, '../../horiz_img_r200.jpg', document_root=TESTDATA)
+
+    def test_missing_original(self):
+        from transmogrify.network import Http404
+
+        self.assertRaises(Http404, utils.process_url, '/horiz_image_r200.jpg', document_root=TESTDATA)
 
 # class TestMakeDirs(unittest.TestCase):
 #     def setUp(self):
@@ -665,8 +689,9 @@ class TestWSGIHandler(unittest.TestCase):
 
 class TestUtil(unittest.TestCase):
     def test_generate_url(self):
+        self.assertEqual(settings.SECRET_KEY, 'secret')
         expected = ("http://example.com/media/foo_r200.jpg"
-                    "?d7a3f8c02c4ecb0c13aa024e1d80d1053ad1deec")
+                    "?d657deac24715ccdd7a3df65f4ea3f9be5bb6454")
         result = utils.generate_url("http://example.com/media/foo.jpg",
                                     "_r200")
         self.assertEqual(expected, result)

@@ -1,6 +1,6 @@
 from collections import namedtuple
 from PIL import Image, ImageFilter, ImageChops
-from .settings import OPENCV_PREFIX
+from transmogrify.settings import OPENCV_PREFIX
 
 try:
     import cv2

@@ -1,6 +1,6 @@
-import autodetect
 import cv2
 import os
+from transmogrify import autodetect
 
 path = os.path.dirname(__file__)
 cascades = [
