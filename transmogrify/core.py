@@ -17,7 +17,8 @@ class Transmogrify(object):
             from filesystem import s3
             self.im = Image.open(s3.get_file(original_file))
         elif not os.path.exists(original_file) or not os.path.isfile(original_file):
-            self.im = None
+            # We shouldn't get here, as process_url should raise an Http404, but just in case...
+            self.im = None  # pragma: no cover
         else:
             self.im = Image.open(original_file)
         if self.im and 'duration' in self.im.info and self.im.format == 'GIF':
@@ -49,7 +50,9 @@ class Transmogrify(object):
         from .filesystem import makedirs
 
         if self.im is None:
-            return
+            # If we got here something very strange is going on that I can't even
+            # predict.
+            return  # pragma: no cover
         makedirs(self.output_path)
         for action, arg in self.actions:
             action = PROCESSORS[action]
@@ -86,13 +89,6 @@ class Transmogrify(object):
                 images2gif.write_gif(self.filename, self.frames)
             else:
                 self.im.save(self.filename, **kwargs)
-
-    def apply_action_tuples(self, actions):
-        """
-        Add more actions to the stack of actions. Nothing is done until the
-        image is saved.
-        """
-        self.actions.extend(actions)
 
     def get_processed_filename(self):
         parent_dir, filename = os.path.split(self.original_file)

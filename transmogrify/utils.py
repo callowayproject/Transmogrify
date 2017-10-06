@@ -34,7 +34,10 @@ logger = daiquiri.getLogger(__name__)
 def is_tool(name):
     try:
         devnull = open(os.devnull)
-        subprocess.Popen([name], stdout=devnull, stderr=devnull).communicate()
+        # devnull = subprocess.PIPE
+        if not isinstance(name, (list, tuple)):
+            name = [name]
+        subprocess.Popen(name, stdout=devnull, stderr=devnull).communicate()
     except OSError as e:
         if e.errno == os.errno.ENOENT:
             return False
@@ -75,7 +78,7 @@ def create_securityhash(action_tuples):
     return security_hash
 
 
-def create_purge_securityhash():
+def create_purge_securityhash():  # pragma: no cover
     """
     Create a SHA1 hsh based on the KEY and 'PURGE'
     """
@@ -96,7 +99,7 @@ def generate_url(url, action_string):
 def is_valid_security(action_tuples, security_hash):
     from settings import DEBUG
 
-    if DEBUG and security_hash == "debug":
+    if DEBUG and security_hash == "debug":  # pragma: no cover
         return True
     if action_tuples == 'PURGE':
         return create_purge_securityhash() == security_hash
@@ -168,13 +171,13 @@ def process_url(url, server_name="", document_root=None, check_security=True):
     except ValueError:
         request_uri, security_hash = url, ""
 
-    external_prefix = EXTERNAL_PREFIX.lstrip("/")
+    external_prefix = EXTERNAL_PREFIX
     is_external = request_uri.startswith(external_prefix)
     resolved_uri = resolve_request_path(request_uri)
     resolved_uri = resolved_uri.lstrip("/")
     resolved_uri = urllib.unquote(resolved_uri)
     if is_external:
-        external_url = urllib.unquote(resolved_uri.replace(external_prefix, ''))
+        external_url = urllib.unquote(resolved_uri.replace(external_prefix.lstrip("/"), ''))
         resolved_uri = resolved_uri.replace("http://", '').replace('https://', '')
     else:
         external_url = ''

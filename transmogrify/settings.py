@@ -28,7 +28,10 @@ USER_SETTINGS = DEFAULT_SETTINGS.copy()
 
 def bool_from_env(key, default=False):
     try:
-        val = os.environ[key]
+        if isinstance(default, bool):
+            val = os.environ[key]
+        else:
+            val = os.environ.get(key, default)
         if val.lower() in ['true', 't', '1']:
             return True
         elif val.lower() in ['false', 'f', '0']:
@@ -39,17 +42,29 @@ def bool_from_env(key, default=False):
         return default
 
 
-def lists_from_env(key):
+def list_from_env(key, default=""):
+    """
+    Splits a string in the format "a,b,c,d,e,f" into
+    ['a', 'b', 'c', 'd', 'e', 'f', ]
+    """
+    try:
+        val = os.environ.get(key, default)
+        return val.split(',')
+    except (KeyError, ValueError):
+        return []
+
+
+def lists_from_env(key, default=""):
     """
     Splits a string in the format "a,b:c,d,e:f" into
     [('a', 'b'), ('c', 'd', 'e'), ('f', )]
     """
     try:
-        val = os.environ[key]
+        val = os.environ.get(key, default)
         lists = val.split(":")
         return [i.split(',') for i in lists]
     except (KeyError, ValueError):
-        return ()
+        return []
 
 settings_file = os.environ.get("TRANSMOGRIFY_SETTINGS", "")
 
@@ -92,7 +107,10 @@ if "TRANSMOGRIFY_PATH_ALIASES" in os.environ:
 # (regex, repl, host),
 # (r"^/media/(.*), "\1", "http://www.example.com/"),
 if "TRANSMOGRIFY_FAILBACK_SERVERS" in os.environ:
-    USER_SETTINGS['FALLBACK_SERVERS'] = dict(lists_from_env("TRANSMOGRIFY_FALLBACK_SERVERS"))
+    try:
+        USER_SETTINGS['FALLBACK_SERVERS'] = dict(lists_from_env("TRANSMOGRIFY_FALLBACK_SERVERS"))
+    except (ValueError, ):
+        USER_SETTINGS['FALLBACK_SERVERS'] = {}
 
 if "TRANSMOGRIFY_ORIG_PATH_HANDLER" in os.environ:
     USER_SETTINGS['ORIG_PATH_HANDLER'] = os.environ.get("TRANSMOGRIFY_ORIG_PATH_HANDLER", "")
@@ -105,6 +123,9 @@ if "TRANSMOGRIFY_EXTERNAL_PREFIX" in os.environ:
 
 if "TRANSMOGRIFY_ALLOWED_PROCESSORS" in os.environ:
     USER_SETTINGS['ALLOWED_PROCESSORS'] = os.environ.get("TRANSMOGRIFY_ALLOWED_PROCESSORS", "__all__,").split(",")
+
+if "TRANSMOGRIFY_IMAGE_OPTIMIZATION_CMD" in os.environ:
+    USER_SETTINGS['IMAGE_OPTIMIZATION_CMD'] = list_from_env("TRANSMOGRIFY_IMAGE_OPTIMIZATION_CMD")
 
 PATH_ALIASES = {}
 
