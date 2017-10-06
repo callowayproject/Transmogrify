@@ -3,3 +3,4 @@ wsgiref
 gunicorn
 numpy
 daiquiri
+opencv-python
