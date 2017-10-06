@@ -13,6 +13,7 @@ transmogrify/tests/testdata/vert_img_*.jpg
 transmogrify/tests/testdata/horiz_img_*.jpg
 transmogrify/tests/testdata/square_img_*.jpg
 transmogrify/tests/testdata/horiz_img-cropped.jpg
+transmogrify/tests/testdata/external/
 dist/
 build/
 testenv/
